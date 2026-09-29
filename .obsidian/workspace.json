@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CHI/CHI-MOC.md",
+                "file": "CHI/07_questions/CHI-UCE态什么情况下会出现.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CHI-MOC"
+              "title": "CHI-UCE态什么情况下会出现"
             }
           }
         ]
@@ -199,9 +199,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "cc69c14bc2030735",
+  "active": "3030398e49516d2c",
   "lastOpenFiles": [
+    "CHI/07_questions/CHI-CompAck在OWO中的使用.md",
     "CHI/07_questions/CHI-UCE态什么情况下会出现.md",
+    "CHI/CHI-MOC.md",
     "2026-09-09.md",
     "2026-09-11.md",
     "面试记录.md",
@@ -223,7 +225,6 @@
     "CHI/07_questions/CHI-CLEANSHARED&CLEANINVALID.md",
     "CHI/07_questions/CHI-如何理解和记忆各种ID.md",
     "CHI/08_assets/Pasted image 20260916181648.png",
-    "CHI/CHI-MOC.md",
     "未命名.canvas",
     "CHI/08_assets/Pasted image 20260916181700.png",
     "CHI/07_questions/CHI-转换文本疑点.md",
@@ -244,7 +245,6 @@
     "CHI/01_maps/CHI-架构与通信-MOC.md",
     "CHI/00_spec/eetop.cn_IHI0050H_amba_chi_architecture_spec.pdf",
     "CHI/03_mechanisms/CHI-Comp与CompAck.md",
-    "CHI/02_concepts/CHI-多副本原子性与Ordering.md",
     "CHI/08_assets",
     "CHI/01_maps",
     "CHI/07_questions"
