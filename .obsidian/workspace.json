@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CHI/07_questions/CHI-UCE态什么情况下会出现.md",
+                "file": "CHI/07_questions/CHI-COPYBACK WRITE.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CHI-UCE态什么情况下会出现"
+              "title": "CHI-COPYBACK WRITE"
             }
           }
         ]
@@ -201,8 +201,10 @@
   },
   "active": "3030398e49516d2c",
   "lastOpenFiles": [
-    "CHI/07_questions/CHI-CompAck在OWO中的使用.md",
+    "CHI/07_questions/CHI-RETRY机制.md",
     "CHI/07_questions/CHI-UCE态什么情况下会出现.md",
+    "CHI/07_questions/CHI-RetToSrc的用途与设计原因.md",
+    "CHI/07_questions/CHI-CompAck在OWO中的使用.md",
     "CHI/CHI-MOC.md",
     "2026-09-09.md",
     "2026-09-11.md",
@@ -219,8 +221,6 @@
     "CHI/07_questions/CompAck在OWO中的使用.md",
     "CHI/07_questions/CHI-4种UNIQUE的区别.md",
     "CHI/07_questions/CHI-256bit数据接口何时只传一拍.md",
-    "CHI/07_questions/CHI-RetToSrc的用途与设计原因.md",
-    "CHI/07_questions/CHI-RETRY机制.md",
     "CHI/07_questions/CHI-COPYBACK WRITE.md",
     "CHI/07_questions/CHI-CLEANSHARED&CLEANINVALID.md",
     "CHI/07_questions/CHI-如何理解和记忆各种ID.md",

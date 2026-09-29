@@ -22,11 +22,11 @@ WriteBack、WriteClean 和 WriteEvictOrEvict 有什么区别？HN 如何决定�
 
 ## 回答
 
-| 请求 | 主要作用 | Requester 的副本 |
-| --- | --- | --- |
-| WriteBackFull / WriteBackPtl | 将脏数据写回下一级缓存或内存 | 最终失效 |
-| WriteCleanFull | 写回完整脏数据 | 通常保留 Clean 副本；并发 snoop 可能使其失效 |
-| WriteEvictOrEvict | 驱逐 Clean 副本，由 HN 决定是否接收数据 | 最终失效 |
+| 请求                           | 主要作用                      | Requester 的副本                 |
+| ---------------------------- | ------------------------- | ----------------------------- |
+| WriteBackFull / WriteBackPtl | 将脏数据写回下一级缓存或内存            | 最终失效                          |
+| WriteCleanFull               | 写回完整脏数据                   | 通常保留 Clean 副本；并发 snoop 可能使其失效 |
+| WriteEvictOrEvict            | 驱逐 Clean 副本，由 HN 决定是否接收数据 | 最终失效                          |
 
 ## WriteEvictOrEvict 的两条路径
 
