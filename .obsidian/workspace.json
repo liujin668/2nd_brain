@@ -11,10 +11,14 @@
             "id": "3030398e49516d2c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "2026-09-29.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "2026-09-29"
             }
           }
         ]
@@ -194,7 +198,7 @@
       "bases:新建数据库": false
     }
   },
-  "active": "2c8c214b6cb45fed",
+  "active": "3030398e49516d2c",
   "lastOpenFiles": [
     "未命名.base",
     "未命名 1.base",
