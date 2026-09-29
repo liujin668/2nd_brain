@@ -161,6 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "2026-09-29.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -168,19 +169,9 @@
               "icon": "lucide-list",
               "title": "大纲"
             }
-          },
-          {
-            "id": "2c8c214b6cb45fed",
-            "type": "leaf",
-            "state": {
-              "type": "git-view",
-              "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
-            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -188,14 +179,14 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "obsidian-git:Open Git source control": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "bases:新建数据库": false
+      "bases:新建数据库": false,
+      "obsidian-git:Open Git source control": false
     }
   },
   "active": "3030398e49516d2c",
