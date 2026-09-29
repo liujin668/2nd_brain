@@ -20,5 +20,5 @@ UCE 态在什么情况下会出现？
 
 ## 思考
 
-- 在 RN0发起CleanUnique 的过程中,接收到了被打掉。
+- 在 RN0发起CleanUnique 的过程中,接收到了snpinvalid,此时数据没了先变成I态,然后CleanUnique完成,拿到权,此时有权wu。
 - 在 I 态时发起 CleanUnique。
