@@ -201,14 +201,14 @@
   },
   "active": "3030398e49516d2c",
   "lastOpenFiles": [
+    "2026-09-11.md",
+    "2026-09-15.md",
+    "2026-09-29.md",
+    "面试记录.md",
     "未命名.base",
     "未命名 1.base",
     "未命名 3.base",
     "未命名 2.base",
-    "2026-09-29.md",
-    "面试记录.md",
-    "2026-09-15.md",
-    "2026-09-11.md",
     "2026-09-09.md",
     "2026-09-08.md",
     "CHI/07_questions/UCE态什么情况下会出现.md",
@@ -246,7 +246,6 @@
     "CHI/02_concepts/CHI-多副本原子性与Ordering.md",
     "CHI/08_assets",
     "CHI/01_maps",
-    "CHI/07_questions",
-    "CHI/06_reference"
+    "CHI/07_questions"
   ]
 }
