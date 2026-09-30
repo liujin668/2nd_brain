@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Neoverse/RD-N2-Reference-Design-中文精读.md",
+                "file": "CHI/CHI-MOC.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "RD-N2-Reference-Design-中文精读"
+              "title": "CHI-MOC"
             }
           }
         ]
@@ -200,14 +200,15 @@
   },
   "active": "3030398e49516d2c",
   "lastOpenFiles": [
+    "2026-09-07.md",
+    "Neoverse/RD-N2-Reference-Design-中文精读.md",
     "Neoverse/01_assets/rdn2-multichip.png",
-    "Neoverse/01_assets/rdn2-boot.png",
     "Neoverse/01_assets/rdn2-cache.png",
+    "Neoverse/01_assets/rdn2-boot.png",
     "Neoverse/01_assets/rdn2-system.png",
     "Neoverse/01_assets",
     "CHI/00_spec/eetop.cn_IHI0050H_amba_chi_architecture_spec.pdf",
     "Neoverse/00_sources/RD-N2-ReleaseD-Technical-Overview.pdf",
-    "Neoverse/RD-N2-Reference-Design-中文精读.md",
     "2026-09-30.md",
     "Neoverse/00_sources",
     "Neoverse",
@@ -227,7 +228,6 @@
     "CHI/07_questions/UCE态什么情况下会出现.md",
     "CHI/07_questions/CompAck在OWO中的使用.md",
     "CHI/07_questions/CHI-4种UNIQUE的区别.md",
-    "2026-09-07.md",
     "CHI/07_questions/CHI-256bit数据接口何时只传一拍.md",
     "CHI/07_questions/CHI-RetToSrc的用途与设计原因.md",
     "CHI/07_questions/CHI-RETRY机制.md",
@@ -243,7 +243,6 @@
     "Pasted image 20260916154922.png",
     "Pasted image 20260916154831.png",
     "Pasted image 20260915102549.png",
-    "Pasted image 20260915102615.png",
     "CHI/01_maps/desktop.ini",
     "欢迎.md",
     "CHI/07_questions/未命名.canvas",
