@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "2026-09-30.md",
+                "file": "CHI/07_questions/CHI-4种UNIQUE的区别.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-09-30"
+              "title": "CHI-4种UNIQUE的区别"
             }
           }
         ]
@@ -161,6 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "2026-09-29.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -170,7 +171,7 @@
             }
           },
           {
-            "id": "2c8c214b6cb45fed",
+            "id": "b5a0985557881020",
             "type": "leaf",
             "state": {
               "type": "git-view",
@@ -188,44 +189,43 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "obsidian-git:Open Git source control": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "bases:新建数据库": false
+      "bases:新建数据库": false,
+      "obsidian-git:Open Git source control": false
     }
   },
   "active": "3030398e49516d2c",
   "lastOpenFiles": [
-    "2026-09-29.md",
     "2026-09-30.md",
-    "未命名.md",
-    "面试记录.md",
-    "CHI/07_questions/CHI-UCE态什么情况下会出现.md",
+    "2026-09-15.md",
+    "2026-09-11.md",
+    "2026-09-09.md",
+    "2026-09-07.md",
+    "CHI/07_questions/CHI-CLEANSHARED&CLEANINVALID.md",
     "CHI/07_questions/CHI-CompAck在OWO中的使用.md",
+    "CHI/07_questions/CHI-COPYBACK WRITE.md",
+    "CHI/07_questions/CHI-RETRY机制.md",
+    "CHI/07_questions/CHI-UCE态什么情况下会出现.md",
+    "CHI/07_questions/CHI-RetToSrc的用途与设计原因.md",
+    "CHI/CHI-MOC.md",
+    "面试记录.md",
+    "2026-09-08.md",
+    "2026-09-29.md",
     "未命名.base",
     "未命名 1.base",
     "未命名 3.base",
     "未命名 2.base",
-    "2026-09-15.md",
-    "2026-09-11.md",
-    "2026-09-09.md",
-    "2026-09-08.md",
     "CHI/07_questions/UCE态什么情况下会出现.md",
     "CHI/07_questions/CompAck在OWO中的使用.md",
     "CHI/07_questions/CHI-4种UNIQUE的区别.md",
-    "2026-09-07.md",
     "CHI/07_questions/CHI-256bit数据接口何时只传一拍.md",
-    "CHI/07_questions/CHI-RetToSrc的用途与设计原因.md",
-    "CHI/07_questions/CHI-RETRY机制.md",
-    "CHI/07_questions/CHI-COPYBACK WRITE.md",
-    "CHI/07_questions/CHI-CLEANSHARED&CLEANINVALID.md",
     "CHI/07_questions/CHI-如何理解和记忆各种ID.md",
     "CHI/08_assets/Pasted image 20260916181648.png",
-    "CHI/CHI-MOC.md",
     "未命名.canvas",
     "CHI/08_assets/Pasted image 20260916181700.png",
     "CHI/07_questions/CHI-转换文本疑点.md",
@@ -243,6 +243,7 @@
     "CHI/00_spec/CHI-Source-IHI0050H.md",
     "CHI/02_concepts/CHI-Cache状态模型.md",
     "CHI/01_maps/CHI-一致性-MOC.md",
+    "CHI/01_maps/CHI-架构与通信-MOC.md",
     "CHI/00_spec/eetop.cn_IHI0050H_amba_chi_architecture_spec.pdf",
     "CHI/08_assets",
     "CHI/01_maps",
