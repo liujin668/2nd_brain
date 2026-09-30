@@ -200,9 +200,15 @@
   },
   "active": "3030398e49516d2c",
   "lastOpenFiles": [
-    "2026-09-30.md",
-    "Neoverse/RD-N2-Reference-Design-中文精读.md",
+    "Neoverse/01_assets/rdn2-multichip.png",
+    "Neoverse/01_assets/rdn2-boot.png",
+    "Neoverse/01_assets/rdn2-cache.png",
+    "Neoverse/01_assets/rdn2-system.png",
+    "Neoverse/01_assets",
+    "CHI/00_spec/eetop.cn_IHI0050H_amba_chi_architecture_spec.pdf",
     "Neoverse/00_sources/RD-N2-ReleaseD-Technical-Overview.pdf",
+    "Neoverse/RD-N2-Reference-Design-中文精读.md",
+    "2026-09-30.md",
     "Neoverse/00_sources",
     "Neoverse",
     "2026-09-29.md",
@@ -238,14 +244,9 @@
     "Pasted image 20260916154831.png",
     "Pasted image 20260915102549.png",
     "Pasted image 20260915102615.png",
-    "Pasted image 20260915102737.png",
-    "Pasted image 20260915103155.png",
     "CHI/01_maps/desktop.ini",
-    "desktop.ini",
     "欢迎.md",
     "CHI/07_questions/未命名.canvas",
-    "CHI/00_spec/CHI-Source-IHI0050H.md",
-    "CHI/02_concepts/CHI-Cache状态模型.md",
-    "CHI/00_spec/eetop.cn_IHI0050H_amba_chi_architecture_spec.pdf"
+    "CHI/00_spec/CHI-Source-IHI0050H.md"
   ]
 }
