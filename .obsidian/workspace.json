@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "2026-10-06.md",
+                "file": "2026-10-07.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-10-06"
+              "title": "2026-10-07"
             }
           }
         ]
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "2026-10-06.md",
+                "file": "2026-10-07.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -201,8 +201,9 @@
   },
   "active": "3030398e49516d2c",
   "lastOpenFiles": [
-    "2026-09-30.md",
     "2026-10-06.md",
+    "2026-10-07.md",
+    "2026-09-30.md",
     "未命名.md",
     "面试记录.md",
     "CHI/07_questions/CHI-4种UNIQUE的区别.md",
@@ -243,7 +244,6 @@
     "欢迎.md",
     "CHI/07_questions/未命名.canvas",
     "CHI/00_spec/CHI-Source-IHI0050H.md",
-    "CHI/02_concepts/CHI-Cache状态模型.md",
     "CHI/00_spec/eetop.cn_IHI0050H_amba_chi_architecture_spec.pdf",
     "CHI/08_assets",
     "CHI/01_maps",
