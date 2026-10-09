@@ -1,0 +1,122 @@
+[
+  [
+    160,
+    "A.1 AArch32 Special-purpose registers summary"
+  ],
+  [
+    160,
+    "A.2 AArch32 Performance Monitors registers summary"
+  ],
+  [
+    207,
+    "A.3 AArch32 Generic Timer registers summary"
+  ],
+  [
+    207,
+    "A.4 AArch32 Debug registers summary"
+  ],
+  [
+    208,
+    "A.5 AArch32 Generic System Control registers summary"
+  ],
+  [
+    208,
+    "A.6 AArch32 Floating Point registers summary"
+  ],
+  [
+    213,
+    "A.7 AArch32 Activity Monitors registers summary"
+  ],
+  [
+    242,
+    "B.1 AArch64 Generic System Control registers summary"
+  ],
+  [
+    351,
+    "B.2 AArch64 Debug registers summary"
+  ],
+  [
+    453,
+    "B.3 AArch64 Random Number Control registers summary"
+  ],
+  [
+    456,
+    "B.4 AArch64 System instructions summary"
+  ],
+  [
+    458,
+    "B.5 AArch64 Identification registers summary"
+  ],
+  [
+    556,
+    "B.6 AArch64 Special-purpose registers summary"
+  ],
+  [
+    556,
+    "B.7 AArch64 Performance Monitors registers summary"
+  ],
+  [
+    633,
+    "B.8 AArch64 GIC system registers summary"
+  ],
+  [
+    779,
+    "B.9 AArch64 Generic Timer registers summary"
+  ],
+  [
+    780,
+    "B.10 AArch64 Other system control registers summary"
+  ],
+  [
+    781,
+    "B.11 AArch64 Activity Monitors registers summary"
+  ],
+  [
+    816,
+    "B.12 AArch64 Trace unit registers summary"
+  ],
+  [
+    1048,
+    "B.13 AArch64 Memory Partitioning and Monitoring"
+  ],
+  [
+    1070,
+    "B.14 AArch64 RAS registers summary"
+  ],
+  [
+    1114,
+    "B.15 AArch64 Statistical Profiling Extension registers"
+  ],
+  [
+    1130,
+    "B.16 AArch64 Trace Buffer Extension registers summary"
+  ],
+  [
+    1131,
+    "C.1 External CoreROM registers summary"
+  ],
+  [
+    1151,
+    "C.2 External PPM registers summary"
+  ],
+  [
+    1157,
+    "C.3 External Performance Monitors registers summary"
+  ],
+  [
+    1279,
+    "C.4 External CTI registers summary"
+  ],
+  [
+    1315,
+    "C.5 External Debug registers summary"
+  ],
+  [
+    1472,
+    "C.6 External Activity Monitors registers summary"
+  ],
+  [
+    1526,
+    "C.7 External Trace unit registers summary"
+  ]
+]
