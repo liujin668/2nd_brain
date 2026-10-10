@@ -22,17 +22,19 @@ for i,t in enumerate(pages):
 for a,b in [(33,36),(76,95),(102,104),(107,108),(117,121),(122,136),(143,149),(153,155),(158,159),(1662,1668)]:selected.update(range(a,b+1))
 selected={i for i in selected if i>=26}
 doc=pdfium.PdfDocument(src);scale=2.25
+old_manifest=json.loads((work/'asset-manifest.json').read_text(encoding='utf-8')) if (work/'asset-manifest.json').exists() else {}
+rerender=old_manifest.get('crop_version')!=2
 for k,n in enumerate(sorted(selected)):
     out=asset/f'p{n:04}-original.png'
-    if not out.exists():
+    if not out.exists() or rerender:
         p=doc[n-1];im=p.render(scale=scale).to_pil()
         # Preserve the full page body and footnotes, including original watermark.
-        im=im.crop(tuple(round(v*scale) for v in (45,60,567,741)))
+        im=im.crop(tuple(round(v*scale) for v in (0,60,p.get_width(),741)))
         im.save(out,optimize=True);p.close()
     if (k+1)%100==0:print(f'Rendered {k+1}/{len(selected)} original page screenshots',flush=True)
 # Tight original figure used in the main guide; keep the title and legend.
 pg=doc[39];im=pg.render(scale=3.4).to_pil();im.crop(tuple(round(v*3.4) for v in (80,76,556,476))).save(asset/'figure-3-1-original.png',optimize=True);pg.close()
-manifest={'source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'source_copy':str(dest),'screenshot_pages':sorted(selected),'captions':captions,'asset_dir':str(asset)}
+manifest={'crop_version':2,'source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'source_copy':str(dest),'screenshot_pages':sorted(selected),'captions':captions,'asset_dir':str(asset)}
 (work/'asset-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
 samples=[28,30,40,50,58,63,75,83,84,97,109,111,122,131,137,141,152,156,157,158,242,1114,1662,1667]
 thumbs=[]

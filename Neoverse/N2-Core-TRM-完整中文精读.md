@@ -603,3 +603,710 @@ IDATA2[63:0] = 0
 ### 10.5 原表中的编码疑点
 
 **待确认**：Table 10-28 的位范围存在重叠，Table 10-58 对 ASID 的范围/宽度表述也有疑点，Table 10-46 写 L2 TLB Way(0-5)，而 Table 6-1 写 5-way。本文不自动修正原编码；调试工具实现应核对该版勘误或更新手册。
+
+## 第11章 RAS与错误处理
+
+**原文范围：p.96-100，§11.1-11.6。** RAS 关注 Reliability、Availability、Serviceability，即可靠性、可用性与可维护性。N2 的 Node 0 包含本核私有 L1/L2 memory systems；这个 RAS node 编号不是 CHI NodeID。
+
+### 11.1 为什么dirty数据用ECC，clean结构可用parity
+
+| 保护方式 | 能力 | N2 中的典型结构 |
+|---|---|---|
+| SED parity | 检测单 bit 错误；不能保证检测同保护粒度双 bit 错误 | I-cache、MOP、MMUTC |
+| SECDED ECC | 单 bit 纠正、双 bit 检测 | D-cache tag/data、L2 tag/data、TQ |
+
+原表 Table 11-1，p.97：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0097-original.png]]
+
+**理解说明**：仅存 clean 内容的结构通常能从可信下游重新取得信息；dirty line 可能是最新数据的唯一副本，不能简单丢弃。因此保护需求不同。但 ECC 不等于自动修复任意多 bit 错误，双 bit 检测也不等于双 bit 纠正。
+
+手册保证单 bit 错误时可继续保持正确；多个不同保护粒度中的单 bit 错误也可处理。同一粒度双 bit 错误则依赖 RAM 类别，dirty 数据可能丢失；三 bit 及以上错误是否能检测不能一概保证。
+
+### 11.2 Poison、containment与异常
+
+Detected data error 可用 poison 随数据传播，让消费者识别，避免静默使用。带双 bit 错误的数据 eviction 也可附带 poison。**不可纠正的 L1 D-cache/L2 tag 错误不能 containment**，因为地址和状态信息本身已不可靠。
+
+ESB（Error Synchronization Barrier）让前序相关 SError 被处理或挂入 `DISR_EL1`，有助于界定异步错误范围；它不是一条“修复 ECC”的指令。
+
+### 11.3 Fault报告与错误被消费要分开
+
+| 机制 | 关注点 |
+|---|---|
+| FHI，Fault Handling Interrupt | 按 FI/CFI 条件报告 deferred、uncorrected、corrected 或计数溢出等 |
+| ERI，Error Recovery Interrupt | 按 UI 条件报告未 deferred 的 uncorrected error |
+| SEA / AEA | 数据被访问或消费时产生同步/异步 external abort |
+| Error record | FR 能力、CTLR 控制、STATUS 状态、ADDR/MISC 定位与计数 |
+
+发现错误、记录错误、发出中断以及软件消费 poisoned data 的时刻可能不同，不能把一次 ECC 检测固定解释为一次立即 Data Abort。
+
+### 11.4 错误注入与验证
+
+支持 corrected、deferred、uncontainable 的伪错误注入，可立即或由 32 位倒计时触发。它用于验证错误处理软件，**不是真正在 RAM bitcell 中制造物理故障**。
+
+**教学示例**：先准备 RAS handler 和记录读取路径，再用 corrected error 注入检查状态、中断与清除流程；不能用一次 corrected 注入通过来证明双 bit tag 错误恢复也正确。
+
+所有检测到的 ECC/parity 错误可触发 PMU `MEMORY_ERROR`，前提是选择并使能对应计数器；Secure 计数另受 `MDCR_EL3.SPME` 等条件约束。RAS 与掉电流程的关联见 [[#第5章 电源管理]]。
+
+原表 Table 11-2 的 RAS 寄存器总表和完整位图入口：[[N2-Core-TRM-正文原图表#第11章 原图表]]、[[N2-Core-TRM-寄存器索引#B14 RAS寄存器]]。
+
+## 第12章 GIC CPU接口
+
+**原文范围：p.101-104，§12.1-12.2。** 本核实现 GICv4.1 CPU interface，接外部 distributor，提供中断屏蔽、识别、优先级、应答及虚拟化相关控制。
+
+### 12.1 支持哪些中断能力
+
+包括两种安全状态、Secure virtualization、SGI、message-based interrupts、system register access、优先级与屏蔽、唤醒事件。Group 0 总是 Secure，通过 FIQ；Group 1 可 Secure/Non-secure，经规则选择 IRQ/FIQ。
+
+**理解说明**：CPU interface 决定“当前 PE 接受和处理哪个中断”，外部 GIC 组件还负责分发、路由和中断源状态。GIC CPU interface 不等于整套 GIC 都在 CPU 核中。
+
+### 12.2 典型处理过程
+
+**教学流程**：外部中断到达 → CPU 侧按 group enable 和 priority mask 判断可否呈现 → 软件读相应 IAR 确认中断 → handler 处理设备 → 写 EOIR，必要时按 EOImode 做 deactivation。优先级降低与 active 状态清除不能永远视为同一个步骤，精确流程查 GIC 架构。
+
+虚拟化中 `ICV_*` 是虚拟 CPU 接口视图，`ICH_*` 面向 hypervisor，如 list registers；它们与物理 `ICC_*` 不能混用。寄存器名后的 EL 不表示低 EL 无条件可访问。
+
+### 12.3 禁用集成接口的条件
+
+复位时将 `GICCDISABLE` 拉高可禁用；系统没有符合要求的外部 GIC distributor（至少 GICv3）时，需要禁用这个接口。禁用后外部 GIC 可驱动 nIRQ/nFIQ/nVIRQ/nVFIQ，而 GIC system register access 产生 Undefined Instruction。
+
+启用时，nVIRQ/nVFIQ 应绑高，因为虚拟中断由 CPU interface 自身生成；nIRQ/nFIQ 的处理条件不同，不能全部照搬绑高。
+
+原表 Table 12-1 跨 p.102-104，全部保留于 [[N2-Core-TRM-正文原图表#第12章 原图表]]。
+
+## 第13章 Advanced SIMD与浮点
+
+**原文范围：p.105。** N2 支持 A32/T32/A64 中的 Advanced SIMD 与标量浮点，硬件实现标量操作，支持 rounding modes、flush-to-zero、default NaN 等组合；本章说明不支持 floating-point exception trapping。
+
+### 13.1 SIMD与标量的差别
+
+标量加法处理一对数；SIMD 把多个元素打包，在一次向量操作中分别处理。**教学示例**：一个 128-bit 向量可放 4 个 32-bit 元素，向量加法得到 4 个独立和，而不是把它当成一个 128-bit 整数相加。
+
+```text
+[1, 2, 3, 4] + [10, 20, 30, 40] → [11, 22, 33, 44]
+```
+
+### 13.2 浮点控制为何影响结果
+
+Rounding mode 决定不可精确表示结果怎样舍入；flush-to-zero 和 default NaN 影响特殊值处理。AArch64 中 FPCR 负责控制，FPSR 记录状态；AArch32 的 FPSCR 综合这些职能。
+
+“不支持异常 trapping”不是“没有浮点异常状态”，也不代表除零、NaN 等行为被忽略。算法对特殊值、舍入和跨平台可重复性的需求必须按架构设置核对。
+
+本章没有给出各指令的 latency/throughput，不从“硬件实现”推断固定单周期；性能参数应查匹配修订的 Software Optimization Guide。
+
+## 第14章 SVE与SVE2
+
+**原文范围：p.106。** N2 支持 SVE/SVE2，**实现的 vector length 为 128 bits**；两者补充而不替代 AArch64 Advanced SIMD/FPU。
+
+### 14.1 Scalable不代表N2任意变宽
+
+SVE 的可扩展性体现在架构与软件模型，可写与向量长度无关的代码；N2 这款实现仍是 128-bit，不应据 scalable 推断 N2 有 256/512-bit 向量硬件。SVE 仅在 AArch64，AArch32 应用不能因此获得 SVE 指令执行能力。
+
+### 14.2 Predicate帮助处理尾部元素
+
+**教学示例**：对 10 个 32-bit 元素做运算，128-bit 一组有 4 个元素。前两组处理 8 个；最后一组用 predicate 只使能剩下 2 个 lane。Predicate 表达哪些元素有效，避免把数组外的元素当成合法运算对象，具体 load 和故障规则仍由指令语义决定。
+
+SVE2 提供更多数据处理指令能力；不能因为 SVE 支持就推定所有可选 SVE 扩展也支持。与 BF16/I8MM、Crypto 等的组合应逐项核对第 2 章能力表和 ID 寄存器。
+
+本章没有公开全部向量流水线宽度、执行端口、吞吐和 lane 内部划分，不能由 128-bit vector length 反推这些实现参数。
+
+## 第15章 系统控制与能力发现
+
+**原文范围：p.107-108，§15.1。** 系统寄存器管理 PMU、cache、MMU、GIC 和整体运行状态；有些还可经 external debug/utility bus 访问。
+
+### 15.1 先读能力，再配置行为
+
+| 目标 | 代表性寄存器 | 理解重点 |
+|---|---|---|
+| 识别核及修订 | MIDR_EL1、REVIDR_EL1 | 核类型与版本，不是运行频率 |
+| 识别拓扑/亲和性 | MPIDR_EL1 | Affinity，不是 CHI TxnID |
+| 识别指令/内存能力 | ID_AA64ISAR*、ID_AA64MMFR*、ID_AA64PFR*、ID_AA64ZFR0_EL1 | 是否存在相关架构功能 |
+| 缓存几何 | CLIDR、CSSELR、CCSIDR、CTR | Cache 层次、尺寸、line 和一致性相关能力 |
+| DC ZVA | DCZID_EL0 | 清零块大小与禁止条件 |
+| N2 配置 | IMP_CPUCFR_EL1 | 实现相关配置，具体位域回查 |
+
+**教学示例**：做缓存 set/way 操作前，按 CLIDR/CSSELR/CCSIDR 识别实际几何，不能在通用代码中硬编码“所有 CPU 都是同样 1MB L2”。使用 SVE、RNG、Crypto 也应检测实际平台能力。
+
+### 15.2 “寄存器存在”不等于“应用可直接访问”
+
+MRS/MSR 的可访问性由当前 EL、安全状态、trap control、debug 条件等共同决定。低 EL 执行可能 trap 到 EL2/EL3，或者 UNDEFINED；有些访问视图会重定向到虚拟寄存器。访问伪代码在附录，不应只看名字和编码总表。
+
+原表 Table 15-1 跨 p.107-108，见 [[N2-Core-TRM-正文原图表#第15章 原图表]]。
+
+## 第16章 随机数指令与外部RNG
+
+**原文范围：p.109-110，§16.1。** 随机数指令可选，N2 期待系统提供符合要求的 **memory-mapped TRNG 与 DRBG 外设**，不是在本核内部自动产生全部熵。
+
+### 16.1 RNDR与RNDRRS
+
+```asm
+MRS Xn, RNDR
+MRS Xn, RNDRRS
+```
+
+两者返回 64-bit random number。RNDRRS 请求按架构要求从 TRNG 为 DRBG reseed；系统需提供带宽、延迟与 QoS 保障，必要时部署多个 RNG 实例。
+
+### 16.2 请求地址如何构造
+
+```text
+RNDR   = {CPURNDBR_EL3[47:16], CPURNDPEID_EL3[10:0], 0, 0000}
+RNDRRS = {CPURNDBR_EL3[47:16], CPURNDPEID_EL3[10:0], 1, 0000}
+```
+
+基地址按 64KB 页配置，地址 [15:5] 标识 PE，[4] 区分 RNDR/RNDRRS。核通过 Device-nGnRnE 的成对读取取回结果。
+
+**教学计算**：若基地址为 `0x80000000`，PEID=3，则 RNDR 地址为 `0x80000060`，RNDRRS 为 `0x80000070`。这仅用于解释拼接，实际地址由 SoC 集成者配置。
+
+外设成功返回时，第一个 64-bit 是随机数，第二个 64-bit 为 1；超出实现规定时间无法提供时，两者为 0。**随机数值本身为 0 不等于失败**，应依据成功状态判断。总线错误导致请求失败，核设置 PSTATE.Z 并发出 SEI。
+
+### 16.3 集成与验证重点
+
+必须核对外设支持、基地址、PEID、Secure/Non-secure 属性、QoS 和失败路径。不能只看到 RNDR instruction supported 就声称随机服务可用。原文给出 SBSA ACS/NIST 测试入口，测试统计性质不能代替整个熵源设计审查。
+
+原表 Table 16-1 与 B.3 的基地址/PEID 原位图入口：[[N2-Core-TRM-正文原图表#第16章 原图表]]、[[N2-Core-TRM-附录B原图表#原文第454页]]、[[N2-Core-TRM-附录B原图表#原文第455页]]。
+
+## 第17章 调试系统
+
+**原文范围：p.111-121，§17.1-17.10。** 调试分 self-hosted 与 external；DSU DebugBlock 单独供电，使核或 cluster 掉电后仍可保持连接。
+
+### 17.1 调试组件如何连接
+
+DebugBlock 与 cluster 之间通过双向 APB 接口传递多数调试访问和 CTI trigger；每核 trace unit 输出经 funnel 汇聚到 ATB。每核 CTI 位于 DebugBlock，CTM 连接触发网络。
+
+原图 Figure 17-1，p.111：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0111-original.png]]
+
+**读图边界**：这是通用 DynamIQ 组织图，画出了 SCU、L3、snoop filter；N2 的 Direct connect 配置不能据此增加这些实际组件。
+
+原图 Figure 17-2，p.112 的外部调试链路见 [[N2-Core-TRM-正文原图表#第17章 原图表]]。Debug host 发高层命令，协议转换设备连接目标 SoC，再通过 CoreSight 访问指定核。Self-hosted debug 则由目标核上的 monitor 软件处理，不必依赖另一台主机。
+
+### 17.2 访问路径并不相同
+
+| 功能 | 核内system register | 外部memory-mapped接口 |
+|---|---|---|
+| Debug / PMU / trace | 支持相应寄存器 | DebugBlock APB |
+| SPE | System registers | 本章未列外部 APB 编程接口 |
+| ELA | 非本章的 system register 路径 | APB memory-mapped |
+| AMU | System registers | Utility bus 的只读计数器访问，见第 21 章 |
+
+外部访问受核供电、OS Lock、外部认证等条件控制。Cold reset 设置 Debug OS Lock，需要按规则清除才能正常调试；有 APB 地址不等于读写必成功。
+
+### 17.3 Breakpoint和watchpoint
+
+N2 支持 **6 个 breakpoint、4 个 watchpoint**。BRP0-3 只做 VA 匹配；BRP4/5 可匹配 VA、Context ID 或 VMID。Watchpoint 可链接 BRP4/5，限制为特定进程/虚拟机上下文。
+
+**教学示例**：某个进程偶尔改坏 `buffer[0]`，设置数据 watchpoint 比只在函数入口设 breakpoint 更能定位实际写入指令；如多个进程共享同 VA，要结合 context 条件，避免抓到别的地址空间。
+
+Watchpoint event 在 N2 中总是 synchronous。但 prefetch/cache hint、部分 CMO 不生成 watchpoint；Store-exclusive 即使失败、CAS 即使比较失败，也可生成 watchpoint。**没有成功写入，不等于一定没有 debug event。** 精确排除列表见 p.115。
+
+### 17.4 ROM table与CoreSight ID
+
+每核 ROM table 给出 core debug、PMU、trace、可选 ELA 的发现入口；DSU 另有 cluster 与 DebugBlock ROM tables。ROM table 是调试组件目录，不是程序启动 ROM 或指令缓存。
+
+Table 17-3 给出 r0p3 的 component ID/peripheral ID/DevArch 等；工具识别需要核对版本。CTI 位于 DSU DebugBlock，相关信号/映射不能仅由本核 TRM 决定。
+
+全部原图、访问条件表、ROM 表和寄存器总表已保留于 [[N2-Core-TRM-正文原图表#第17章 原图表]]。
+
+## 第18章 PMU性能监测
+
+**原文范围：p.122-136，§18.1-18.5。** PMU 从其他功能单元收集事件，提供 6 个可配置 64-bit event counters、周期计数、上下文采样快照和溢出中断。可通过 system registers 或外部 Debug APB 编程。
+
+### 18.1 事件名不能代替事件定义
+
+| 编号 | 事件 | 重要计数口径 |
+|---|---|---|
+| 0x08 | INST_RETIRED | 退休的体系结构指令，包括条件判断不通过的指令 |
+| 0x11 | CPU_CYCLES | 核周期；此事件不导出给 trace |
+| 0x03 / 0x04 | L1D_CACHE_REFILL / L1D_CACHE | 可包括 load/store 和 table walk，排除项需查原定义 |
+| 0x14 | L1I_CACHE | I-cache **或 MOP cache** 的取指访问，不能当成纯 I-cache access |
+| 0x16 / 0x17 | L2D_CACHE / L2D_CACHE_REFILL | 来自本核上层的相应 lookup/refill；外部 snoop 等有排除条件 |
+| 0x19 | BUS_ACCESS | 按数据传输 beat 计数，不按一整个 CHI transaction 计数 |
+| 0x21 / 0x22 | BR_RETIRED / BR_MIS_PRED_RETIRED | 退休分支与导致相应 flush 的预测错误分支 |
+| 0x23 / 0x24 | STALL_FRONTEND / STALL_BACKEND | 按事件定义计没有 fetched instruction 或资源阻塞的周期 |
+| 0x3A / 0x3B | OP_RETIRED / OP_SPEC | micro-operation，不是体系结构指令 |
+| 0x36 / 0x37 | LL_CACHE_RD / LL_CACHE_MISS_RD | 受 CPUECTLR.EXTLLC 与系统实现影响 |
+| 0x4000-0x4003 | SAMPLE_* | SPE population、采样、过滤和 collision 统计 |
+| 0x8006、0x8074 等 | SVE_* | SVE operation、predicate 等行为 |
+
+原始 **Table 18-1，p.122-132** 的整张事件表及全部续页：[[N2-Core-TRM-正文原图表#第18章 原图表]]。
+
+### 18.2 教学例子：CPI与事件比率
+
+假设同一段测量窗口中：退休指令 100 万，核周期 200 万，则 CPI=2，IPC=0.5。这是平均吞吐表现，**不是每条指令都耗时两周期**，乱序与并行使单条 latency 和整体 CPI 不同。
+
+若同窗 L1D_CACHE=10 万，L1D_CACHE_REFILL=2 万，可以按这一计数口径计算 20% 的 refill/access 比例。但它不是自动等于“应用 load 的精确 miss rate”，因为分母/分子可包含 table walk 等，且都有排除项。
+
+**教学例子**：软件 `store` 可能触发 ReadUnique；PMU 某些事务事件按 CHI read transaction 计数。因此“read 事件增长”并不证明源代码执行了同样数量的 load。
+
+### 18.3 Bus、LLC与时钟的三个陷阱
+
+1. `BUS_ACCESS` 是 data beat；完整 64B 数据通常涉及两个 256-bit beat，不应与事务总数直接比较。请求、响应头等也不属于这份数据量计数。
+2. 名为 L3/SCU 的事件描述反映数据来源与系统语境，不能据事件名字推定 N2 Direct connect 自带集群 L3。
+3. CPU_CYCLES 和 constant-frequency cycles 不同；DVFS 会改变核周期对应的时间，比较性能需要同时明确测量窗口、频率和运行状态。
+
+### 18.4 中断、权限与测量质量
+
+计数器溢出可触发低有效 `nPMUIRQ[n]`。外部访问受供电、OS Lock、External Performance Monitors Access Disable 等限制。短窗口容易受 pipeline effects 影响；事件虽可统计，也必须选择并使能计数器。
+
+6 个事件计数器不意味着只能分析 6 种事件；可分多轮测量，但不同轮负载变化及复用会带来可比性问题。PMU 总量分析之后，可用 SPE 把事件关联到具体被采样操作，或用 trace 看控制流。
+
+## 第19章 ETE指令流追踪
+
+**原文范围：p.137-149，§19.1-19.9。** Embedded Trace Extension 生成实时、压缩的程序流追踪；N2 ETE **不实现 data tracing**。
+
+### 19.1 四个主要部分
+
+原图 Figure 19-1，p.137：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0137-original.png]]
+
+| 部分 | 作用 |
+|---|---|
+| Core interface | 按程序顺序提供分支、异常等 P0 elements |
+| Trace generation | 将这些元素编码为 trace packets |
+| Filtering / triggering | 限定地址范围、上下文和触发条件，控制输出量 |
+| FIFO / trace out | 平滑突发，经 ATB 或 trace buffer 输出 |
+
+FIFO 满时发生 overflow，生成逻辑暂停新 trace 直至 FIFO 排空，导致 debugger 看到追踪缺口。不能假定追踪永远连续完整，也不能把缺口解释成程序停止执行。
+
+### 19.2 N2实现的资源与限制
+
+Table 19-1 给出：8 对 resource selection、4 个 external input selectors、4 个 ETE events、2 个 counters、4 个 sequencer states、1 个 VMID comparator、1 个 Context ID comparator、4 对地址 comparator；不实现 data address/data value comparators。
+
+Table 19-2 给出：8-byte 指令地址、4-byte VMID/Context ID、7-bit Trace ID、64-bit global timestamp；支持 instruction cycle counting、branch broadcast、return stack、SError tracing。不支持 data tracing、load/store 作为 P0 tracing、stall control、overflow avoidance 和低功耗 override。Cycle-counting minimum threshold 为 4。
+
+**教学示例**：异常偶现时，trace 可帮助理解程序从函数 A 进入 B，经哪个分支到故障处理入口；却不能据 N2 的 instruction flow trace 得到“每次 LDR 读到了哪些数据值”。数据来源/地址统计更适合 SPE 或其他观测机制。
+
+### 19.3 两种编程路径的顺序
+
+APB 路径：关闭 `TRCPRGCTLR.EN` → 轮询 `TRCSTATR.Idle=1` → 配好所有相关寄存器 → 开 EN → 轮询 Idle=0。
+
+原图 Figure 19-2，p.141：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0141-original.png]]
+
+System register 路径：EN=0 → ISB → TSB → 配寄存器 → EN=1 → ISB。
+
+原图 Figure 19-3，p.142：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0142-original.png]]
+
+先整体停用再配置，目的是避免部分设置先开始计数/触发，而其他条件还没建立。不能把两个接口的轮询和屏障流程随意交换。
+
+### 19.4 PMU、复位与追踪
+
+4 个扩展输入选择器可独立选择 PMU events，按事件发生周期提供给 trace 条件。Tables 19-3 另列 PMU overflow、TRB trigger 等事件。
+
+Warm reset 可能缺少复位前最后几条指令的 trace；TRBE 在 Warm reset 被禁用，不能用它保证捕获暖复位过程。Trace unit 被 reset 后需重新配置并使能。
+
+全部资源/能力原表、流程图、总表和续页见 [[N2-Core-TRM-正文原图表#第19章 原图表]]。
+
+## 第20章 TRBE追踪缓冲
+
+**原文范围：p.150，§20.1-20.2。** TRace Buffer Extension 接受 ETE 生成的 program-flow trace，并直接写向内存系统；它是保存追踪流的机制，不是另一种指令流生成器。
+
+### 20.1 Accept、discard、reject的区别
+
+| 行为 | 后果 |
+|---|---|
+| Accept | 接收 trace，向 L2 memory system 写入 |
+| Discard | 丢弃 trace，这部分数据永久丢失 |
+| Reject | 暂时不接收，trace unit 保留待接收数据 |
+| TRBE disabled | 忽略本缓冲路径，trace unit 向 ATB 输出 |
+
+Reject 与 discard 不同，但上游 FIFO 有限，因此 reject 也不能无限期保证无丢失；应结合 ETE overflow 行为理解整个缓冲链。
+
+### 20.2 配置与地址
+
+通过 system registers 配置，`TRBLIMITR_EL1.E` 控制使能；需整体完成设置后启用。Base、pointer、limit、memory attributes、status、trigger 等寄存器见 B.16，p.1130 的 Table B-739。
+
+原表 Table B-739：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p1130-original.png]]
+
+**教学示例**：追踪程序一段执行路径，ETE 负责产生压缩流，TRBE 把它写入指定 buffer，软件/工具之后解码。Buffer 可写、地址转换、边界和异常处理属于使能前必须成立的条件，不能只打开 E 位就假定可靠记录。
+
+## 第21章 AMU活动监测
+
+**原文范围：p.151-155，§21.1-21.5。** Activity Monitors 更偏向系统管理、功耗策略和持续监测；PMU 更偏向应用性能分析和调试。
+
+### 21.1 实际计数内容
+
+N2 实现 7 个 64-bit wrapping counters：Group 0 四项，Group 1 三项。
+
+| Counter | 事件 | 作用 |
+|---|---|---|
+| AMEVCNTR00 | CPU_CYCLES，0x0011 | 核频率周期 |
+| AMEVCNTR01 | CNT_CYCLES，0x4004 | 恒定频率周期 |
+| AMEVCNTR02 | Instructions retired，0x0008 | 架构执行的指令，包括条件不通过的指令 |
+| AMEVCNTR03 | STALL_BACKEND_MEM，0x4005 | 核内末级缓存 miss 导致前端无法向后端派发的周期 |
+| AMEVCNTR10-12 | Reserved，0x0300-0x0302 | 原表未定义可用业务事件，不自行补充 |
+
+原表 Table 21-1，p.152：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0152-original.png]]
+
+Counter wrap 不产生 overflow status 或 interrupt；Cold reset 清零。频率变化与 WFI/WFE 停钟可影响计数，要比较同一有定义的窗口。
+
+### 21.2 访问与配置
+
+最高已实现 EL 配置主要控制和计数值；运行中主要用读访问。System register 的低 EL 权限还受 AMUSERENR、CPTR_EL2.TAM、CPTR_EL3.TAM 等限制。Utility bus 只提供相应计数器的只读 memory-mapped 访问，基地址为 `0x<n>90000`，n 表示 DSU 内核实例。
+
+### 21.3 管理例子
+
+**教学示例**：同样的工作量，若退休指令变化小而 memory stall cycles 很高，单纯提高核心频率可能收益有限。系统管理软件可结合核周期、恒定频率周期、退休指令和内存阻塞信息评估策略，但要考虑时钟停止、窗口与其他系统瓶颈，不能只用一比值推断完整功耗。
+
+**待确认**：§21.3 引言写 events “fixed or programmable”，但正文与 Table 21-1 将 N2 事件定义为 fixed，辅助三项为 Reserved。本文按具体计数器说明，不把它当成 7 个任意可编程 PMU counters。
+
+## 第22章 SPE统计采样
+
+**原文范围：p.156-159，§22.1-22.4；补充位域依据 B.15，p.1114-1129。** Statistical Profiling Extension **抽样跟踪执行中的微操作**，写出样本，再由工具聚合分析。
+
+### 22.1 N2抽样的是micro-operation
+
+原图 Figure 22-1，p.156：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0156-original.png]]
+
+倒计数器按已派发的 speculative micro-operations 递减，归零选择一个；在该微操作生命周期中收集信息，相关指令 retired/aborted/flushed 后写记录。因此采样可覆盖后来被冲刷的操作，不能把所有样本当成已退休指令。
+
+MOP cache 保存已译码表示，SPE 则观察被选中的执行实例；Macro-operation 与 micro-operation 的具体拆分不能假定一一对应。
+
+记录通过 VA 写入 memory buffer，写入本身需要 MMU 转换与内存访问。采样通常扰动较小，但过密会增加开销。N2 建议最小间隔为 **1024 个微操作**；不是每 1024 条 retired instructions，也不是固定 1024 个 cycles。
+
+### 22.2 N2样本中的事件
+
+| 事件位 | 含义或注意 |
+|---|---|
+| 0 / 1 | Generated exception / Architecturally retired |
+| 2 / 3 | L1 data cache access / refill |
+| 4 / 5 | TLB access / 页表遍历相关事件；位 5 名称见下方口径说明 |
+| 6 / 7 | Not taken / Branch mispredicted |
+| 8 / 9 | Last-level cache access / miss |
+| 10 / 11 / 12 | Remote access / Data alignment flag / Late prefetch |
+| 17 / 18 | Partial predicate / Empty predicate |
+
+原表 Table 22-1，p.157：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0157-original.png]]
+
+**原文口径说明**：Table 22-1 对 bit 5 只写 “L1 data cache Translation Lookaside Buffer (TLB)”，未明确动作；B.15.1 的 E[5] 在 p.1115、1124 明确称为 TLB walk。本文据附录解释这一位，保留主表措辞疑点供回查，不直接当成任意 L1 TLB miss。
+
+### 22.3 数据来源能定位到哪一层
+
+| 编码 | 数据来源 |
+|---|---|
+| 0x0 | L1 data cache |
+| 0x8 | L2 cache |
+| 0x9 | Peer core |
+| 0xA | Local cluster |
+| 0xB | System cache |
+| 0xC | Peer cluster |
+| 0xD | Remote |
+| 0xE | DRAM |
+
+原表 Table 22-2，p.158：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0158-original.png]]
+
+这些是分类，不是 CHI NodeID。Peer core 不标识具体 RN；Local cluster/Peer cluster/Remote 的实际拓扑意义需结合集成。编码存在也不意味着当前系统必然包含每种来源。
+
+### 22.4 Load样本的具体例子
+
+```asm
+0x4000: LDR X0, [X0, #8]    // 例如读取链表的 next 指针
+```
+
+分析工具解码后的样本可示意为：
+
+```text
+PC：0x4000
+操作：Load
+数据地址：0x90000008
+L1 data access：1
+L1 data refill：1
+Last-level cache miss：1
+Data source：DRAM
+Total latency：180 cycles
+Architecturally retired：1
+```
+
+这是**教学样本**，不是原始 packet 格式，地址和 180 cycles 都是假设。N2 的 ID 寄存器支持微操作采样、loaded data source、按类型/事件/延迟过滤；SPE 架构中的地址和 latency packet 定义应查 Arm ARM。Total latency 的范围不能直接当成 DDR 设备本身响应时间。
+
+若在相同过滤条件下，这条 load 的 1000 份样本中 700 份来自 DRAM，就可怀疑其局部性较差，结合链表布局排查。**70% 是这组样本的来源比例，不是全部程序读写的精确 DRAM 比率**。被记录数据也不包括这次 LDR 实际读到的业务数据值。
+
+### 22.5 Branch样本与数据共享例子
+
+条件分支 `B.NE` 的 sample 若带 bit7=1，可将 misprediction 关联到对应 PC；大量样本集中到同一分支，就能检查条件变化和布局。
+
+同一 load 的另一份 sample 若 Data source=Peer core，可以研究共享数据访问。但单个样本不能证明 false sharing，更不能还原 RetToSrc、forwarding、CompAck 等完整 CHI 交换。需要访问地址、缓存行分布、线程行为及更多证据一起判断。
+
+### 22.6 过滤、记录尺寸和饱和
+
+`PMSIDR_EL1` 在本版给出：ArchInst=0（micro-op sampling）、LDS=1、FL/FT/FE 支持；CountSize 为 12-bit saturating，MaxSize 为 64B，Interval 推荐 1024。`PMBIDR_EL1` 规定 pointer 最小对齐为 64B；不能忽略 buffer 权限和边界。
+
+Event filter 是 **AND** 条件。比如 E[3]=1 且 E[5]=1，只保留同时具有 L1 data/unified refill 与 TLB walk 的样本，不是二者满足任一即可。
+
+采样倒计数和随后过滤要分开理解：并不是先找出“所有 cache miss”，再每隔 N 个 miss 采样。原记录会受过滤、collision、缓冲写入及观测窗口影响，不能把 sample count 简单乘 interval 当成无偏精确总量。
+
+### 22.7 PMU、SPE、ETE、AMU的选择
+
+| 想知道的事 | 更适合的机制 |
+|---|---|
+| 总共多少 cache refill、branch miss、cycles | PMU，注意每个事件口径 |
+| 哪条被采样 load 很慢、数据来自哪里 | SPE |
+| 运行时经哪些分支/异常走到这里 | ETE，必要时由 TRBE 保存 |
+| 系统长期运行、频率和内存阻塞的管理信息 | AMU |
+
+全部原流程、事件/数据来源总表与 register summary：[[N2-Core-TRM-正文原图表#第22章 原图表]]。PMSIDR/PMBIDR 原位图与对应表见 [[N2-Core-TRM-附录B原图表#原文第1126页]] 至 [[N2-Core-TRM-附录B原图表#原文第1129页]]。
+
+## 附录A AArch32寄存器
+
+**原文范围：p.160-241，§A.1-A.7。** 这部分是 AArch32 视图的寄存器参考。N2 的 AArch32 仅用于 EL0，附录中架构寄存器的通用访问描述不能推导出 N2 支持 AArch32 EL1/EL2/EL3。原文明确说本手册不是完整架构寄存器清单，必须结合 Arm ARM。
+
+| 分组 | 原文入口 | 理解重点 |
+|---|---|---|
+| A.1 Special-purpose | p.160 | DSPSR、DLR 是调试保存状态和链接信息 |
+| A.2 Performance Monitors | p.160-206 | PMCR、计数器使能/溢出、事件选择、事件计数器及类型；是 PMU 的 AArch32 访问视图 |
+| A.3 Generic Timer | p.207 | 区分物理/虚拟 count、compare value、timer value 和 control；部分寄存器为 64 位 |
+| A.4 Debug | p.207 | DBGDSCRint、DBGDTRRXint、DBGDTRTXint，是内部调试状态与数据传递视图 |
+| A.5 Generic System Control | p.208 | TPIDRURW、TPIDRURO 是软件线程标识，不是 CHI TxnID/NodeID |
+| A.6 Floating Point | p.208-212 | FPSCR 同时包含控制字段与累计状态字段，部分位映射到 AArch64 FPSR |
+| A.7 Activity Monitors | p.213-241 | AMU 的能力、使能、计数器及事件类型；实际实现数量应回到第21章 |
+
+### A.1 两种访问视图不能当成两套硬件
+
+例如 AArch32 的 FPSCR 与 AArch64 的 FPSR/FPCR 之间存在架构定义的映射。附录中的 `architecturally mapped` 描述用于理解状态之间的对应关系，不意味着可以在任意 EL、任意执行状态下直接访问另一视图。
+
+PMU/AMU 同样要区分**寄存器名称、架构允许的编号范围与 N2 实际计数器数量**。N2 的 PMU 是 6 个事件计数器；不能看到模板化位域中出现更大的编号，就认为 N2 实现了更多计数器。
+
+### A.2 如何读FPSCR
+
+原位图 Figure A-13 与位域表 Table A-43，p.209：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0209-original.png]]
+
+将字段分成四组理解：比较结果 NZCV、Advanced SIMD 累计饱和 QC、舍入/默认 NaN/flush-to-zero 等控制字段、浮点累计异常状态。第13章已说明 N2 不支持浮点异常 trapping；存在状态标志不等于该异常会引发 trap。清除/写入行为必须按对应字段定义，不能把整寄存器未知复位位直接当 0。
+
+详细条目见 [[N2-Core-TRM-寄存器索引#A2 PMU寄存器]]、[[N2-Core-TRM-寄存器索引#A6 浮点寄存器]]。全部原位图、编码与续表见 [[N2-Core-TRM-附录A原图表]]。
+
+## 附录B AArch64寄存器
+
+**原文范围：p.242-1130，§B.1-B.16。** 这是编写固件、虚拟化软件、性能工具和调试工具时最常回查的部分。每个展开条目通常包含作用、配置前提、访问属性、复位、位图、位域和访问伪代码。中文功能概括不能替代这些精确条件。
+
+### B.1 功能分组与软件使用场景
+
+| 分组 | 原文入口 | 用来解决的问题 |
+|---|---|---|
+| B.1 Generic System Control | p.242-350 | 页表和转换配置、内存属性、异常信息、Pointer Authentication、MTE，以及 N2 私有控制 |
+| B.2 Debug | p.351-452 | 断点/观察点、调试锁、调试状态、寄存器传递和异常控制 |
+| B.3 Random Number Control | p.453-456 | RNDR/RNDRRS 的指令可见接口与状态；外部 RNG 集成见第16章 |
+| B.4 System instructions | p.456-457 | SYS_IMP_RAMINDEX：内部 RAM 的诊断读取接口，配合第10章 |
+| B.5 Identification | p.458-555 | 读取架构能力、缓存属性、处理器身份；决定软件能否使用某项功能 |
+| B.6 Special-purpose | p.556 | DSPSR_EL0、DLR_EL0 的调试特殊用途视图 |
+| B.7 Performance Monitors | p.556-632 | PMU 控制、过滤、计数器、事件类型、使能和溢出 |
+| B.8 GIC system registers | p.633-778 | ICC 物理接口与 ICH 虚拟化接口，包括优先级、应答、EOI 与虚拟中断状态 |
+| B.9 Generic Timer | p.779-780 | 各异常级的物理/虚拟 timer；count 和 compare/control 要分开 |
+| B.10 Other system control | p.780-781 | SCTLR、CPACR、HCR、CPTR、ZCR 等控制和 trap 寄存器总表 |
+| B.11 Activity Monitors | p.781-815 | AMU 能力、两组计数器和访问控制 |
+| B.12 Trace unit | p.816-1047 | ETE 配置、资源选择、过滤、状态和组件识别 |
+| B.13 MPAM | p.1048-1069 | 读取分区/监测能力并控制 PARTID/PMG 等分区信息 |
+| B.14 RAS | p.1070-1113 | 选择错误记录、读取状态/地址/杂项信息、控制上报和注入 |
+| B.15 SPE | p.1114-1129 | 采样间隔、事件/操作/延迟过滤、能力与采样缓冲控制 |
+| B.16 TRBE | p.1130 | 追踪 buffer 的 base、limit、pointer、状态等寄存器总表 |
+
+表中的“入口”按分组起止位置归纳；同一页可能同时包含上一组的末尾和下一组的开头。
+
+### B.2 地址转换：基址、配置、属性、故障各司其职
+
+`TTBR0_EL1/TTBR1_EL1` 指向 Stage 1 页表；`TCR_EL1` 控制地址转换相关参数；`MAIR_EL1` 提供属性编码。涉及虚拟化时，再看 `VTTBR_EL2/VTCR_EL2` 的 Stage 2 配置。`ESR_ELx/FAR_ELx` 是故障分析入口，不应拿页表基址寄存器代替 fault address。
+
+理解说明：同一 VA 下出现 TLB miss、translation fault、permission fault 与 external abort，原因不同。先用第6章判断故障属于转换还是数据访问，再查相应寄存器字段。修改页表后是否需要 TLBI、屏障、怎样处理并发，是架构和软件协议问题；本摘要不提供可直接运行的通用页表更新代码。
+
+MTE 的标签控制、种子等条目也在 B.1。标签相关配置不能代替常规地址转换/权限检查；需要同时核对 feature ID、页表属性和对应异常信息。
+
+### B.3 N2私有控制必须与通用架构控制区分
+
+`IMP_CPUACTLR_EL1`、`IMP_CPUECTLR_EL1` 等带 `IMP_` 的条目属于实现相关接口。前文的 write streaming、预取、电源相关设置要回查对应位域。不能把某一版 N2 的私有编码当作所有 Cortex/Neoverse 的通用设置，也不能仅根据 `_EL1` 后缀推定任何 EL1 软件都获准访问。
+
+`SYS_IMP_RAMINDEX` 与第10章配合读取内部 RAM。它用于诊断与编码回查，不能借此向 MOP cache 写入“自定义指令”，也不能把原始 tag/data 位当成常规架构寄存器。
+
+### B.4 能力发现先于功能使用
+
+从 `MIDR_EL1/REVIDR_EL1` 确认实现身份和修订，再看 `ID_AA64*` 等 feature ID。缓存方面由 `CTR_EL0`、`CLIDR_EL1`、`CCSIDR_EL1` 等发现属性，按架构要求选择合法的 cache level/type。
+
+例如 SVE 软件既要确认支持 SVE，也要读取/配置允许的 vector length；N2 128-bit 的实现上限见第14章，不能仅根据 SVE 架构允许更大的向量而假定这颗核实现了它。有关私有 L2 大小、可选 RNG/crypto/coherent I-cache，还需核对实际构建配置。
+
+### B.5 GIC：读到中断编号之后还有状态转换
+
+ICC 系列的 IAR/EOIR 等寄存器控制物理中断应答与优先级状态；虚拟化还需 ICH 系列维护虚拟中断的列表和控制状态。EOI 和 deactivate 是否合并受接口模式影响，不能把“写 EOIR”概括为所有情况下都彻底释放中断。对应行为见第12章与 B.8。
+
+### B.6 MPAM：标识资源分区，不是直接配置核私有缓存容量
+
+MPAM（Memory Partitioning and Monitoring）寄存器描述能力和分区/监测标识，如 PARTID、PMG，以及虚拟化相关控制。它们提供可随访问传播的资源管理信息；共享资源具体如何分配和监测，还要看系统中的接收组件及实现。
+
+理解说明：把线程标记为不同 PARTID，与“把 N2 私有 L2 强制分成两块固定容量”不是同一个结论。不能只根据本附录推断整个 CMN/SLC 的容量分配策略。原总表与字段见 [[N2-Core-TRM-附录B原图表#原文第1048页]] 起。
+
+### B.7 RAS：选择记录之后才读状态与附加信息
+
+先用 `ERRIDR_EL1` 理解记录能力，通过 `ERRSELR_EL1` 选择记录，再读取 `ERXFR_EL1` 的能力、`ERXSTATUS_EL1` 的状态，按有效位解释 `ERXADDR_EL1/ERXMISC*`。控制/注入类寄存器与读取报告不同，具体清除和写入语义需核对原位域。
+
+不能把 UNKNOWN reset、地址无效或未实现字段解释成“无错误”。也不能根据一个 error status 就忽略第11章中的同步/异步异常、poison、FHI/ERI 与电源状态。对应条目见 [[N2-Core-TRM-寄存器索引#B14 RAS寄存器]]。
+
+### B.8 性能与追踪：按实现能力配置
+
+PMU 的控制/事件类型/计数值对应第18章；ETE 配置对应第19章；AMU 对应第21章；SPE 对应第22章。名称相似的 buffer、counter、filter 不能互换。
+
+SPE 先读 `PMSIDR_EL1/PMBIDR_EL1` 的能力和 buffer 要求，再理解 `PMSIRR_EL1`、`PMSEVFR_EL1`、`PMSLATFR_EL1` 等采样配置。TRBE 的 `TRBBASER_EL1/TRBLIMITR_EL1/TRBPTR_EL1` 记录 ETE 追踪缓冲；SPE 的 `PMB*` 是另一条数据记录路径。
+
+### B.9 逐项条目的阅读顺序
+
+1. 先看 Configurations：是否存在、依赖哪个 FEAT、是否当前执行状态可用。
+2. 看 Attributes：宽度、RO/RW/WO 或各字段访问类型。
+3. 看 Reset：`x`/UNKNOWN 与 0 不同；Cold/Warm reset 也可能不同。
+4. 看 Bit descriptions：RES0/RES1、RAZ/WI、有效位、清除语义必须逐项遵守。
+5. 最后看 Accessibility：当前 EL、安全状态、trap/锁等条件，不能只按寄存器名称后缀判断。
+
+有些分组只有总表，没有在本手册内逐项展开。索引会明确标出，并指向原总表；没有的说明不会补写成 N2 的确定行为。入口：[[N2-Core-TRM-寄存器索引]]；完整位图与续表：[[N2-Core-TRM-附录B原图表]]。
+
+## 附录C 外部寄存器
+
+**原文范围：p.1131-1660，§C.1-C.7。** 外部寄存器是调试/系统侧通过 memory-mapped 接口看到的组件视图。原表的 Offset 通常是相应组件基址内的偏移，不能当作固定物理地址。
+
+| 分组 | 原文入口 | 主要用途 |
+|---|---|---|
+| C.1 CoreROM | p.1131-1150 | 发现组件、核对 ROM entry 与组件识别信息 |
+| C.2 PPM | p.1151-1156 | Power/Performance Management 寄存器；本版条目 RO，位域 Reserved |
+| C.3 Performance Monitors | p.1157-1278 | PMU 的外部访问视图，包含计数、配置、锁和组件识别 |
+| C.4 CTI | p.1279-1314 | Cross Trigger Interface，配置触发输入/输出和通道连接 |
+| C.5 Debug | p.1315-1471 | 外部调试状态、指令/数据传递、断点/观察点、锁和认证 |
+| C.6 Activity Monitors | p.1472-1525 | AMU 外部只读观察及组件相关寄存器 |
+| C.7 Trace unit | p.1526-1660 | ETE 的 memory-mapped 配置、状态、资源、锁与识别 |
+
+### C.1 相对偏移与组件发现
+
+Core ROM table 帮助外部调试器找到组件；ROM entry、PIDR、CIDR 等用于发现和识别。第17章的布局与附录 C 的组件内偏移需要一起读。教学例子：若工具已经确定某 PMU 组件基址为 `BASE`，其寄存器地址按 `BASE + offset` 计算；`BASE` 必须来自平台/组件发现，本文不虚构 SoC 的固定基址。
+
+### C.2 外部访问受电源、锁与认证共同约束
+
+某寄存器在 APB 上“能寻址”，不意味着核心掉电、OS Lock/Double Lock 生效或认证未通过时仍可正常读取。第17/18/19/21章分别定义了相关模块的访问限制；位于 DebugBlock 和 Core power domain 的寄存器可能受不同电源状态影响。
+
+同名信息的系统寄存器视图与外部视图通常用于观察同一功能，但不是所有寄存器都严格一一映射，也不能忽略外部接口的数据宽度、访问大小与锁条件。操作系统和调试器若并发配置同一功能，应由软件协调。
+
+### C.3 PPM不能按名称推测写控制能力
+
+原 C.2 的 `CPUPPMCR/CPUPPMCR2-6` 描述开头提到 CPU behavior 控制，但本版 Attributes 是 **RO**，公开位域全部 Reserved。偏移为 0x000、0x010、0x020、0x080、0x088、0x090。可编程控制含义**待确认**，不能仅凭名称编造 DVFS 或功率控制流程。
+
+原表入口 p.1151：
+
+![[Neoverse/01_assets/N2-Core-TRM-r0p3/p1151-original.png]]
+
+### C.4 CTI连接事件，不搬运追踪数据
+
+CTI 用于将触发事件通过通道进行连接，配合第17章的 CTM。它可以协调调试/追踪组件的触发行为；Trace stream 本身由 ATB/TRBE 等路径处理。CTI 的 trigger channel 和 CHI 的 REQ/RSP/SNP/DAT channel 属于不同系统，不能因都叫 channel 而混用。
+
+### C.5 总表与展开条目一起使用
+
+先从本组 summary 查 offset/width/description，再进入具体条目确认位域与访问条件。原图表保留每组总表、所有编号位图与位域续表，见 [[N2-Core-TRM-附录C原图表]]；名字检索用 [[N2-Core-TRM-寄存器索引]]。
+
+## 附录D UNPREDICTABLE行为
+
+**原文范围：p.1661-1665，§D.1-D.4。** 本章记录特定条件下，N2 对架构允许的不确定行为所作的选择或偏离。它是排查异常/调试兼容性问题的依据，不能用来鼓励依赖不可移植的指令用法。
+
+### D.1 R15作为操作数
+
+对于原文指定的、以 R15 为 load/store base 的 UNPREDICTABLE 情形，N2 使用具有通常偏移的 PC；T32 时强制 word alignment。若指令要求 WriteBack，则执行访存但不 WriteBack。其他不合法 R15 使用不能概括为“读 0、写忽略”：原文明确 N2 不采用该策略，而是采取 UNDEFINED exception trap。
+
+### D.2 跨页访问
+
+| 原文限定的跨页情形 | N2记录的行为 |
+|---|---|
+| Store 跨页 | 不产生该情形的 alignment fault，拆成两个 store，各自采用所在地址的 memory type/shareability |
+| Load 跨页，Device→Device 或 Normal→Normal | 不产生该情形的 alignment fault，拆成两个 load，各自使用对应属性 |
+| Load 跨页，Device→Normal 或 Normal→Device | 产生 alignment fault |
+
+此表讨论原文列出的 CONSTRAINED UNPREDICTABLE 条件，不表示所有跨页访问都无其他异常，也不保证拆分访问的整体原子性。中文“各自属性”不能替代设备内存访问规则。
+
+### D.3 调试与计数器边界
+
+原 Table D-1（p.1662-1664）包括下列值得记住的情况：
+
+- A32 BKPT/HLT 的 condition code 不为 AL 时，这些列出的情形仍无条件执行。
+- 链接到不存在或不具上下文能力的 breakpoint，不产生对应 Breakpoint/Watchpoint event；LBN 读 UNKNOWN。
+- Address match breakpoint 的 BAS=0000 时视为 disabled；其他 BAS/MASK 组合需查原表，不能猜测。
+- PMU 选择超出可访问/实现计数器范围时，可出现 RES0 或 UNALLOCATED；要区分实际实现数量 N、受虚拟化控制的可访问数量和 selector。
+- 调试寄存器映射成 Normal memory，访问可能被重复、合并、拆分或改变大小，效果 UNPREDICTABLE。
+- 不符合规定访问大小的外部访问可能读 UNKNOWN 或写成 UNKNOWN；外部写与 reset 同时发生时取 reset value。
+- 保留调试/PMU 地址在掉电、锁或访问禁止等条件下，可能返回 Error 或 RES0；具体地址范围和优先条件见 p.1664。
+
+### D.4 其他边界
+
+`CSSELR` 选择不存在的缓存时，读取 CCSIDR 可能成为 NOP、UNDEFINED 或返回 UNKNOWN，不能据此推导出缓存容量为零。AArch32 CRC32/CRC32C 某些不合法 size/condition 编码的行为也有单独记录，不能扩展为正常编程建议。
+
+全部原行为表及续表见 [[N2-Core-TRM-附录DE原图表]]。
+
+## 附录E 文档版本变化
+
+**原文范围：p.1666-1668，§E.1。** 文档内容变动可能是增补、澄清或自动生成寄存器条目的变化；不能把每条 change 都理解为硬件新增功能或已确认的 silicon erratum。
+
+| 文档版本 | 对应状态 | 对本次学习最重要的变化 |
+|---|---|---|
+| 0000-02 | r0p0 early access | 增补 SPE、L2 编码和 PMU 事件信息 |
+| 0000-03 | r0p0 的后续文档 | 增补 DSU 依赖项、SPE/trace 寄存器；补充电源模式与 write streaming；移除 PMSSRR 条目 |
+| 0000-04 | r0p0 的后续文档 | RNG、transaction queue、架构版本、bus port 和 PMU→trace 信息更新 |
+| 0001-05 | r0p1 首版 | 更新 full retention、AMU、L2 行为、转换响应和多个字段说明 |
+| 0003-06 | r0p3 首版，本次依据 | 更新 feature/转换响应、L1 data tag 位位置和 CoreSight revision；导入新的自动生成寄存器说明 |
+
+读到网络旧资料或不同修订的截图时，先核对产品 revision 与 document issue。第10章的编码、第9章 TQ 数量、第5章 retention、第16章 RNG 等均是历史上修改过的内容，必须引用本版原页。原 change tables：[[N2-Core-TRM-附录DE原图表#原文第1666页]] 起。
+
+## 综合理解与学习路线
+
+### 先建立一条完整的数据路径
+
+```text
+分支预测/取指 → L1 I-cache 或 L0 MOP cache → decode/rename/乱序执行
+                                            ↓ load/store
+                       VA → L1 TLB →（miss）L2 TLB/页表遍历
+                                            ↓ PA + 属性
+                       L1 D-cache → 私有 L2 → CPU bridge / CHI
+                                            ↓
+                                    DSU-110 → 系统一致性与内存
+```
+
+这是理解关系的概念路径，不是周期精确流水图；MOP 命中可避开重复译码，TLB miss 和 cache miss 是不同的等待原因。请求可能被其他缓存满足，不是所有 L2 miss 都必然读 DDR。
+
+### 按问题串联章节
+
+| 问题 | 阅读顺序 |
+|---|---|
+| L0 MOP cache 存什么、如何减少前端工作 | 第3→7→10章，注意第10章原始编码公开边界 |
+| 一条 load 为什么慢 | 第6→8→9章，再用第18/22章观察 |
+| 写大数组为什么未必反复填入L1 | 第8章 write streaming，结合第9章缓存分配 |
+| RN 一致性事务如何经过CPU缓存体系 | 第8/9章，再看 [[CHI-Cache状态模型]] 与 [[CHI-节点角色与能力]] |
+| WFI、retention、掉电分别保留什么 | 第4→5章，再看第11/17/19章的错误与调试影响 |
+| ECC纠错、poison、SError和错误中断的关系 | 第11章→附录 B.14；不要只看一个 status bit |
+| 想知道“多少”“哪条慢”“走到哪” | 第18 PMU→22 SPE→19 ETE/20 TRBE，AMU 用于长期管理 |
+| 给系统做性能或调试工具 | 第15/17章发现能力→功能章→附录 B/C 精确访问定义 |
+| 理解整个平台而非单核 | 本文第2/9章→[[RD-N2-Reference-Design-中文精读]] |
+
+学习完成后应能区分四组经常混淆的概念：MOP 内容与机器码/数据、translation 与 cache lookup、coherence 与内存可观察/顺序、计数与采样/追踪。阅读参数时同时记住“固定实现能力、构建选项、运行配置、系统集成条件”各属于哪一层。
+
+## 待确认事项与使用边界
+
+下列疑点保留原文，不擅自修订。实际编程应核对后续正式勘误、适用版 Arm ARM 或你的平台文档。
+
+| 项目 | 疑点与处理 | 原文回查 |
+|---|---|---|
+| L2 TLB相联路数与way编码 | 功能描述为5路，RAM诊断编码列出的way范围存在口径疑点；不扩写为6路TLB | §6.1、§10.2.3，p.58、92 |
+| 内部RAM字段 | 个别字段位区间/宽度说明有疑点；原编码图表保留，未自行修正 | 第10章，尤其相关L1/L2 TLB表 |
+| 外部abort的Device措辞 | 原文条件含容易混淆的 acquire/release 用语；同步/异步分类按原表回查，不推导新规则 | §6.6，p.61-63 |
+| Direct connect与L3通用表述 | N2明确仅Direct connect，但个别缓存/调试/PMU段落仍含L3或通用DSU示意；不据此认定N2具有DSU L3 | 第2/8/17/18章 |
+| AMU辅助组 | 描述包含辅助/programmable字样，但实现事件表列Reserved；不虚构三种可用事件 | 第21章，p.151-152 |
+| SPE事件bit5 | 正文表标题与寄存器字段描述口径需一起核对；过滤解释采用位域中TLB walk说明 | p.157、1115、1124 |
+| PPM可编程含义 | 名称/引言提到控制CPU，但公开接口RO、位域Reserved | §C.2，p.1151-1156 |
+| MOP具体二进制语义 | 有RAM返回宽度/读取接口，未公开足以把每个entry还原成指令的完整格式；示例仅概念解释 | §7、§10 |
+
+本文没有依据本手册推断具体 SoC 的主频、IPC、DDR 延迟、CHIE 的所有事务细节、Linux 工具版本或后续 N2 修订能力。需要这些信息时应另附可验证来源，不能回填为本版 TRM 原文结论。
+
+维护时先核对来源版本，再修改对应章节；新增外部证据应标明来源和与本版差异。图表册与寄存器索引负责回查，中文精读负责解释，入口统一放在 [[Neoverse-MOC]]。
