@@ -152,25 +152,25 @@ N2 在 DSU-110 的 **Direct connect** 配置中使用。Figure 2-1 展示单核 
 
 ### 2.2 构建配置、集成配置、软件配置
 
-| 层次 | 谁决定 | 示例 |
-|---|---|---|
-| Build-time | IP 实现者，RTL 配置与物理实现 | L2 大小、TQ 大小、Crypto、coherent I-cache、RNG、ELA |
-| Integration | SoC 集成者，连接和绑带输入 | 外部中断接口、复位行为、RNG 外设关联 |
-| Software | 固件、hypervisor、OS | MMU、缓存、预取、电源、PMU 和 SPE 控制 |
+| 层次          | 谁决定                | 示例                                          |
+| ----------- | ------------------ | ------------------------------------------- |
+| Build-time  | IP 实现者，RTL 配置与物理实现 | L2 大小、TQ 大小、Crypto、coherent I-cache、RNG、ELA |
+| Integration | SoC 集成者，连接和绑带输入    | 外部中断接口、复位行为、RNG 外设关联                        |
+| Software    | 固件、hypervisor、OS   | MMU、缓存、预取、电源、PMU 和 SPE 控制                   |
 
 L2 512KB/1024KB，TQ 48/56/64 是构建选项，不能假定 OS 可以随意在线变更这些容量。ELA-600 是独立许可产品，ELA ATB FIFO 深度可为 4、8、16、32、64；Crypto 同样需额外许可。L2 RAM 时序也有配置选项。
 
 ### 2.3 架构特性应逐项判断
 
-| 类别 | 重要能力或限制 |
-|---|---|
-| 基本执行 | A32/T32/A64 指令集；AArch32 只在 EL0；AArch64 覆盖 EL0-EL3 |
-| 内存 | 48 位 VA/PA；HAFDBS、16 位 VMID、PBHA；不支持 LPA/大 VA 扩展 |
-| 虚拟化 | NV/NV2 嵌套虚拟化特性支持，具体行为查架构手册 |
-| 安全 | MTE 总是实现；指针认证增强、FPAC；Crypto 与 RNG 受选配条件影响 |
-| 数据处理 | SVE/SVE2、BF16、I8MM；F32MM/F64MM 矩阵扩展不支持 |
-| 观测 | PMU、AMU、SPE、ETE、TRBE；ELA 可选 |
-| 不支持的其他项 | TME；FEAT_ExS；FEAT_VPIPT；LSMAOC；AA32HPD |
+| 类别      | 重要能力或限制                                           |
+| ------- | ------------------------------------------------- |
+| 基本执行    | A32/T32/A64 指令集；AArch32 只在 EL0；AArch64 覆盖 EL0-EL3 |
+| 内存      | 48 位 VA/PA；HAFDBS、16 位 VMID、PBHA；不支持 LPA/大 VA 扩展  |
+| 虚拟化     | NV/NV2 嵌套虚拟化特性支持，具体行为查架构手册                        |
+| 安全      | MTE 总是实现；指针认证增强、FPAC；Crypto 与 RNG 受选配条件影响         |
+| 数据处理    | SVE/SVE2、BF16、I8MM；F32MM/F64MM 矩阵扩展不支持            |
+| 观测      | PMU、AMU、SPE、ETE、TRBE；ELA 可选                       |
+| 不支持的其他项 | TME；FEAT_ExS；FEAT_VPIPT；LSMAOC；AA32HPD            |
 
 “架构可选扩展”与“这个 N2 IP 可以裁剪的组件”不是同一回事。例如 SPE 在架构上是可选扩展，但手册明确说 N2 实现 SPE；是否可裁剪不能仅凭 optional 一词推断。
 
