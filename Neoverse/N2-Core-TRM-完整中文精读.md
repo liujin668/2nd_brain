@@ -380,23 +380,23 @@ Debug over powerdown 则借助 DSU DebugBlock 保持调试连接。DebugBlock �
 
 ### 6.1 Stage 1与Stage 2
 
-| 模式 | 转换 | 常见理解 |
-|---|---|---|
-| Stage 1 | VA → PA，或 VA → IPA | OS 管理进程虚拟地址 |
-| Stage 2 | IPA → PA | Hypervisor 管理客体物理地址 |
-| Combined | VA → IPA → PA | 虚拟机里运行进程时的两阶段转换 |
+| 模式       | 转换                 | 常见理解                |
+| -------- | ------------------ | ------------------- |
+| Stage 1  | VA → PA，或 VA → IPA | OS 管理进程虚拟地址         |
+| Stage 2  | IPA → PA           | Hypervisor 管理客体物理地址 |
+| Combined | VA → IPA → PA      | 虚拟机里运行进程时的两阶段转换     |
 
 **教学示例**：虚拟机中的应用读 VA `0x4000`，客体页表将其映射为 IPA `0x8000`，hypervisor 又把 IPA 映射为 PA `0xA000`。数据缓存最终需要识别真实物理地址，不能把 IPA 当成系统 DDR 地址。Stage 2 也可能修改 Stage 1 给出的属性或施加额外限制。
 
 ### 6.2 两级TLB和页表预取
 
-| 结构 | 配置 | 缓存的主要内容 |
-|---|---|---|
-| L1 ITLB | 全相联，48 entries | 4KB、16KB、64KB、2MB 的 VA→PA 转换 |
-| L1 DTLB | 全相联，44 entries | 4KB、16KB、64KB、2MB、512MB 的 VA→PA 转换 |
-| L1 TRBE TLB | 2 entries | 追踪缓冲写入所用 VA→PA 转换 |
-| L2 TLB / MMUTC 路径 | 5 路，1280 entries，指令/数据共用 | 多种 VA→PA、IPA→PA 映射及 table walk 中间信息 |
-| Translation table prefetcher | 可通过控制寄存器关闭 | 检测连续页表访问并预取后续内容 |
+| 结构                           | 配置                       | 缓存的主要内容                             |
+| ---------------------------- | ------------------------ | ----------------------------------- |
+| L1 ITLB                      | 全相联，48 entries           | 4KB、16KB、64KB、2MB 的 VA→PA 转换        |
+| L1 DTLB                      | 全相联，44 entries           | 4KB、16KB、64KB、2MB、512MB 的 VA→PA 转换  |
+| L1 TRBE TLB                  | 2 entries                | 追踪缓冲写入所用 VA→PA 转换                   |
+| L2 TLB / MMUTC 路径            | 5 路，1280 entries，指令/数据共用 | 多种 VA→PA、IPA→PA 映射及 table walk 中间信息 |
+| Translation table prefetcher | 可通过控制寄存器关闭               | 检测连续页表访问并预取后续内容                     |
 
 L2 支持的 VA→PA 块大小包含 4KB、16KB、64KB、2MB、32MB、512MB、1GB；Stage 2 块支持需同时看 translation granule，不能把所有大小当成每种 granule 都可用。
 
