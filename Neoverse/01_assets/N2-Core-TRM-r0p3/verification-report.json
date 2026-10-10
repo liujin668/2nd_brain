@@ -1,12 +1,35 @@
 {
-  "note_count": 8,
-  "main_characters": 49409,
-  "main_Chinese_characters": 16169,
+  "operation": "single-note-consolidation",
+  "verified_on": "2026-10-10",
+  "main_note": "Neoverse\\N2-Core-TRM-完整中文精读.md",
   "chapters": 22,
   "appendices": 5,
-  "wikilinks_checked": 5588,
+  "register_detail_entries": 548,
+  "register_summary_names": 860,
   "original_caption_count": 1432,
   "screenshot_pages": 1233,
-  "source_hash": "4973a1bd1c77a3a7c8700ebe811ad8b95c037d2b3806b9d28ee92af1ba041f87",
-  "errors": []
+  "new_chapter_screenshot_embeds": 69,
+  "collapsed_groups": 122,
+  "source_sha256": "4973a1bd1c77a3a7c8700ebe811ad8b95c037d2b3806b9d28ee92af1ba041f87",
+  "rd_note_unchanged": true,
+  "retired_notes": [
+    "N2-Core-TRM-寄存器索引",
+    "N2-Core-TRM-正文原图表",
+    "N2-Core-TRM-附录A原图表",
+    "N2-Core-TRM-附录B原图表",
+    "N2-Core-TRM-附录C原图表",
+    "N2-Core-TRM-附录DE原图表",
+    "Neoverse-MOC"
+  ],
+  "errors": [],
+  "wikilinks_checked": 5531,
+  "internal_heading_links_checked": 108,
+  "main_body_screenshot_pages": 92,
+  "remaining_root_notes": [
+    "N2-Core-TRM-完整中文精读.md",
+    "RD-N2-Reference-Design-中文精读.md"
+  ],
+  "removed_auxiliary_notes": 7,
+  "main_note_bytes": 652601,
+  "main_note_sha256": "f7029d781198cda0467665f9040964f4dd7de9202db126198370cb0c41df0aee"
 }
