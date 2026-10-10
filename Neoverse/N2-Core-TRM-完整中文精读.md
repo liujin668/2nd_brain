@@ -239,14 +239,14 @@ ATPG 测试核逻辑，MBIST 测试 RAM；接口使用细节在集成手册。N2
 
 ![[Neoverse/01_assets/N2-Core-TRM-r0p3/figure-3-1-original.png]]
 
-| 组件组 | 职责 |
-|---|---|
-| I-cache、ITLB、MOP、branch prediction | 取到正确位置的指令，准备内部操作表示 |
-| Decode、rename、issue | 译码，组织依赖，选择可以进入执行流水线的操作 |
-| Integer / vector execution | 执行整数、SIMD、浮点、SVE/SVE2；可选 Crypto |
-| D-cache、DTLB、MMU、L2 | 地址与权限检查、数据访问、缓存和一致性响应 |
-| CPU bridge | 缓冲和同步，连接核与 DSU-110 |
-| PMU、AMU、SPE、trace、GIC | 统计、采样、追踪、系统管理和中断 |
+| 组件组                                | 职责                              |
+| ---------------------------------- | ------------------------------- |
+| I-cache、ITLB、MOP、branch prediction | 取到正确位置的指令，准备内部操作表示              |
+| Decode、rename、issue                | 译码，组织依赖，选择可以进入执行流水线的操作          |
+| Integer / vector execution         | 执行整数、SIMD、浮点、SVE/SVE2；可选 Crypto |
+| D-cache、DTLB、MMU、L2                | 地址与权限检查、数据访问、缓存和一致性响应           |
+| CPU bridge                         | 缓冲和同步，连接核与 DSU-110              |
+| PMU、AMU、SPE、trace、GIC              | 统计、采样、追踪、系统管理和中断                |
 
 绿色 Crypto 与 ELA 是图中标出的可选组件。AMU、SPE 没有单独画出，不表示它们不存在。这张图也没有公开全部流水级、ROB、端口或逐周期路径。
 
@@ -278,12 +278,12 @@ AArch32 只在 EL0，AArch64 覆盖 EL0-EL3；SVE 仅在 AArch64。执行状态�
 
 **原文范围：p.45。** 每个 N2 核有一个时钟域、一个时钟输入；CPU bridge 中的架构级 clock gate 可控制这个输入。核内部还有 regional 和 local clock gating，分别减少模块、寄存器组的切换。
 
-| 机制 | 作用 | 注意 |
-|---|---|---|
-| 顶层 clock gate | 大范围停止核时钟 | 开钟/关钟不等于电源移除 |
-| Regional / local gating | 停止暂时不工作的块或寄存器 | 减少动态功耗，模块仍可保留状态 |
-| Warm reset | 复位主要核状态 | 不复位部分 debug/trace 与 RAS 状态 |
-| Cold reset | 复位整个核逻辑 | 包括调试和追踪逻辑 |
+| 机制                      | 作用            | 注意                         |
+| ----------------------- | ------------- | -------------------------- |
+| 顶层 clock gate           | 大范围停止核时钟      | 开钟/关钟不等于电源移除               |
+| Regional / local gating | 停止暂时不工作的块或寄存器 | 减少动态功耗，模块仍可保留状态            |
+| Warm reset              | 复位主要核状态       | 不复位部分 debug/trace 与 RAS 状态 |
+| Cold reset              | 复位整个核逻辑       | 包括调试和追踪逻辑                  |
 
 **理解说明**：故障后仍能读到 RAS 信息，与部分状态不被 Warm reset 清掉有关。但“暖复位保留一些诊断状态”不能推出“程序和所有缓存内容正常保留”。正常复位、电源保持和 Debug recovery 是不同机制。
 
