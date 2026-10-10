@@ -1,6 +1,6 @@
 ---
 type: guide
-status: draft
+status: reviewed
 topics: [Neoverse, N2, CPU, MMU, Cache, CHI, RAS, Debug, PMU, SPE]
 aliases: ["Neoverse N2 Core TRM中文精读", "N2核技术参考手册中文导读"]
 tags: [arm, neoverse, cpu, architecture, reference]
@@ -11,9 +11,9 @@ source_date: 2022-10-27
 spec_issue: "CHI E"
 source_sections: ["1-22", "A", "B", "C", "D", "E"]
 evidence: mixed
-verification: pending
+verification: source-text-and-figure-index-checked
 created: 2026-10-09
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Neoverse N2 Core TRM 完整中文精读
@@ -383,7 +383,7 @@ Page-Based Hardware Attributes 可把页表中的最多 4 位属性带到事务�
 
 ## 第7章 L1指令存储系统与MOP cache
 
-**原文范围：p.65-68，§7.1-7.4。** 前端同时解决“下一条取哪里”“机器码是什么”“能否复用内部操作表示”。
+**原文范围：p.65-68，§7.1-7.4；MOP 内容的补充依据为 §3.1，p.40。** 前端同时解决“下一条取哪里”“机器码是什么”“能否复用内部操作表示”。
 
 ### 7.1 I-cache、ITLB、MOP分别保存什么
 
@@ -400,6 +400,8 @@ Page-Based Hardware Attributes 可把页表中的最多 4 位属性带到事务�
 ![[Neoverse/01_assets/N2-Core-TRM-r0p3/p0065-original.png]]
 
 ### 7.2 MOP具体例子
+
+p.40 明确说明 L0 MOP cache 包含 decoded and optimized instructions。以下用两条指令解释这种内部表示与执行数据的区别；具体编码和拆分方式未公开。
 
 ```asm
 0x1000: ADD X0, X1, X2
@@ -1101,10 +1103,10 @@ PMU/AMU 同样要区分**寄存器名称、架构允许的编号范围与 N2 实
 |---|---|---|
 | B.1 Generic System Control | p.242-350 | 页表和转换配置、内存属性、异常信息、Pointer Authentication、MTE，以及 N2 私有控制 |
 | B.2 Debug | p.351-452 | 断点/观察点、调试锁、调试状态、寄存器传递和异常控制 |
-| B.3 Random Number Control | p.453-456 | RNDR/RNDRRS 的指令可见接口与状态；外部 RNG 集成见第16章 |
+| B.3 Random Number Control | p.453-456 | 配置外部 RNG 的基址、安全属性与 PEID；RNDR/RNDRRS 请求构造见第16章 |
 | B.4 System instructions | p.456-457 | SYS_IMP_RAMINDEX：内部 RAM 的诊断读取接口，配合第10章 |
 | B.5 Identification | p.458-555 | 读取架构能力、缓存属性、处理器身份；决定软件能否使用某项功能 |
-| B.6 Special-purpose | p.556 | DSPSR_EL0、DLR_EL0 的调试特殊用途视图 |
+| B.6 Special-purpose | p.556 | SPSR/ELR/SP 等保存状态、异常返回和栈指针，以及 DSPSR_EL0、DLR_EL0 调试视图 |
 | B.7 Performance Monitors | p.556-632 | PMU 控制、过滤、计数器、事件类型、使能和溢出 |
 | B.8 GIC system registers | p.633-778 | ICC 物理接口与 ICH 虚拟化接口，包括优先级、应答、EOI 与虚拟中断状态 |
 | B.9 Generic Timer | p.779-780 | 各异常级的物理/虚拟 timer；count 和 compare/control 要分开 |
