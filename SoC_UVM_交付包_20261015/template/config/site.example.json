@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "description": "Copy to site.json and fill actual approved wrapper argv. No simulator flags or tools are assumed. This example is intentionally disabled.",
+  "adapters": {
+    "vcs": {
+      "enabled": false,
+      "tool_identity": "",
+      "version_argv": [],
+      "environment": {},
+      "build_argv": [],
+      "elaborate_argv": [],
+      "build_cwd": "{project_root}",
+      "build_inputs": [],
+      "build_artifacts": [],
+      "build_timeout_s": 3600,
+      "run_argv": [],
+      "run_cwd": "{run_dir}",
+      "native_error_patterns": [],
+      "log_contract_acknowledged": false
+    },
+    "xcelium": {
+      "enabled": false,
+      "tool_identity": "",
+      "version_argv": [],
+      "environment": {},
+      "build_argv": [],
+      "elaborate_argv": [],
+      "build_cwd": "{project_root}",
+      "build_inputs": [],
+      "build_artifacts": [],
+      "build_timeout_s": 3600,
+      "run_argv": [],
+      "run_cwd": "{run_dir}",
+      "native_error_patterns": [],
+      "log_contract_acknowledged": false
+    }
+  },
+  "scheduler": {
+    "backend": "local",
+    "lsf": {
+      "integration_status": "TEMPLATE_ONLY",
+      "enabled": false,
+      "queue": "",
+      "project": "",
+      "cores": 1,
+      "memory_request": "SITE_DEFINED_UNITS",
+      "poll_interval_s": 15,
+      "pending_timeout_s": 3600,
+      "run_timeout_s": 3600,
+      "note": "No LSF command is executed by this template. See script/lsf_adapter_template.py and docs_flow.md before enabling on site."
+    }
+  }
+}

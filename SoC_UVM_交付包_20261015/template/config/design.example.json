@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "design_name": "DEMO_NOT_REAL_SOC",
+  "validation_scope": "EXAMPLE_ONLY",
+  "die_count": 1,
+  "address_width": 64,
+  "regions": [
+    {"name": "DEMO_RAM", "base": "0x10000000", "size": "0x10000"},
+    {"name": "DEMO_MAILBOX", "base": "0x20000000", "size": "0x1000"}
+  ]
+}

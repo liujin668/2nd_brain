@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "name": "flow_mock_negative_contract",
+  "kind": "negative_selftest",
+  "profile": "mock",
+  "cases": [
+    {"name": "expected_mismatch", "scenario": "fail", "seeds": [103], "timeout_s": 10, "expected_failures": ["MOCK_MISMATCH"]}
+  ]
+}
