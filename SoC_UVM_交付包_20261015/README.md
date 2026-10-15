@@ -43,7 +43,21 @@
 
 ```sh
 python3 script/socflow.py --help
+python3 script/socflow.py doctor --profile mock
+python3 script/socflow.py regress --suite regress/mock_smoke.json --jobs 2
+python3 script/socflow.py regress --suite regress/mock_negative.json
 ```
+
+如需设置工程根目录，在 `template` 目录中按当前 shell 选一条执行：
+
+```sh
+# bash/sh
+. ./env_setup.sh
+# csh/tcsh
+source ./env_setup.csh
+```
+
+这两个入口只设置 `SOC_UVM_ROOT`；公司的工具、VIP 和许可证环境继续使用现有初始化方式。
 
 Python工具链使用标准库。真实VCS/Xcelium运行需要在内网配置已有工具和UVM，不要求升级系统库。软件平台接口尚待实现，未配置的固件入口明确拒绝编译。
 
