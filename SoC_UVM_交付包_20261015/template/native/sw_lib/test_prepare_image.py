@@ -64,5 +64,45 @@ class ImageTests(unittest.TestCase):
                 IMAGE.export_image(source, output, "paddr", [(0x100000000, 0x1000)])
 
 
+    def test_boot_not_validated_by_mapping(self):
+        out = IMAGE.inspect_elf(make_elf(), "paddr", [(0x100000000, 0x1000)])
+        self.assertTrue(out["requires_address_translation"])
+        self.assertFalse(out["boot_entry_validated"])
+
+    def test_dynamic_and_interpreter_rejected(self):
+        for p_type in (2, 3):
+            with self.subTest(p_type=p_type):
+                data = bytearray(make_elf())
+                struct.pack_into("<I", data, 64, p_type)
+                with self.assertRaises(ValueError):
+                    IMAGE.inspect_elf(data, "paddr", [(0x100000000, 0x1000)])
+
+    def test_64bit_end_overflow(self):
+        with self.assertRaises(ValueError):
+            IMAGE.inspect_elf(make_elf(load=(1 << 64) - 8), "paddr", [((1 << 64) - 16, 16)])
+
+    def test_entry_in_bss_rejected(self):
+        data = bytearray(make_elf())
+        struct.pack_into("<Q", data, 24, 0x80000008)
+        with self.assertRaises(ValueError):
+            IMAGE.inspect_elf(data, "paddr", [(0x100000000, 0x1000)])
+
+    def test_overlap_rejected(self):
+        header = bytearray(make_elf()[:64])
+        struct.pack_into("<H", header, 56, 2)
+        first = struct.pack("<IIQQQQQQ", 1, 5, 176, 0x80000000, 0x100000000, 4, 16, 1)
+        second = struct.pack("<IIQQQQQQ", 1, 5, 180, 0x80000100, 0x100000008, 4, 16, 1)
+        with self.assertRaises(ValueError):
+            IMAGE.inspect_elf(header + first + second + b"ABCDEFGH", "paddr", [(0x100000000, 0x1000)])
+
+    def test_ambiguous_entry_rejected(self):
+        header = bytearray(make_elf()[:64])
+        struct.pack_into("<H", header, 56, 2)
+        first = struct.pack("<IIQQQQQQ", 1, 5, 176, 0x80000000, 0x100000000, 4, 16, 1)
+        second = struct.pack("<IIQQQQQQ", 1, 5, 180, 0x80000000, 0x100000100, 4, 16, 1)
+        with self.assertRaises(ValueError):
+            IMAGE.inspect_elf(header + first + second + b"ABCDEFGH", "paddr", [(0x100000000, 0x1000)])
+
 if __name__ == "__main__":
     unittest.main()
+

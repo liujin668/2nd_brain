@@ -1,0 +1,88 @@
+{
+  "utc": "2026-10-15T11:24:44.858688+00:00",
+  "scope": "FLOW_MOCK_AND_BLOCKING_CONTRACTS_ONLY",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "checks": [
+    {
+      "name": "mock_smoke",
+      "argv": [
+        "regress",
+        "--suite",
+        "regress/mock_smoke.json",
+        "--jobs",
+        "2"
+      ],
+      "returncode": 0,
+      "expected_returncode": 0,
+      "status": "PASS",
+      "report_dir": "C:\\Users\\jinliu01\\OneDrive - ARM China\\\u6587\u6863\\Obsidian Vault\\2nd_brain\\2nd_brain\\SoC_UVM_\u4ea4\u4ed8\u5305_20261015\\template\\regress\\out\\regressions\\reg-20261015T112431-a0eafa707545",
+      "validation_levels": [
+        "FLOW_MOCK"
+      ],
+      "accepted_count": 2,
+      "planned_count": 2
+    },
+    {
+      "name": "mock_negative",
+      "argv": [
+        "regress",
+        "--suite",
+        "regress/mock_negative.json"
+      ],
+      "returncode": 0,
+      "expected_returncode": 0,
+      "status": "PASS",
+      "report_dir": "C:\\Users\\jinliu01\\OneDrive - ARM China\\\u6587\u6863\\Obsidian Vault\\2nd_brain\\2nd_brain\\SoC_UVM_\u4ea4\u4ed8\u5305_20261015\\template\\regress\\out\\regressions\\reg-20261015T112436-da308b35e38b",
+      "validation_levels": [
+        "FLOW_MOCK"
+      ],
+      "accepted_count": 1,
+      "planned_count": 1
+    },
+    {
+      "name": "blocked_n2",
+      "argv": [
+        "run",
+        "--profile",
+        "n2_boot"
+      ],
+      "returncode": 2,
+      "expected_returncode": 2,
+      "status": "BLOCKED",
+      "report_dir": null,
+      "validation_levels": null,
+      "accepted_count": null,
+      "planned_count": null
+    },
+    {
+      "name": "blocked_lsf",
+      "argv": [
+        "run",
+        "--profile",
+        "mock",
+        "--scheduler",
+        "lsf"
+      ],
+      "returncode": 2,
+      "expected_returncode": 2,
+      "status": "BLOCKED",
+      "report_dir": null,
+      "validation_levels": null,
+      "accepted_count": null,
+      "planned_count": null
+    },
+    {
+      "name": "blocked_coverage",
+      "argv": [
+        "coverage"
+      ],
+      "returncode": 2,
+      "expected_returncode": 2,
+      "status": "BLOCKED",
+      "report_dir": null,
+      "validation_levels": null,
+      "accepted_count": null,
+      "planned_count": null
+    }
+  ]
+}

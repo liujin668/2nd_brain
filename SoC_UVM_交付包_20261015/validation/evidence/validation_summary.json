@@ -1,0 +1,96 @@
+{
+  "timestamp_utc": "2026-10-15T11:28:52.716238+00:00",
+  "host_platform": "Windows-11-10.0.22621-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "status": "PASS",
+  "scope": "Python unit tests, mock runner CLI, static bundle integrity",
+  "tools_on_path": {
+    "vcs": false,
+    "xrun": false,
+    "bsub": false,
+    "csh": false,
+    "gcc": false
+  },
+  "checks": [
+    {
+      "name": "image_unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "native/sw_lib",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 3.437,
+      "status": "PASS"
+    },
+    {
+      "name": "flow_unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests_flow",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 85.359,
+      "status": "PASS"
+    },
+    {
+      "name": "mock_smoke_cli",
+      "argv": [
+        "python3",
+        "script/socflow.py",
+        "regress",
+        "--suite",
+        "regress/mock_smoke.json",
+        "--jobs",
+        "2",
+        "--out",
+        "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 5.438,
+      "status": "PASS"
+    },
+    {
+      "name": "mock_negative_cli",
+      "argv": [
+        "python3",
+        "script/socflow.py",
+        "regress",
+        "--suite",
+        "regress/mock_negative.json",
+        "--out",
+        "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\negative"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 8.703,
+      "status": "PASS"
+    },
+    {
+      "name": "bundle_integrity",
+      "argv": [
+        "python3",
+        "C:\\Users\\jinliu01\\OneDrive - ARM China\\文档\\Obsidian Vault\\2nd_brain\\2nd_brain\\SoC_UVM_交付包_20261015\\validation\\check_bundle.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 3.172,
+      "status": "PASS"
+    }
+  ],
+  "limitations": [
+    "No SystemVerilog compilation or simulation was performed",
+    "No real N2, CMN, commercial VIP, LSF or coverage merge was exercised",
+    "Mock run directories are temporary; retained reports are validation evidence only",
+    "Python 3.8 compatibility is a source target, not a tested runtime version"
+  ]
+}

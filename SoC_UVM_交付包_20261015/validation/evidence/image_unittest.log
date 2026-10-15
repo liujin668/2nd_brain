@@ -1,0 +1,22 @@
+STDOUT
+
+STDERR
+test_64bit_address_and_bss (test_prepare_image.ImageTests.test_64bit_address_and_bss) ... ok
+test_64bit_end_overflow (test_prepare_image.ImageTests.test_64bit_end_overflow) ... ok
+test_ambiguous_entry_rejected (test_prepare_image.ImageTests.test_ambiguous_entry_rejected) ... ok
+test_bad_memory_size (test_prepare_image.ImageTests.test_bad_memory_size) ... ok
+test_boot_not_validated_by_mapping (test_prepare_image.ImageTests.test_boot_not_validated_by_mapping) ... ok
+test_dynamic_and_interpreter_rejected (test_prepare_image.ImageTests.test_dynamic_and_interpreter_rejected) ... ok
+test_entry_in_bss_rejected (test_prepare_image.ImageTests.test_entry_in_bss_rejected) ... ok
+test_export_and_stale_directory (test_prepare_image.ImageTests.test_export_and_stale_directory) ... ok
+test_overlap_rejected (test_prepare_image.ImageTests.test_overlap_rejected) ... ok
+test_pie_rejected (test_prepare_image.ImageTests.test_pie_rejected) ... ok
+test_truncated_file (test_prepare_image.ImageTests.test_truncated_file) ... ok
+test_virtual_mapping_is_explicit (test_prepare_image.ImageTests.test_virtual_mapping_is_explicit) ... ok
+test_wrong_isa (test_prepare_image.ImageTests.test_wrong_isa) ... ok
+test_wrong_region (test_prepare_image.ImageTests.test_wrong_region) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.050s
+
+OK

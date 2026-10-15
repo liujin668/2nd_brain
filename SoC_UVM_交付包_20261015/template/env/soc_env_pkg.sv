@@ -1,0 +1,20 @@
+package soc_env_pkg;
+  timeunit 1ps;
+  timeprecision 1ps;
+  import uvm_pkg::*;
+  import soc_tb_defs_pkg::*;
+  `include "uvm_macros.svh"
+  `include "soc_env_config.svh"
+  `include "soc_transactions.svh"
+  `include "soc_run_state.svh"
+  `include "soc_memory_reference.svh"
+  `include "soc_tl_memory_backend.svh"
+  `include "soc_tl_monitor.svh"
+  `include "soc_scoreboard.svh"
+  `include "soc_memory_driver.svh"
+  `include "soc_cov_collector.svh"
+  `include "soc_virtual_sequencer.svh"
+  `include "soc_result_manager.svh"
+  `include "soc_boot_memory_vseq.svh"
+  `include "soc_env.svh"
+endpackage

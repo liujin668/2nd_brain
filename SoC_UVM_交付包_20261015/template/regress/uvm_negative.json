@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "uvm_expected_mismatch",
+  "kind": "negative_selftest",
+  "profile": "uvm_selftest",
+  "cases": [
+    {
+      "name": "mismatch",
+      "test": "soc_selftest_mismatch",
+      "seeds": [
+        666
+      ],
+      "timeout_s": 120,
+      "expected_failures": [
+        "DATA_MISMATCH",
+        "UVM_ERROR"
+      ],
+      "expected_counts": {
+        "uvm_errors": 1,
+        "uvm_fatals": 0,
+        "assertion_errors": 0
+      },
+      "expected_log_counts": {
+        "DATA_MISMATCH": 1
+      }
+    }
+  ]
+}

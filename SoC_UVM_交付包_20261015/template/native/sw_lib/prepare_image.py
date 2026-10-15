@@ -99,7 +99,9 @@ def inspect_elf(data, address_kind, regions):
     return {
         "schema_version": 1, "format": "ELF64_LE_AARCH64_ET_EXEC",
         "address_kind": address_kind, "entry_virtual": entry,
-        "entry_load_address": entries[0], "source_sha256": hashlib.sha256(data).hexdigest(),
+        "entry_load_address": entries[0], "boot_entry_validated": False,
+        "requires_address_translation": any(s["load_address"] != s["virtual_address"] for s in segments),
+        "source_sha256": hashlib.sha256(data).hexdigest(),
         "allowed_regions": [{"base": b, "size": s} for b, s in regions],
         "segments": segments,
         "loader_contract": "write file bytes at load_address then zero_fill bytes; verify through actual backing store"
@@ -139,3 +141,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "planned_count": 2,
+  "result_count": 2,
+  "accepted_count": 2,
+  "validation_levels": [
+    "FLOW_MOCK"
+  ],
+  "runs": [
+    {
+      "acceptance": "PASS",
+      "log_errors": [],
+      "process": {
+        "argv": [
+          "C:\\Users\\jinliu01\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "C:\\Users\\jinliu01\\OneDrive - ARM China\\文档\\Obsidian Vault\\2nd_brain\\2nd_brain\\SoC_UVM_交付包_20261015\\template\\script\\mock_sim.py",
+          "--scenario",
+          "pass",
+          "--run-id",
+          "run-20261015T112838-789035ad6dde",
+          "--result-file",
+          "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559\\runs\\run-20261015T112838-789035ad6dde\\tb_result.json",
+          "--profile",
+          "mock",
+          "--test",
+          "soc_mock_test",
+          "--seed",
+          "101"
+        ],
+        "cwd": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559\\runs\\run-20261015T112838-789035ad6dde",
+        "elapsed_s": 2.047,
+        "pid": 36476,
+        "returncode": 0,
+        "state": "EXITED"
+      },
+      "profile": "mock",
+      "reasons": [],
+      "run_dir": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559\\runs\\run-20261015T112838-789035ad6dde",
+      "run_id": "run-20261015T112838-789035ad6dde",
+      "schema_version": 1,
+      "seed": 101,
+      "status": "PASS",
+      "tb_result": {
+        "assertion_errors": 0,
+        "checks_count": 4,
+        "completed": true,
+        "failures": [],
+        "pending_count": 0,
+        "profile": "mock",
+        "run_id": "run-20261015T112838-789035ad6dde",
+        "schema_version": 1,
+        "seed": 101,
+        "software_required": false,
+        "software_status": "NOT_REQUIRED",
+        "status": "PASS",
+        "stimulus_count": 4,
+        "test": "soc_mock_test",
+        "uvm_errors": 0,
+        "uvm_fatals": 0
+      },
+      "test": "soc_mock_test",
+      "validation_level": "FLOW_MOCK"
+    },
+    {
+      "acceptance": "PASS",
+      "log_errors": [],
+      "process": {
+        "argv": [
+          "C:\\Users\\jinliu01\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "C:\\Users\\jinliu01\\OneDrive - ARM China\\文档\\Obsidian Vault\\2nd_brain\\2nd_brain\\SoC_UVM_交付包_20261015\\template\\script\\mock_sim.py",
+          "--scenario",
+          "pass",
+          "--run-id",
+          "run-20261015T112838-9591a7483994",
+          "--result-file",
+          "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559\\runs\\run-20261015T112838-9591a7483994\\tb_result.json",
+          "--profile",
+          "mock",
+          "--test",
+          "soc_mock_test",
+          "--seed",
+          "102"
+        ],
+        "cwd": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559\\runs\\run-20261015T112838-9591a7483994",
+        "elapsed_s": 2.031,
+        "pid": 44388,
+        "returncode": 0,
+        "state": "EXITED"
+      },
+      "profile": "mock",
+      "reasons": [],
+      "run_dir": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559\\runs\\run-20261015T112838-9591a7483994",
+      "run_id": "run-20261015T112838-9591a7483994",
+      "schema_version": 1,
+      "seed": 102,
+      "status": "PASS",
+      "tb_result": {
+        "assertion_errors": 0,
+        "checks_count": 4,
+        "completed": true,
+        "failures": [],
+        "pending_count": 0,
+        "profile": "mock",
+        "run_id": "run-20261015T112838-9591a7483994",
+        "schema_version": 1,
+        "seed": 102,
+        "software_required": false,
+        "software_status": "NOT_REQUIRED",
+        "status": "PASS",
+        "stimulus_count": 4,
+        "test": "soc_mock_test",
+        "uvm_errors": 0,
+        "uvm_fatals": 0
+      },
+      "test": "soc_mock_test",
+      "validation_level": "FLOW_MOCK"
+    }
+  ],
+  "report_dir": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\smoke\\regressions\\reg-20261015T112837-1230500f5559"
+}

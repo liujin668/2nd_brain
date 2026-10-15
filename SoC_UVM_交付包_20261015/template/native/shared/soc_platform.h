@@ -40,6 +40,12 @@ soc_status_t soc_wait_ns(uint64_t delay_ns);
 soc_status_t soc_memory_barrier(void);
 soc_status_t soc_cache_clean(uint64_t address, size_t length);
 soc_status_t soc_cache_invalidate(uint64_t address, size_t length);
+/* Publication contract: initialize a fresh token/RUNNING state before use.
+ * Publish final payload first, ensure payload visibility, then commit state
+ * LAST using a platform-confirmed atomic aligned 32-bit write. Ensure commit
+ * visibility too. Cache clean/order requirements belong to the backend.
+ * Reader must validate token/version and a stable commit before accepting.
+ * Return non-OK if these guarantees cannot be provided. */
 soc_status_t soc_publish_result(const soc_sw_result_t *result);
 void soc_log(const char *message);
 
@@ -48,3 +54,4 @@ void soc_log(const char *message);
  * converted to zero data. CPU-only operations in host DPI must be UNSUPPORTED
  * unless the stated test semantics truly require no CPU-side operation. */
 #endif
+

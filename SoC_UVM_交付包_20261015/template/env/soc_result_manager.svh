@@ -45,7 +45,9 @@ class soc_result_manager extends uvm_component;
     errors = server.get_severity_count(UVM_ERROR);
     fatals = server.get_severity_count(UVM_FATAL);
     assertion_errors = cfg.assertions.errors;
-    foreach (cfg.assertions.error_ids[i])
+    if (cfg.assertions.registered_count == 0 || cfg.assertions.samples == 0)
+      state.record_failure("ASSERTION_NOT_ACTIVE");
+    for (int i = 0; i < cfg.assertions.error_ids.size(); i++)
       state.record_failure(cfg.assertions.error_ids[i]);
     if (!state.completed || state.stage != SOC_DONE)
       state.record_failure("TEST_INCOMPLETE");

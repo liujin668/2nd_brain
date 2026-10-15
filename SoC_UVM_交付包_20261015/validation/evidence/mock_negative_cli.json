@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "planned_count": 1,
+  "result_count": 1,
+  "accepted_count": 1,
+  "validation_levels": [
+    "FLOW_MOCK"
+  ],
+  "runs": [
+    {
+      "acceptance": "EXPECTED_FAILURE",
+      "log_errors": [],
+      "process": {
+        "argv": [
+          "C:\\Users\\jinliu01\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "C:\\Users\\jinliu01\\OneDrive - ARM China\\文档\\Obsidian Vault\\2nd_brain\\2nd_brain\\SoC_UVM_交付包_20261015\\template\\script\\mock_sim.py",
+          "--scenario",
+          "fail",
+          "--run-id",
+          "run-20261015T112843-970dc3b6634d",
+          "--result-file",
+          "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\negative\\regressions\\reg-20261015T112842-fe11e2642558\\runs\\run-20261015T112843-970dc3b6634d\\tb_result.json",
+          "--profile",
+          "mock",
+          "--test",
+          "soc_mock_test",
+          "--seed",
+          "103"
+        ],
+        "cwd": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\negative\\regressions\\reg-20261015T112842-fe11e2642558\\runs\\run-20261015T112843-970dc3b6634d",
+        "elapsed_s": 5.0,
+        "pid": 46312,
+        "returncode": 0,
+        "state": "EXITED"
+      },
+      "profile": "mock",
+      "reasons": [
+        "TB_FAIL",
+        "UVM_ERRORS",
+        "FAILURE_IDS"
+      ],
+      "run_dir": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\negative\\regressions\\reg-20261015T112842-fe11e2642558\\runs\\run-20261015T112843-970dc3b6634d",
+      "run_id": "run-20261015T112843-970dc3b6634d",
+      "schema_version": 1,
+      "seed": 103,
+      "status": "FAIL",
+      "tb_result": {
+        "assertion_errors": 0,
+        "checks_count": 4,
+        "completed": true,
+        "failures": [
+          "MOCK_MISMATCH"
+        ],
+        "pending_count": 0,
+        "profile": "mock",
+        "run_id": "run-20261015T112843-970dc3b6634d",
+        "schema_version": 1,
+        "seed": 103,
+        "software_required": false,
+        "software_status": "NOT_REQUIRED",
+        "status": "FAIL",
+        "stimulus_count": 4,
+        "test": "soc_mock_test",
+        "uvm_errors": 1,
+        "uvm_fatals": 0
+      },
+      "test": "soc_mock_test",
+      "validation_level": "FLOW_MOCK"
+    }
+  ],
+  "report_dir": "C:\\Users\\jinliu01\\AppData\\Local\\Temp\\soc_verify_xjr7uncc\\negative\\regressions\\reg-20261015T112842-fe11e2642558"
+}

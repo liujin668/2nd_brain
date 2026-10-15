@@ -1,0 +1,15 @@
++incdir+tb/common
++incdir+env
++incdir+env/seq
++incdir+test/sv
+tb/common/soc_tb_defs_pkg.sv
+tb/hdl_top/interfaces/soc_control_if.sv
+env/soc_env_pkg.sv
+test/sv/soc_test_pkg.sv
+tb/hdl_top/generators/soc_clk_gen.sv
+tb/hdl_top/generators/soc_reset_gen.sv
+tb/hdl_top/soc_demo_wrapper.sv
+tb/hdl_top/assertions/soc_pin_checks.sv
+tb/hdl_top/soc_hdl_top.sv
+tb/hdl_top/binds/soc_demo_bind.sv
+tb/hvl_top/soc_hvl_top.sv

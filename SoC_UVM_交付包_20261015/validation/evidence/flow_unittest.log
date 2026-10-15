@@ -1,0 +1,24 @@
+STDOUT
+
+STDERR
+test_build_tamper_rejected (test_flow.FlowTests.test_build_tamper_rejected) ... ok
+test_cli_ascii_stdout_with_unicode_paths (test_flow.FlowTests.test_cli_ascii_stdout_with_unicode_paths) ... ok
+test_config_generation_and_overlap (test_flow.FlowTests.test_config_generation_and_overlap) ... ok
+test_dry_run_never_runs_mock (test_flow.FlowTests.test_dry_run_never_runs_mock) ... ok
+test_exact_negative_contract (test_flow.FlowTests.test_exact_negative_contract) ... ok
+test_fail_closed_cases (test_flow.FlowTests.test_fail_closed_cases) ... ok
+test_info_containing_error_is_not_failure (test_flow.FlowTests.test_info_containing_error_is_not_failure) ... ok
+test_late_assertion_log_is_failure (test_flow.FlowTests.test_late_assertion_log_is_failure) ... ok
+test_negative_rejects_extra_same_id_and_late_duplicate (test_flow.FlowTests.test_negative_rejects_extra_same_id_and_late_duplicate) ... ok
+test_parallel_regression_and_incomplete_report (test_flow.FlowTests.test_parallel_regression_and_incomplete_report) ... ok
+test_pass_and_reports (test_flow.FlowTests.test_pass_and_reports) ... ok
+test_profile_and_lsf_blocked (test_flow.FlowTests.test_profile_and_lsf_blocked) ... ok
+test_result_type_identity_and_sw_contract (test_flow.FlowTests.test_result_type_identity_and_sw_contract) ... ok
+test_suite_guards (test_flow.FlowTests.test_suite_guards) ... ok
+test_timeout (test_flow.FlowTests.test_timeout) ... ok
+test_unique_run_and_reproduce (test_flow.FlowTests.test_unique_run_and_reproduce) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 80.720s
+
+OK

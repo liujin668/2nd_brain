@@ -1,0 +1,11 @@
+# Local generated artifacts
+__pycache__/
+*.pyc
+regress/out/
+config/site.json
+config/generated/
+*.fsdb
+*.vpd
+*.vcd
+*.shm/
+*.vdb/

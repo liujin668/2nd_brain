@@ -39,7 +39,7 @@ class soc_env_config extends uvm_object;
     if (clk_ctrl == null || reset_ctrl == null || observe == null ||
         assertions == null)
       `uvm_fatal("CONTROL_IF_MISSING", "All control/observation VIFs are required")
-    if (mem_bytes < 256 || mem_base[2:0] != 0)
+    if ($isunknown(mem_base) || mem_bytes < 256 || mem_base[2:0] != 0)
       `uvm_fatal("MEMORY_CONFIG", "Selftest needs an aligned >=256-byte window")
   endfunction
 endclass

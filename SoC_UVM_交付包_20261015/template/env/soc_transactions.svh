@@ -2,7 +2,7 @@ class soc_mem_req extends uvm_sequence_item;
   soc_mem_op_e op;
   soc_addr_t addr;
   soc_data_t data;
-  bit [7:0] byte_enable;
+  logic [7:0] byte_enable;
   longint unsigned uid;
   int unsigned epoch;
   `uvm_object_utils_begin(soc_mem_req)

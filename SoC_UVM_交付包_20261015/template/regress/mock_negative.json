@@ -4,6 +4,24 @@
   "kind": "negative_selftest",
   "profile": "mock",
   "cases": [
-    {"name": "expected_mismatch", "scenario": "fail", "seeds": [103], "timeout_s": 10, "expected_failures": ["MOCK_MISMATCH"]}
+    {
+      "name": "expected_mismatch",
+      "scenario": "fail",
+      "seeds": [
+        103
+      ],
+      "timeout_s": 10,
+      "expected_failures": [
+        "MOCK_MISMATCH"
+      ],
+      "expected_counts": {
+        "uvm_errors": 1,
+        "uvm_fatals": 0,
+        "assertion_errors": 0
+      },
+      "expected_log_counts": {
+        "MOCK_MISMATCH": 1
+      }
+    }
   ]
 }

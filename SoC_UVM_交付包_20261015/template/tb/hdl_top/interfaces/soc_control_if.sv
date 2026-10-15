@@ -1,5 +1,5 @@
 interface soc_clk_ctrl_if;
-  timeunit 1ns;
+  timeunit 1ps;
   timeprecision 1ps;
   bit request_enable = 0;
   time request_period = 10ns;
@@ -21,7 +21,7 @@ interface soc_clk_ctrl_if;
 endinterface
 
 interface soc_reset_ctrl_if;
-  timeunit 1ns;
+  timeunit 1ps;
   timeprecision 1ps;
   bit request_assert = 1;
   int unsigned request_id = 0;
@@ -41,15 +41,24 @@ interface soc_reset_ctrl_if;
 endinterface
 
 interface soc_observe_if(input logic clk, input logic rst_n);
-  timeunit 1ns;
+  timeunit 1ps;
   timeprecision 1ps;
 endinterface
 
 interface soc_assert_status_if;
-  timeunit 1ns;
+  timeunit 1ps;
   timeprecision 1ps;
   int unsigned errors = 0;
+  int unsigned registered_count = 0;
+  int unsigned samples = 0;
   string error_ids[$];
+
+  function void register_checker();
+    registered_count++;
+  endfunction
+  function void record_sample();
+    samples++;
+  endfunction
 
   // Static checkers use this API; the UVM result manager is the only JSON writer.
   // Do not terminate here: final reporting must preserve the failure evidence.
