@@ -466,6 +466,12 @@ RN0 持有完整 line 的全部数据和四个有效标签，其中 T1 从 `5` �
 
 具体使用哪一种取决于 snoop 后是否仍有副本、是否取消及 CopyBack 规则。验证时应联动检查 snoop 后状态、BE、实际 DAT 的 TagOp 和 Dirty 责任，不能只做 REQ 与 DAT 的逐位相等断言。[^C8]
 
+### 6.4 Clean eviction 与清零操作的边界
+
+`WriteEvictFull` 和 `WriteEvictOrEvict` 可使用 Transfer 传递 Clean 标签，但不支持 Update 或 Match。因此，有 Dirty 标签的 line 不能仅凭 payload 看起来干净，就当成这类 Clean eviction 处理。[^C3][^C8]
+
+`WriteNoSnpZero` 与 `WriteUniqueZero` 只允许 TagOp Invalid。架构上“清零数据并设置标签”的 STZG，并不等于外部一定发一个 Zero opcode 再带 Update。实现必须选择合法的事务或本地操作组合，不能仅凭名称相近建立一一映射。[^C8][^S3]
+
 ## 7 为什么标签会改变 snoop 选择
 
 ### 7.1 需要获取标签的读不能使用 forwarding snoop
@@ -514,3 +520,459 @@ RN0 的 `ReadUnique + Fetch` 表明它会覆盖整条数据，却**不表示会�
 如果 RN1 的 Dirty 标签为 `[5,9,5,5]`，下层还是 `[5,5,5,5]`，HN 不能为丢弃旧 payload 而使用会丢失最新标签的 `SnpMakeInvalid`。规范明确禁止在这个场景使用它。应使用能够保存必要数据和标签责任的合法路径。[^C12]
 
 同理，对 WriteUniqueFull、MakeUnique 等，只有请求具备规定的 Update 意图，或者 HN 能确认 Snoopee 没有 Dirty 标签，才允许按对应规则使用 SnpMakeInvalid。**覆盖全部 payload 和覆盖全部标签，是两种不同承诺。**
+
+## 8 DMT 和分离响应如何携带标签
+
+### 8.1 DMT 与 DCT 要分开判断
+
+[[CHI-直接数据传输]] 中的两种直接读数据路径，在 MTE 条件下并不相同：
+
+| 路径 | 数据发送者 | 获取标签时的限制 |
+| --- | --- | --- |
+| DMT | SN 直接发给 Requester | 可以随数据直接带回标签，须满足 DMT 和标签规则 |
+| 基于 forwarding snoop 的 DCT | 另一个 RN 直接发给 Requester | 需要获取标签的读不能选择 forwarding snoop |
+
+因此，“需要取标签不能用 forwarding snoop”不等于“带标签数据一律必须经过 HN”。[^C12][^C13]
+
+### 例 25 读标签通过 DMT 直接返回 RN0
+
+初始条件：HN 已确定从 SN 取数的路径满足该请求的一致性条件，SN 支持目标地址的 MTE 操作。
+
+```mermaid
+sequenceDiagram
+    participant R as RN0
+    participant H as HN
+    participant S as SN
+    R->>H: ReadUnique TagOp Transfer
+    H->>S: ReadNoSnp TagOp Transfer 和直接返回所需 ID
+    S-->>H: ReadReceipt 若该流程要求
+    S-->>R: CompData_UC 和 Clean Allocation Tags
+    Note over R: 根据本地数据状态及返回标签完成处理
+    R->>H: CompAck
+```
+
+SN 的数据可以绕过 HN，标签与 DAT 同行。HN 仍负责请求排序、合法数据来源和事务管理；不能仅因 SN 有标签就绕过对其他 cache 的一致性检查。[^C13]
+
+### 例 26 RespSepData 先到但标签尚未到
+
+对同样的请求，HN 也可能选择：
+
+```text
+HN -> RN0：RespSepData，TagOp字段不适用并为0
+HN -> SN ：ReadNoSnpSep，TagOp=Transfer
+SN -> HN ：ReadReceipt
+SN -> RN0：DataSepResp，携带数据及Allocation Tags
+```
+
+**RespSepData 先到，不能据此完成依赖尚未返回标签的比较。** 对图中适用的 Allocating Read，RN0 可以提前 CompAck，但仍必须保存接收数据和标签所需状态；若收到后续同地址 snoop，要按 hazard 规则等待全部数据响应包收齐再回复。[^C4][^C18]
+
+这里需要同时满足三件事：完成响应的排序语义、数据与标签的实际到达、后续 snoop 的正确处理。不能用一个“done”信号替代所有状态。可结合 [[CHI-Comp与CompAck]]、[[CHI-Hazard处理]] 阅读。
+
+## 9 CMO Atomic 与 Stash 的标签规则
+
+### 9.1 CMO 对数据和标签共同生效
+
+Cache Maintenance Operations 必须作用于数据及对应的 memory tags。CMO 请求的 TagOp 为 Invalid，并不意味着可以忽略 Dirty 标签：**操作意图由 CMO opcode 定义，不是所有标签行为都必须靠 TagOp=Update 才能触发。**[^C9][^C15]
+
+### 例 27 MakeInvalid 可以丢 Dirty 数据但不能随便丢 Dirty 标签
+
+假设软件使用适用的 MakeInvalid 场景，并允许丢弃旧 payload。RN1 却持有最新 Allocation Tag=`9`，内存仍为 `5`。
+
+CHI 要求：即使该 MakeInvalid 允许不写回 Dirty 数据，**Dirty 标签仍必须写回内存**。不能从“数据不要了”推导“标签也不要了”。[^C9]
+
+这也解释了为什么只按传统数据一致性规则实现 CMO 不够：维护操作必须覆盖元数据的最新版本及其责任。
+
+### 9.2 MakeUnique 的 Update 是整体更新承诺
+
+MakeUnique 是支持 TagOp 的 Dataless 事务，可取 Invalid 或 Update。Update 表示 Requester 会连同数据更新标签；它与 HN 能否使用 SnpMakeInvalid 的条件关联。其响应的 TagOp 只允许 Invalid。其他 Dataless 事务没有相同的自由度。[^C9]
+
+因此，不要将“只有标签要更新”一律映射为 MakeUnique；要看 Requester 是否承诺完整更新，以及是否已拥有需要保留的数据和标签。
+
+### 9.3 Atomic 的 Match 由执行路径承接
+
+Atomic 请求支持 Invalid 或 Match，不支持借此更新 Allocation Tags。Physical Tags 随原子操作的写数据提供。AtomicLoad、AtomicStore、AtomicSwap 的最大数据大小为 8 B，因此适用数据只对应一组标签位。[^C10]
+
+### 例 28 Far atomic 在 SN 进行标签检查
+
+假设 HN 选择让支持相应能力的 SN 执行 AtomicAdd，并传递 `TagOp=Match`：
+
+```text
+RN -> HN -> SN：原子操作请求及操作数，携带Physical Tag
+SN：对目标Allocation Tag执行比较，并完成规定的原子事务流程
+SN：发送TagMatch结果
+SN/HN：按该原子流的规则返回完成及需要的旧数据
+```
+
+SN 发出的 TagMatch 的 TgtID 从请求 ReturnNID 获取；它可以指向 RN，也可以指向 HN。若返回给 HN，HN 负责转给 Requester。**不能假设所有 TagMatch 都先回 HN，也不能仅按 CompData 的 TxnID 路径实现标签结果路由。**[^C13][^C14]
+
+若原子在 HN 执行，标签检查和相应责任也要按该执行路径处理，不能因概念上叫 near atomic 就让它绕过 MTE。接口为 Reduced 时，不能把 Match 转交给 SN，见第 10 节。
+
+### AtomicCompare 的特殊大小含义
+
+AtomicCompare 的请求数据最大可为 32 B，但其中 compare 和 swap 数据各为 16 B，目标内存的相应比较并非对两个不同 granule 各做一次更新。Match 所需 Physical Tag 要复制到两组操作数对应的位置，Completer 可使用任一份。不能把“32 B 操作数消息”误判成“对两个独立地址分别检查”。[^C10]
+
+### 9.4 Stash 也要考虑标签预热
+
+StashOnce 和 StashOnceSep 支持 Invalid 或 Transfer；Transfer 表示请求把 Allocation Tags 与数据一同 stash。SNP 没有 TagOp，所以 HN 不能把原 REQ 的标签意图原样传给 Stash target，必须依 B12.9.3 的规则组织 DataPull 返回。[^C11][^C12]
+
+### 例 29 Stash 了数据仍可能发生标签 miss
+
+假设设备或另一个核把 A 的数据预先 stash 到 RN0，但 RN0 没得到标签。随后 CPU 访问 A：data hit，不代表所需标签也 hit，仍可能需要第 5 节的补取流程。
+
+若标签可得，按规范建议随 DataPull 返回 Clean 标签，可以减少后续补取；但文中的建议不能改写成“每个 stash snoop 都必须携带标签”。特别是 `SnpResp` 自身不提供实际 Tag 字段，实际标签要由允许的 DAT 响应传送。[^C12]
+
+对于 `PrefetchTgt`，TagOp 可为 Invalid 或 Transfer；该字段表达标签预取意图，不将一个预取动作变成数据或标签已经抵达的确认。相关预取完成语义仍需按 PrefetchTgt 的完整规则处理。[^C15]
+
+## 10 HN 到 SN 的能力配置决定由谁补足功能
+
+### 10.1 MTE_Support 的适用范围
+
+`MTE_Support` 定义 Home–Subordinate 接口支持多少 MTE 功能。它不是单个应用“有没有启用 MTE”的开关，也不能直接当成整颗 CPU 的 MTE 支持位。[^C17]
+
+| 配置 | 核心能力与限制 |
+| --- | --- |
+| Full 或未指定 | 在各 opcode 自身限制内支持完整操作，包括 Match、Fetch 和允许的 Update |
+| Reduced | 支持取回标签和部分更新路径；不支持下发 Match，不允许 WriteNoSnpPtl 的 Update；仍允许 WriteNoSnpFull 的 Update |
+| False | 该接口上的 TagOp 必须为 Invalid |
+
+**Reduced 不等于不能更新标签。** 它限制了 Partial Update 和 Match 等路径，HN 需要承担相应转换或检查工作。[^C17]
+
+### 例 30 Reduced 接口如何更新单个标签
+
+仍使用例 19：只将 T1 从 `5` 改为 `9`，payload 不变。Full 接口可使用适用的 Partial Update，但 Reduced 接口不能直接下发这一操作。
+
+规范指出，HN 需要采用 Read Modify Write，构造完整的数据和标签，并通过 `WriteNoSnpFull + Update` 向 SN 写入。概念上是：
+
+```text
+取得需要保留的完整数据和标签
+保留未修改字节及其他Allocation Tags
+合入T1=9
+发出满足Full写规则的WriteNoSnpFull + Update
+```
+
+RMW 过程中还必须防止与其他同地址操作发生破坏性竞争；地址 hazard、内部缓冲和序列化的具体实现需按 HN 设计确定，不能把读和写分成两个无保护的普通请求就宣称完成了正确转换。[^C17]
+
+### 例 31 Reduced 接口上的 Match 必须由 HN 承担
+
+RN 发来 `WriteUniquePtl + Match`，但 HN–SN 配置为 Reduced。HN 不能直接把 Match 透传给 SN；它必须代表下游完成 TagMatch，再按允许的事务向 SN 传递数据和需要的标签。
+
+这会影响 HN 的标签获取能力、比较逻辑、TagGroupID 跟踪、错误处理和资源分配。Reduced 减少的是下游接口需要支持的功能，不代表系统整体可以省掉这些责任。[^C17]
+
+### 10.2 互通不等于完整功能一致
+
+规范区分接口组合的协议兼容与完整 MTE 功能。Full Home 不能假设自己可以向 Reduced 或 False SN 发出所有 Full 操作；违规组合可能无法前向进展。Reduced Home 与 False SN 的某些组合虽然协议上兼容，返回 TagOp 可一直为 Invalid，也不等于建立了完整的有效标签存储能力。[^C17]
+
+学习或验证时至少记录：RN 的操作意图、HN 的标签能力、SN 接口属性、目标地址是否支持 MTE。只看其中一个支持位不足以判断整条路径。
+
+## 11 TagMatch 错误及不支持 MTE 的响应
+
+### 11.1 TagGroupID 的用途
+
+TagMatch 必须返回请求中的 TagGroupID，使 Requester 能将结果归到正确的检查组。它的内容由实现定义，可能编码核、Exception Level 或 TTBR 等上下文；不能把这些典型用途当成固定的位分配。[^C16]
+
+TagMatch 不是另一条普通 Comp。检查其路由和归属时，应使用其消息定义，而不是套用 Comp/DBID 的关联方式。
+
+### 例 32 Comp 到了但 TagMatch 还没到
+
+请求带 Match，Completer 已按规则发出 Comp，但独立 TagMatch 尚在路上。Requester 不能因此把该检查结果直接记作 Pass，或释放所有接收结果所需的信息。
+
+实现可以分开管理“主事务资源”和“尚未返回的标签检查组”。规范使用独立消息，正是为了使准确报告不必阻塞 Comp；具体资源怎样分开是实现选择。[^C14]
+
+### 11.2 几种特殊结果
+
+| 情况 | 标签检查响应规则 |
+| --- | --- |
+| 实际执行比较 | 准确报告 Pass 或 Fail |
+| 目标支持 MTE，但因例如访问权限失败而没有实际比较 | 按规定报告 Pass；其他访问错误仍单独处理 |
+| 目标不支持 MTE，收到需要 Match 的写 | 仍发送 TagMatch，并报告 Fail；不必等待写数据才回报 |
+| 写数据被取消 | 仍必须发送规定的 TagMatch；不能因取消而漏响应 |
+
+“Pass”在部分异常路径只表示没有产生标签比较失败，不能替代访问权限成功、数据无错和整体完成的判断。RespErr 仍有独立意义；标签本身不支持 Poison 机制。[^C14]
+
+### 例 33 要求 Transfer 却收到 Invalid 和全零标签
+
+如果目标地址不支持 MTE，Completer 对 Transfer/Fetch 读按规则返回 `TagOp=Invalid`、零标签。Requester 可以按规定将这些零标签缓存为 Clean。[^C14]
+
+这不表示目标提供了正常的非零 Allocation Tag 存储，也不表示软件可以忽略地址类型和映射约束。对 Non-cacheable 或 Device 的读，返回 TagOp 必须为 Invalid；CHI 的 memory tagging 只允许用于规定的 Normal WriteBack 请求。[^C1][^C14]
+
+因此，看到波形上的标签值是 `0`，至少还要问：它是有效零标签，还是不支持路径返回的零值？不能仅凭数值作结论。
+
+## 12 把规则串起来的完整场景
+
+### 例 34 从带标签指针到第一次读再到本地写
+
+假设软件已按正确的发布和同步顺序，使 A 的数据和 Allocation Tag=`5` 可供使用，并向 RN0 上的软件提供标签为 `5` 的指针。
+
+| 阶段 | RN0 看到的状态或动作 | 需要注意的责任 |
+| --- | --- | --- |
+| 第一次 load 前 | 本地没有数据和标签 | 不能凭指针标签猜 Allocation Tag |
+| ReadNotSharedDirty 或其他适用读 | 请求 Transfer，要求带回标签 | HN 选择支持标签需求的合法路径 |
+| 返回数据及 Clean 标签 | 假设数据最终为 UC，Allocation Tag=5 | Requester 执行适用比较 |
+| 后续同 granule load | 数据及标签仍有效且 hit | 不必为了每次比较再访问 SN |
+| 普通 store 命中 | 已有 Unique 数据和适用标签 | 按架构和缓存规则检查并本地更新，不必每次发 ReadUnique |
+| 后续 eviction | 假设数据 Dirty、标签 Clean | 选择合法写回方式；不能把数据 Dirty 误当成标签也已改值 |
+
+这个例子中，最初的 Allocation Tag 不是 CHI 自动选择的；CHI 保证它被正确取得和保存。后续缓存命中时不发外部请求，也不表示 MTE 没有工作。[^C1][^C3][^C4]
+
+### 例 35 另一个核改标签后旧指针如何看到变化
+
+初始条件：RN0 与 RN1 共享 A 的数据及 Clean 标签 `5`。RN1 要将 A 的标签改成 `9`，之后旧指针仍携带 `5`。
+
+```mermaid
+sequenceDiagram
+    participant R0 as RN0
+    participant H as HN
+    participant R1 as RN1
+    Note over R0,R1: 两者持有 Shared 数据和标签5
+    R1->>H: 取得 Unique 所需的合法请求
+    H->>R0: 同地址失效 snoop
+    R0-->>H: 处理副本及标签的失效并响应
+    H-->>R1: 给予 Unique 权限
+    Note over R1: 将 Allocation Tag 改为9并承担Dirty责任
+    R0->>H: 后续访问重新获取标签
+    H->>R1: 获取必要的数据和标签
+    R1-->>H: 返回包含最新标签9的合法响应
+    H-->>R0: 数据及标签9
+    Note over R0: 旧指针的5与9不匹配
+```
+
+这里假设软件已正确安排重标记与后续访问的同步，不是在无同步数据竞争中承诺程序观察顺序。硬件一致性的作用是：RN0 不能永久拿着一个失去有效性的 Clean 标签 `5`，绕过 RN1 维护的最新 `9`。
+
+“标签也是 coherent metadata”具体体现在这条链上：取得 Unique、使其他副本失效、保存 Dirty 标签、向后来访问者提供正确标签。[^C3][^C5][^C12]
+
+### 例 36 Clean 标签被丢弃后再次访问
+
+在合法场景中，RN0 静默丢弃 Clean 标签，但仍保有允许保留的数据副本。之后数据 hit、标签 miss，需要重新获取标签。
+
+这个例子同时解释两个看似冲突的现象：
+
+- 标签曾经被取回，不代表一直驻留在标签缓存中。
+- 数据一直没有被驱逐，也不保证后续不会再产生取标签流量。
+
+标签数组是否和数据数组同组、能否独立替换以及容量多大，属于具体实现；上述协议现象不能反推出某个固定的标签缓存结构。[^C3][^C5]
+
+### 例 37 主事务完成后仍要收齐独立检查结果
+
+假设两个 Match 请求分别带不同检查组 G0、G1，结果独立返回：
+
+```text
+请求W0，TagGroupID=G0
+请求W1，TagGroupID=G1
+先收到W0、W1相关完成响应
+之后收到TagMatch(G1, Fail)
+再收到TagMatch(G0, Pass)
+```
+
+这个例子只强调不能依赖跨组固定返回顺序，具体允许的顺序还应满足底层通道和事务规则。接收端需要按照 TagGroupID 和实现的检查组管理方式归属结果，不能按“第一个结果就是第一笔 Comp”的假设配对。
+
+若多个请求共享同一组，必须按设计规定维护该组的请求和响应计数，不能把组标识简单当成每笔事务唯一 ID。规范定义 TagGroupID 的组用途，其精确编码与组管理策略由实现确定。[^C14][^C16]
+
+## 13 从设计与验证角度检查什么
+
+### 13.1 RN 需要准备的能力
+
+下面是由规则推导的设计检查项，不要求每个实现采用相同的寄存器或队列结构。
+
+| 检查项 | 为什么需要 |
+| --- | --- |
+| 分别跟踪数据有效性和标签有效性 | data hit 不能覆盖 tag miss |
+| 按权限及标签状态选择合法请求 | 不能在只有 Shared 副本时静默更新标签 |
+| 处理返回数据的丢弃及合并 | 防止 UD 被旧值覆盖、UDP 丢字节 |
+| 保存 Dirty 标签及责任 | 防止 eviction、snoop、取消过程中丢失最新标签 |
+| 支持 TagMatch 结果归组 | 独立响应不等于 Comp 的固定附属拍 |
+| 拆分响应到达与数据标签到达状态 | 早 CompAck 后仍有接收和 hazard 责任 |
+| 按需处理标签和数据的同时写回 | Full Update 的 TU 约束不能按“哪个标签脏”直接生成 |
+
+### 13.2 HN 需要准备的能力
+
+- 根据请求是否需要标签，选择合法 snoop 与 DMT 路径。
+- Snoopee 没提供所需标签时，完成补取后再响应。
+- 防止 Snoop Filter 把已有 Unique/Dirty 状态错误降级。
+- 跟踪标签的 Dirty 责任，避免仅为丢 payload 而丢标签。
+- 根据 MTE_Support 执行 Match 或转换 Partial Update。
+- 正确路由 TagMatch，特别是 SN 的 ReturnNID 路径。
+- 处理同地址竞争、RMW 及独立响应带来的资源生命周期。
+
+这些要求分别来自 B12 的读、snoop、下游、错误响应规则及 B16.1.23，而不是另加一套与 CHI 无关的检查流程。[^C5][^C12][^C13][^C14][^C17]
+
+### 13.3 SN 需要准备的能力
+
+SN 只应接收其接口能力允许的 TagOp/opcode 组合，正确保存支持地址的 Allocation Tags，按请求返回标签或执行规定的 Match，并在不支持路径给出规定响应。
+
+标签在 DRAM、独立元数据区、控制器缓存或其他结构中怎样存储，以及带宽和 ECC 怎样组织，**在本文依据的 CHI 规则中没有唯一布局，需查目标 SoC 文档，待确认**。不能从“一个 16-byte granule 一个 4-bit 标签”直接推出 DDR 物理布局。[^C13][^C17]
+
+### 13.4 建议建立的数据与标签参考模型
+
+验证环境可分别维护以下逻辑对象：
+
+```text
+DataMemory[address]         普通数据的参考值
+AllocationTag[granule]      与16 B granule关联的参考标签
+CacheCopy[rn][line]         数据状态、有效字节、标签有效性与责任
+PendingRead[identity]      请求意图和尚未收到的数据标签
+PendingTagGroup[group]     标签检查组及尚未回报的结果
+```
+
+这是用于推理的模型，不指定 DUT 内部实现。特别是，标签检查组不应只靠数据事务的一项 completion bit 代替。
+
+对 Partial Match，可以用下面的教学伪代码表达“只检查含有效写字节的 granule”。它不实现地址环绕、错误响应、取消及完整 CHI 包处理：
+
+```python
+# 教学模型：一条64 B line，be[0..63]，每个granule对应一个tag
+for granule in range(4):
+    first = granule * 16
+    last = first + 16
+    if any(be[first:last]):
+        compare(physical_tags[granule], allocation_tags[granule])
+    else:
+        skip_compare(granule)
+```
+
+对 Update 则是另一套语义：先校验该 opcode 的 TU/BE 组合是否合法，再只更新 TU 选中的 Allocation Tags。不能把上面用于 Match 的 BE 选择条件搬给 Update。[^C8]
+
+### 13.5 有价值的验证场景
+
+| 场景 | 应核对的结果 |
+| --- | --- |
+| UC 数据 hit，标签 Invalid | 发起允许的标签获取，而不是跳过检查 |
+| UD 补取标签，下层数据较旧 | 标签正确获取，本地 Dirty payload 不被覆盖 |
+| UDP 补取数据 | 已修改字节保留，其他字节按规则合并 |
+| Transfer 读返回 Dirty 标签 | 接收状态及 PassDirty 正确 |
+| Fetch 返回任意 payload | Requester 不使用返回 payload |
+| Partial Match 的部分 BE 为 1 | 仅相应 granule 被比较 |
+| Partial Match 全 BE 为 0 | 不执行比较，仍正确处理响应义务 |
+| Tag-only Partial Update | 只改 TU 选中的标签，payload 保留 |
+| Full Update 的 TU 不全为 1 | 识别为违反该 opcode 的约束 |
+| Dirty 标签遇到失效 forwarding snoop | 不直接转发数据，向 HN 返回必要信息 |
+| SnpRespDataPtl | TagOp 只能为 Invalid，Tag/TU 为 0 |
+| Update 写回与 snoop 竞争 | 合法变化后仍保存所有 Dirty 责任 |
+| WriteDataCancel | MTE 字段按要求清零，TagMatch 义务不丢失 |
+| Retry 后重新发请求 | TagOp 与原请求一致 |
+| CMO/MakeInvalid 遇到 Dirty 标签 | 不因丢 payload 而丢标签 |
+| Reduced SN 遇到上游 Match | HN 执行检查，不下发非法 Match |
+| Reduced 下的 Partial Update | 合法转换，保留未修改数据及标签 |
+| 多组 TagMatch 返回与 Comp 顺序不同 | 正确归组，不提前当成 Pass |
+| 目标不支持 MTE | 规定的 Invalid/零标签或 Match Fail 响应 |
+| 提前 CompAck 后收到同地址 snoop | 按要求等所有数据响应包收齐再回复 |
+
+以上覆盖点是规则驱动的建议，不是已对某个 DUT 执行过的测试报告。Snoop Partial、取消和 Retry 的约束分别见 B12.9.4、B12.5.2 与 B13.10.38。[^C8][^C12][^C16][^C18]
+
+## 14 容易混淆的判断
+
+| 常见说法 | 应当怎样理解 |
+| --- | --- |
+| MTE 是 CHI 的专属功能 | MTE 是架构特性；CHI 定义其在该互连上的支持机制 |
+| 指针标签由硬件按地址自动补上 | 软件建立并保留带标签指针；显式取标签是另一动作 |
+| 每条 cache line 只有一个 tag | 64 B line 对应四个 16 B granule 标签 |
+| cache tag RAM 就是 MTE tag | 前者常指地址匹配信息；后者是 Allocation Tag |
+| 数据 hit 就不需要再发读 | 标签可能 miss，需要补取 |
+| ReadUnique 起始为 UD 说明必须重新要写权限 | UD 已有权限；标签缺失等场景仍可需要读事务 |
+| Transfer 保证返回标签 Clean | 请求要求取标签；响应可按规则返回 Dirty 标签 |
+| Fetch 只是 Transfer 的别名 | Fetch 的返回 payload 必须忽略，且有大小和使用条件 |
+| Match 会把标签改成请求携带的值 | Match 比较；Update 才按 TU 修改 Allocation Tags |
+| TagMatch Fail 自动回滚 CHI 写 | CHI 事务按规则推进，结果单独回报 |
+| 没改普通数据就能 Clean eviction | Dirty 标签仍有保存责任 |
+| 需要标签就不能用 DMT | 可以用合法 DMT；受限制的是取标签读的 forwarding snoop |
+| 覆盖完整数据就能丢旧标签 | 必须另外证明标签也被覆盖，或没有 Dirty 标签 |
+| Reduced 没有 Update | Reduced 支持 Full Update，限制 Partial Update 和 Match |
+| CompAck 已发就能丢所有读状态 | 仍可能等待 DataSepResp 及标签，并需处理 snoop hazard |
+| CMO 的 TagOp=Invalid 表示标签不参与 | CMO 本身必须作用于相应数据和标签 |
+
+其中涉及具体 opcode 的判断，仍应回查第 5 至 11 节的条件，不能把本表当作无条件报文生成表。
+
+## 15 自测题及参考答案
+
+先遮住答案，尝试说清“谁保存最新值、谁比较、谁负责回报”，比只记字段编码更有用。
+
+### 自测题
+
+1. RN0 有 UC 数据但没有 Allocation Tags，需要检查一次 load，能否直接认为缓存命中并结束？
+2. RN0 有 UD 数据 `0x22`，补标签时内存返回 `0x11`，该保留哪个 payload？
+3. `ReadShared + Transfer` 的返回能否为 `TagOp=Update`？它表达什么？
+4. 只打算写 8 B，能否为了省掉有效数据传输而随便选择 Fetch？
+5. Partial Match 的有效 BE 只落在第三个 granule，应检查哪些标签？
+6. 所有 BE 为 0，但一个 TU 为 1，是否一定非法？
+7. HN 能否对要求获取 Allocation Tags 的读选择 SnpUniqueFwd？
+8. 发起请求不需要标签，RN1 却有 Dirty 标签，收到 SnpUniqueFwd 后怎么办？
+9. Match 写收到 Comp，但还没有 TagMatch，可以直接记录标签检查成功吗？
+10. MakeInvalid 允许丢弃 Dirty payload，是否也允许丢掉 Dirty 标签？
+11. Reduced 接口能否直接接收 WriteNoSnpPtl 的 Update？
+12. 已提前 CompAck，数据标签还没到，同地址 snoop 到达后能否立即回复？
+
+### 参考答案
+
+1. 不能。数据与标签有效性分别判断，使用适用的读事务补取标签。
+2. 保留本地 `0x22`，按 UD 规则丢弃内存旧 payload，正确处理标签。
+3. 可以。响应中的 Update 表示返回 Dirty 标签，必须按相应状态及 PassDirty 接管责任。
+4. 不能。Fetch 的数据必须忽略，且相应已有数据场景受完整覆盖承诺等条件约束。
+5. 只检查包含有效写字节的第三个 granule，不检查其余无有效字节的 granule。
+6. 不一定。Full 能力下适用 Partial Update 可表达 tag-only 更新；还要看 opcode 和接口能力。
+7. 不能。需要获取标签的读不得使用 forwarding snoop。
+8. 不向 Requester 转发数据，按规定把数据和标签返回 HN。
+9. 不能。主事务完成语义与独立检查结果分别跟踪。
+10. 不允许。Dirty 标签必须按规范写回。
+11. 不能。HN 需采用规定的 RMW 和 Full Update 等合法转换。
+12. 不能。必须按 hazard 规则等待全部数据响应包收齐再响应 snoop。
+
+## 16 按原文继续学习及来源索引
+
+### 16.1 CHI 章节路线
+
+| 原文章节 | 对应学习内容 | 建议带着的问题 |
+| --- | --- | --- |
+| B12.1 | MTE 的协议边界 | 谁比较，谁传标签，哪些地址允许用 |
+| B12.2 | 消息扩展 | Tag、TU、TagOp 分别在哪个通道 |
+| B12.3 | Tag coherence | 数据和标签能有哪些状态组合 |
+| B12.4 | 读与标签获取 | Transfer、Fetch、已有数据时怎么处理 |
+| B12.5 | 写与标签操作 | 比较和更新怎么分开，BE/TU 怎么约束 |
+| B12.6 | Dataless 和 CMO | payload 可丢时标签能否丢 |
+| B12.7 | Atomic | 标签在哪里检查，结果怎么回 |
+| B12.8 | Stash | 标签能否随预放置的数据同行 |
+| B12.9 | Snoop | Dirty 标签如何改变 forwarding 与失效 |
+| B12.10 | HN–SN | DMT 和下游写标签如何处理 |
+| B12.11 | 错误与 TagMatch | Comp 与检查结果有何不同 |
+| B12.12、B12.13 | opcode 及通道总览 | 具体 TagOp 到底是否合法 |
+| B4.2.1.2、B4.7.1 | 起始状态和转移 | 哪些返回要丢弃，哪些要合并 |
+| B13.10.38–B13.10.41 | 字段定义 | 编码、位数及对应关系 |
+| B16.1.23 | 接口能力 | Full、Reduced、False 如何互通 |
+
+### 16.2 范围和待确认事项
+
+本文给出 B12 全章的学习解释，保留重要例外，并结合相关状态、字段和能力规则。它不代替每个 opcode 的完整合法性矩阵、所有错误组合、可执行 RTL 或特定处理器的实现手册。
+
+以下事项需要针对目标平台继续确认，不能仅从 CHI 推断：
+
+- 目标处理器的 MTE 版本、检查模式和支持限制。
+- 每级 cache 的标签容量、替换策略和比较器位置。
+- Allocation Tags 在内存控制器及物理存储中的布局。
+- 指令如何映射到具体 CHI 请求及何时对外可见。
+- HN 内部 RMW、标签检查队列及 TagGroupID 编码。
+- DMA、IOMMU 及非 CPU agent 是否产生、保留或检查 MTE 标签；一致性接入本身不自动保证它们执行标签检查。
+
+全文的例子均为规则解释和教学构造。协议事实以下方原文为依据；平台选择未确认前不填入猜测值。
+
+### 16.3 来源
+
+原始 [[CHI/00_spec/CHI.md|CHI.md]] 与 PDF 均保留。下列 Source 分段标题对应原始行号；章节号比因清洗而变化的行号更稳定。
+
+[^C1]: CHI Issue H，B12.1，原文 L17165–L17202。[[CHI-Source-IHI0050H#原文 L17161|查看来源分段]]。定义、4-bit/16 B、Normal WriteBack 限制、读写检查责任和 CMO 总体要求。
+[^C2]: CHI Issue H，B12.2，原文 L17207–L17231。[[CHI-Source-IHI0050H#原文 L17161|查看来源分段]]。Tag/TU 宽度、TagOp 编码及通道。
+[^C3]: CHI Issue H，B12.3，原文 L17237–L17251。[[CHI-Source-IHI0050H#原文 L17161|查看来源分段]]。标签有效性、Unique/Shared 协调和驱逐责任。
+[^C4]: CHI Issue H，B12.4.1、B12.4.1.1、B12.4.1.3，原文 L17261–L17283、L17327–L17370。[[CHI-Source-IHI0050H#原文 L17161|读规则起点]]；[[CHI-Source-IHI0050H#原文 L17281|响应与标签状态]]。含 Fetch 数据必须忽略、Size=64 B、Split response 的 TagOp 条件。
+[^C5]: CHI Issue H，B12.4.1.2，原文 L17284–L17326。[[CHI-Source-IHI0050H#原文 L17281|查看来源分段]]。已有数据时补标签、完整覆盖条件、ReadPreferUnique 的版本变化及 Snoop Filter 限制。
+[^C6]: CHI Issue H，B12.4.2、表 B12.2，原文 L17371–L17410。[[CHI-Source-IHI0050H#原文 L17281|表格起点]]；[[CHI-Source-IHI0050H#原文 L17401|表格续页]]。读请求起始标签状态及 MakeReadUnique 的 Transfer 条件。
+[^C7]: CHI Issue H，B4.2.1.2 的表 B4.4，B4.7.1 的表 B4.38 及脚注 e，特别是原文 L10679–L10680。[[CHI-Source-IHI0050H#原文 L8281|读请求起始状态]]；[[CHI-Source-IHI0050H#原文 L10441|状态转移表起点]]；[[CHI-Source-IHI0050H#原文 L10561|ReadUnique 状态项及末尾数据处理脚注]]。
+[^C8]: CHI Issue H，B12.5–B12.5.2，原文 L17417–L17491。[[CHI-Source-IHI0050H#原文 L17401|查看来源分段]]。写请求与 DAT、TagOp 变化、各 opcode 的 BE/TU 限制、取消。
+[^C9]: CHI Issue H，B12.6，原文 L17498–L17506。[[CHI-Source-IHI0050H#原文 L17401|查看来源分段]]。MakeUnique 与 CMO，MakeInvalid 不能丢 Dirty 标签。
+[^C10]: CHI Issue H，B12.7，原文 L17513–L17523。[[CHI-Source-IHI0050H#原文 L17401|Atomic 起点]]；[[CHI-Source-IHI0050H#原文 L17521|Atomic 续段]]。Atomic 的 Match、大小和 AtomicCompare 标签复制。
+[^C11]: CHI Issue H，B12.8，原文 L17530–L17532。[[CHI-Source-IHI0050H#原文 L17521|查看来源分段]]。StashOnce 与 StashOnceSep 的合法 TagOp。
+[^C12]: CHI Issue H，B12.9–B12.9.4，原文 L17538–L17625。[[CHI-Source-IHI0050H#原文 L17521|Snoop 规则]]。Non-forwarding、forwarding、Dirty 标签、Stash snoop 及 SnpRespDataPtl 限制。
+[^C13]: CHI Issue H，B12.10，原文 L17632–L17651。[[CHI-Source-IHI0050H#原文 L17521|章节起点]]；[[CHI-Source-IHI0050H#原文 L17641|章节续段]]。下游标签操作、DMT、标签更新和 Atomic TagMatch 路由。
+[^C14]: CHI Issue H，B12.11–B12.11.3，原文 L17660–L17716。[[CHI-Source-IHI0050H#原文 L17641|查看来源分段]]。独立 TagMatch、事务正常推进、Pass/Fail、错误及不支持情况。
+[^C15]: CHI Issue H，B12.12、表 B12.3 和 B12.13，原文 L17722–L17869。[[CHI-Source-IHI0050H#原文 L17641|opcode 总表起点]]；[[CHI-Source-IHI0050H#原文 L17761|总表续页及通道汇总]]。合法操作须按 opcode 和通道联合判断。
+[^C16]: CHI Issue H，B13.10.38–B13.10.41，原文 L19663–L19736。[[CHI-Source-IHI0050H#原文 L19561|字段定义起点]]；[[CHI-Source-IHI0050H#原文 L19681|Tag、TU、TagGroupID 续段]]。字段含义、位对应关系、Retry 保持 TagOp。
+[^C17]: CHI Issue H，B16.1.23、表 B16.23–B16.25，原文 L22023–L22121。[[CHI-Source-IHI0050H#原文 L21961|能力选项起点]]；[[CHI-Source-IHI0050H#原文 L22081|合法操作及互通矩阵续页]]。Full/Reduced/False、Partial Update 转换和 Match 处理责任。
+[^C18]: CHI Issue H，B2.3.1.1、B2.7.4、B4.11.1，原文 L2195–L2202、L5855–L5884、L11867–L11911。[[CHI-Source-IHI0050H#原文 L2161|Allocating Read 分离响应说明]]；[[CHI-Source-IHI0050H#原文 L5761|分离响应排序语义起点]]；[[CHI-Source-IHI0050H#原文 L11881|RN snoop hazard 及等待数据规则]]。
+[^S1]: Linux Kernel Documentation，[Memory Tagging Extension in AArch64 Linux](https://docs.kernel.org/arch/arm64/memory-tagging-extension.html)，Introduction、PROT_MTE、Tag Check Faults。用于指针标签位、OS 启用条件及同步/异步架构可见行为；不作为 CHI 报文规则来源。
+[^S2]: Arm，[Arm C Language Extensions 中的 Memory tagging intrinsics](https://arm-software.github.io/acle/main/acle.html#memory-tagging-intrinsics)。用于软件生成、保存、设置和显式获取标签的职责，以及有限标签空间的含义。
+[^S3]: Android Developers，[Arm Memory Tagging Extension](https://developer.android.com/ndk/guides/arm-mte#advanced_users_using_mte_in_your_own_allocator)，自定义 allocator 部分。用于 IRG、STG、STZG 等软件动作示例；不据此推导固定 CHI opcode 映射。

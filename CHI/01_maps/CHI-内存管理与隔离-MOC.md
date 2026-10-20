@@ -19,7 +19,7 @@ source_sections:
 evidence: derived
 verification: md-checked
 created: 2026-09-09
-updated: 2026-09-09
+updated: 2026-10-20
 ---
 
 # CHI-内存管理与隔离-MOC
@@ -32,6 +32,10 @@ updated: 2026-09-09
 - [[CHI-RME与PAS]]
 - [[CHI-GDI]]
 - [[CHI-MTE与Tag一致性]]
+
+## MTE 系统学习
+
+- [[CHI-MTE完整学习指南]]：从软件标签到 CHI 一致性和事务的完整学习路径，含大量例子、时序图、自测题与原文索引。
 
 ## 返回与依据
 
