@@ -207,12 +207,12 @@ RN0：AllocationTags[A] 无效
 
 ### 4.2 同一个编码在请求和响应中含义不同
 
-| TagOp 编码 | 名称 | 常见使用语境 |
-| --- | --- | --- |
-| 00 | Invalid | 标签无效或当前消息不进行相应标签操作；不等于 cache line 为 I |
-| 01 | Transfer | 读请求要求返回标签；DAT 中表示传递 Clean Allocation Tags |
-| 10 | Update | DAT 中表示 Dirty Allocation Tags，需要按 TU 更新；特定写请求也可声明此意图 |
-| 11 | Fetch 或 Match | 读请求中为 Fetch；写或原子请求中为 Match |
+| TagOp 编码 | 名称            | 常见使用语境                                               |
+| -------- | ------------- | ---------------------------------------------------- |
+| 00       | Invalid       | 标签无效或当前消息不进行相应标签操作；不等于 cache line 为 I                |
+| 01       | Transfer      | 读请求要求返回标签；DAT 中表示传递 Clean Allocation Tags            |
+| 10       | Update        | DAT 中表示 Dirty Allocation Tags，需要按 TU 更新；特定写请求也可声明此意图 |
+| 11       | Fetch 或 Match | 读请求中为 Fetch；写或原子请求中为 Match                           |
 
 先看 opcode 和通道，再解释 `TagOp`。**不能只看到 `11` 就说这是一次写标签比较，也不能把请求 Transfer 理解为返回标签必为 Clean。** 读请求 Transfer 的返回 DAT 可以为 Transfer，也可以为 Update，取决于标签的实际状态。[^C4][^C16]
 
