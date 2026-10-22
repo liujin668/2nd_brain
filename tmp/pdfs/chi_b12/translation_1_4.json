@@ -1,0 +1,914 @@
+{
+  "range": [
+    429,
+    436
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "title": "B12 内存标签（Memory Tagging）",
+      "source_page": 429
+    },
+    {
+      "type": "p",
+      "text": "本章介绍内存标签机制，包含以下各节：",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.1 引言",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.2 消息扩展",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.3 标签一致性",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.4 读事务规则",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.5 写事务",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.6 无数据事务",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.7 原子事务",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.8 Stash事务",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.9 侦听请求",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.10 Home节点到从属节点的事务",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.11 错误响应",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.12 请求及允许的标签操作",
+      "source_page": 429
+    },
+    {
+      "type": "bullet",
+      "text": "B12.13 TagOp字段使用汇总",
+      "source_page": 429
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.1 引言",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "内存标签扩展（Memory Tagging Extension，MTE）是一种用于检查内存中所存数据是否被正确使用的机制。当某个内存位置被分配用于特定用途时，也可以为其指定一个内存标签。该内存标签与对应数据一同保存在内存中，称为分配标签（Allocation Tag）。以后访问该内存位置时，请求方同时使用该位置的地址，以及请求方认为与该位置关联的标签值。此标签称为物理地址标签（Physical Address Tag）或物理标签（Physical Tag）。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "对于启用了标签检查的任何访问，都会将物理标签与分配标签进行比较。访问始终正常进行，而标签检查的结果决定是否报告错误情况。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "MTE确保内存访问符合其预期用途，而不是错误或恶意访问。MTE可在运行时识别许多常见的程序内存错误，例如缓冲区溢出和释放后使用。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "内存中每个按16字节对齐的16字节数据块，都关联一个4位的内存标签。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "支持以下行为：",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "仅允许在面向Normal WriteBack存储器的请求中使用内存标签。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "读事务在事务请求中包含一项指示，用于确定是否必须随数据一起返回分配标签值。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "由请求方执行返回的物理标签与分配标签之间的检查。",
+      "source_page": 430
+    },
+    {
+      "type": "note",
+      "text": "译注：上一句原文为“Checking of the returned Physical Tag against the Allocation Tag is performed by the Requester.”，其中“returned Physical Tag”与前句所述返回Allocation Tag存在表述不一致；此处保留原文含义。B12.4.1明确说明，请求方将Physical Tag与随读数据收到的Allocation Tag进行比较。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "如果缓存中保存了数据值，但未保存分配标签值，则必须执行同时返回数据和标签的读事务。返回的数据不要求有效。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "需要获取标签的读请求不得使用Forwarding snoop（转发侦听）。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "请求分配标签的StashOnce事务。预期分配标签随数据的stash操作一起被存入。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "随写数据一起提供物理标签、且该物理标签必须与分配标签进行比较的写事务。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "由完成方（Completer）执行物理标签与分配标签之间的检查。如果不匹配，则要求发出失败通知。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "将分配标签更新为新值的写事务。",
+      "source_page": 430
+    },
+    {
+      "type": "p",
+      "text": "这些写事务通常同时更新数据。不过，允许令BE=0，从而仅更新标签。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "将Dirty或Clean缓存行传递到下游缓存或内存控制器、且既不更新也不检查标签的写事务。这些写事务始终包含数据，并提供一项指示，说明是否也随数据传递分配标签值。如果标签为Clean，则可以选择是否在写事务中提供这些标签。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "返回数据的侦听事务也可以返回关联的分配标签。如果标签为Dirty，则必须返回。如果标签为Clean，则可以选择是否返回。",
+      "source_page": 430
+    },
+    {
+      "type": "bullet",
+      "text": "缓存维护操作（Cache Maintenance Operations）必须同时作用于数据及其对应的内存标签。",
+      "source_page": 430
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.2 消息扩展",
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "通过对CHI消息定义进行以下扩展来支持内存标签：",
+      "source_page": 431
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "Tag",
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "提供一组4位标签，每个标签关联一个按16字节对齐的16字节数据块。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "仅适用于DAT通道。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "大小为Data_Width/32位。",
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "更多信息参见Tag。",
+      "source_page": 431
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "TU",
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "Tag Update（标签更新）。指示必须更新哪些分配标签。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "仅适用于DAT通道。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "大小为Data_Width/128位。",
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "更多信息参见TU。",
+      "source_page": 431
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "TagOp",
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "Tag Operation（标签操作）。指示对相应DAT通道中的标签执行何种操作。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "适用于REQ、DAT和RSP通道。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "大小为2位。",
+      "source_page": 431
+    },
+    {
+      "type": "bullet",
+      "text": "表B13.31给出了取值编码。",
+      "source_page": 431
+    },
+    {
+      "type": "table",
+      "caption": "表B12.1：TagOp编码与标签操作",
+      "columns": [
+        "TagOp[1:0]",
+        "标签操作"
+      ],
+      "rows": [
+        [
+          "0b00",
+          "Invalid"
+        ],
+        [
+          "0b01",
+          "Transfer"
+        ],
+        [
+          "0b10",
+          "Update"
+        ],
+        [
+          "0b11",
+          "Match或Fetch"
+        ]
+      ],
+      "footnotes": [],
+      "source_page": 431
+    },
+    {
+      "type": "p",
+      "text": "更多信息参见TagOp。",
+      "source_page": 431
+    },
+    {
+      "type": "note",
+      "text": "为便于区分，下文中的TagOp取值使用斜体，以区别于数据及缓存行的取值。",
+      "source_page": 431
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.3 标签一致性",
+      "source_page": 432
+    },
+    {
+      "type": "p",
+      "text": "本节概述标签一致性的特性。",
+      "source_page": 432
+    },
+    {
+      "type": "p",
+      "text": "被缓存的分配标签由硬件保持一致性。一致性机制与数据一致性机制相同。",
+      "source_page": 432
+    },
+    {
+      "type": "p",
+      "text": "适用的标签缓存状态为Invalid、Clean和Dirty。处于Clean或Dirty状态的缓存行为Valid。",
+      "source_page": 432
+    },
+    {
+      "type": "p",
+      "text": "数据缓存状态与标签缓存状态之间的组合约束如下：",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "仅当数据为Valid时，标签才能为Valid。",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "数据为Valid时，标签可以为Invalid。",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "缓存行处于Unique状态时，数据和标签均为Unique。",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "缓存行处于Shared状态时，数据和标签均为Shared。",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "当带有Dirty标签的缓存行被逐出时：",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "数据和标签均必须按Dirty处理。",
+      "indent": 1,
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "标签必须写回内存，或者由Home节点以传递Dirty[_PD]的方式传给另一个缓存。",
+      "indent": 1,
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "当Clean标签从缓存中被逐出时，可以将其发送到其他缓存，也可以直接丢弃而不发送通知。",
+      "source_page": 432
+    },
+    {
+      "type": "bullet",
+      "text": "当Clean标签与Dirty数据一同被逐出时，Clean标签可以随Dirty数据一起传输到PoC下游。",
+      "source_page": 432
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.4 读事务规则",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "读操作可以选择随数据一起获取标签。是否需要随读数据一起返回标签，由请求中的TagOp取值决定。",
+      "source_page": 433
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.4.1 TagOp取值",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "当请求中的TagOp值为Transfer时：",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "要求随数据一起返回标签。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "返回标签的状态必须是所使用请求允许的适当缓存状态。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "待返回的标签数量由返回的数据大小决定。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "当访问要求执行匹配检查时，由请求方将物理标签与随读数据收到的分配标签进行比较。",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "当请求中的TagOp值为Fetch时：",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "要求随数据一起返回标签。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "返回的数据不要求有效。无论标签匹配结果如何，请求方都必须忽略接收到的数据。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "请求中的Size字段必须为64B。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "必须返回一个缓存行对应的全部标签。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "返回标签的状态必须为Clean或Dirty。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "如果返回Dirty标签，则必须保留这些标签（除非对其进行更新），并将其写回内存。",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "当请求中的TagOp值为Invalid时：",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "允许但不要求随数据一起返回标签。",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "如果随数据一起返回标签，则标签必须为Clean。",
+      "source_page": 433
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.4.1.1 将标签从Shared转换为Unique",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "当请求方同时持有处于Shared状态的数据和标签，并且为了更新数据、标签或两者而需要将缓存行转为Unique状态时，预期使用TagOp值为Transfer的MakeReadUnique事务。也允许请求方使用TagOp值为Transfer的ReadUnique。",
+      "source_page": 433
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.4.1.2 已持有数据时获取标签",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "如果请求方持有某个缓存行的缓存副本，其中数据为Valid，但分配标签不是Valid，并且请求方要求执行Tag Match，则请求方必须使用读请求获取所需标签。",
+      "source_page": 433
+    },
+    {
+      "type": "p",
+      "text": "在上述场景中：",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "如果请求方能够保证无论Tag Match结果如何都写入完整的缓存行，则允许使用以下任一种方式：",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "如果目标内存位置为Non-snoopable，则使用TagOp为Fetch的ReadNoSnp。返回的数据不要求有效，并且必须丢弃。必须返回Clean标签。缓存行中的全部标签都必须为Valid。",
+      "indent": 1,
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "如果目标内存位置为Snoopable，则使用TagOp为Fetch的ReadUnique。返回的数据不要求有效，并且必须丢弃。必须返回Clean或Dirty标签。缓存行中的全部标签都必须为Valid。",
+      "indent": 1,
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "如果请求方不能保证无论Tag Match结果如何都写入完整的缓存行：",
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "建议使用：",
+      "indent": 1,
+      "source_page": 433
+    },
+    {
+      "type": "bullet",
+      "text": "TagOp为Transfer的ReadPreferUnique。",
+      "indent": 2,
+      "source_page": 434
+    },
+    {
+      "type": "note",
+      "text": "在Issue G之前，发送ReadPreferUnique时，不允许初始缓存状态为UC、UD和UDP。Issue G放宽了此约束，允许TagOp为Transfer的ReadPreferUnique使用任意初始状态。因此，当请求方已经持有数据的Unique副本时，与下述方式相比，它提供了一种性能更好的MTE标签获取方式：\n• TagOp为Transfer的ReadClean：存在其他非独占读取方时，此方式较为保守，请求方可能始终只能收到Shared Clean数据。\n• TagOp为Transfer的ReadUnique：存在独占访问时不安全。",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "允许使用以下任一种方式：",
+      "indent": 1,
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "TagOp为Transfer的ReadClean。",
+      "indent": 2,
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "TagOp为Transfer的ReadUnique。",
+      "indent": 2,
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "请求方缓存状态转换参见表B4.38。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "响应ReadPreferUnique或ReadClean时，如果Home节点使用侦听过滤器（Snoop Filter）跟踪请求方的缓存状态，则不得根据发给请求方的响应中的状态，降低侦听过滤器中该缓存行的状态。也就是说，侦听过滤器不得将此前跟踪为以下状态的缓存行作如下变更：",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "从Valid改为Invalid。",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "从Unique改为Shared。",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "从Dirty改为Clean。",
+      "source_page": 434
+    },
+    {
+      "type": "note",
+      "text": "在Issue G之前，ReadPreferUnique事务不允许初始缓存行状态为UC、UD或UDP。使用侦听过滤器跟踪缓存状态的Home节点，可以根据响应中的状态设置缓存行状态。",
+      "source_page": 434
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.4.1.3 允许的响应与标签状态",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "必须适当处理随分配标签一同收到的缓存行数据和状态，以免破坏一致性。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "当请求的TagOp值为Transfer时，允许的响应字段取值为：",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "Transfer：表示返回的标签为Clean。",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "Update：表示返回的标签为Dirty。数据响应必须传递Dirty[_PD]。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "当请求的TagOp值为Fetch时，允许的响应字段取值为：",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "Transfer：表示返回的标签为Clean。",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "Update：表示返回的标签为Dirty。数据响应必须传递Dirty[_PD]。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "当请求的TagOp值为Invalid时，允许的响应字段取值为：",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "Invalid：表示返回的标签为Invalid。",
+      "source_page": 434
+    },
+    {
+      "type": "bullet",
+      "text": "Transfer：表示返回的标签为Clean。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "当读数据中的TagOp值为Invalid时，TU必须全为0。Tag不适用，可以取任意值。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "在读事务中，当数据与响应分开发送时，TagOp字段仅适用于Data-only（仅数据）消息。TagOp不适用于Non-data（无数据）响应消息，且必须设置为0。",
+      "source_page": 434
+    },
+    {
+      "type": "p",
+      "text": "标签必须保持的缓存状态应与读请求类型一致：",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Invalid的所有读请求，必须返回Invalid或Clean标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Transfer或Fetch的ReadNoSnp，必须返回Clean标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Transfer的ReadClean、ReadOnce、ReadOnceCleanInvalid和ReadOnceMakeInvalid，必须返回Clean标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Transfer的ReadNotSharedDirty，必须返回Clean或Dirty标签。仅当缓存行状态为Unique时，才允许返回Dirty标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Transfer的ReadShared，必须返回Clean或Dirty标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Transfer或Fetch的ReadUnique，必须返回Clean或Dirty标签。返回的缓存行状态必须为Unique。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Invalid的MakeReadUnique，必须返回Invalid或Clean标签。仅允许在带数据的响应中返回Clean标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "对于TagOp值为Transfer的MakeReadUnique，如果响应包含数据，则必须返回Clean或Dirty标签。",
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "允许在带数据的响应中返回Clean标签。",
+      "indent": 1,
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "仅当响应正在转移更新Dirty数据的责任时，才允许返回Dirty标签，即响应包含[UD_PD]。",
+      "indent": 1,
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "使用Comp_UC或Comp_SC的无数据响应，即使实际上没有发生标签传输，也允许指示正在传输Clean标签。",
+      "indent": 1,
+      "source_page": 435
+    },
+    {
+      "type": "bullet",
+      "text": "返回Dirty标签时，返回的缓存行必须包含传递Dirty的指示[_PD]。",
+      "source_page": 435
+    },
+    {
+      "type": "p",
+      "text": "当目标地址不支持MTE时，响应必须使用值为Invalid的TagOp。",
+      "source_page": 435
+    },
+    {
+      "type": "p",
+      "text": "对于独占访问序列，获取标签时必须避免使用任何会在执行Exclusive Store事务之前使该缓存行其他副本变为Invalid的请求。通常，通过在执行Exclusive Load事务时同时获取标签来满足这一要求。",
+      "source_page": 435
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.4.2 允许的初始MTE标签状态",
+      "source_page": 435
+    },
+    {
+      "type": "p",
+      "text": "表B12.2列出了不同读事务允许的初始数据状态及标签状态，以及相应请求中允许的TagOp值。标签与数据状态的组合必须遵循B12.3“标签一致性”中所述的一致性规则。",
+      "source_page": 435
+    },
+    {
+      "type": "table",
+      "caption": "表B12.2：读事务中允许的初始标签状态与请求TagOp值",
+      "columns": [
+        "请求",
+        "TagOp",
+        "数据状态",
+        "标签状态"
+      ],
+      "rows": [
+        [
+          "ReadNoSnp",
+          "Invalid, Transfer, Fetch",
+          "I",
+          "Invalid"
+        ],
+        [
+          "ReadOnce",
+          "Invalid, Transfer",
+          "I",
+          "Invalid"
+        ],
+        [
+          "ReadOnceMakeInvalid",
+          "Invalid, Transfer",
+          "I",
+          "Invalid"
+        ],
+        [
+          "ReadOnceCleanInvalid",
+          "Invalid, Transfer",
+          "I",
+          "Invalid"
+        ],
+        [
+          "ReadNotSharedDirty",
+          "Invalid, Transfer",
+          "I, UCE",
+          "Invalid"
+        ],
+        [
+          "ReadShared",
+          "Invalid, Transfer",
+          "I, UCE",
+          "Invalid"
+        ],
+        [
+          "ReadClean",
+          "Invalid",
+          "I, UCE",
+          "Invalid"
+        ],
+        [
+          "ReadClean",
+          "Transfer",
+          "I, UCE, UDP",
+          "Invalid"
+        ]
+      ],
+      "footnotes": [],
+      "source_page": 435
+    },
+    {
+      "type": "table",
+      "caption": "表B12.2（续）：读事务中允许的初始标签状态与请求TagOp值",
+      "columns": [
+        "请求",
+        "TagOp",
+        "数据状态",
+        "标签状态"
+      ],
+      "rows": [
+        [
+          "ReadClean",
+          "Transfer",
+          "SC, UC",
+          "Invalid, Clean"
+        ],
+        [
+          "ReadClean",
+          "Transfer",
+          "SD, UD",
+          "Invalid, Clean, Dirty"
+        ],
+        [
+          "ReadPreferUnique",
+          "Invalid",
+          "I, UCE",
+          "Invalid"
+        ],
+        [
+          "ReadPreferUnique",
+          "Invalid",
+          "SC",
+          "Invalid, Clean"
+        ],
+        [
+          "ReadPreferUnique",
+          "Invalid",
+          "SD",
+          "Invalid, Clean, Dirty"
+        ],
+        [
+          "ReadPreferUnique",
+          "Transfer",
+          "I, UCE, UDP",
+          "Invalid"
+        ],
+        [
+          "ReadPreferUnique",
+          "Transfer",
+          "SC, UC",
+          "Invalid, Clean"
+        ],
+        [
+          "ReadPreferUnique",
+          "Transfer",
+          "SD, UD",
+          "Invalid, Clean, Dirty"
+        ],
+        [
+          "ReadUnique",
+          "Invalid, Transfer, Fetch",
+          "I, UCE",
+          "Invalid"
+        ],
+        [
+          "ReadUnique",
+          "Invalid, Transfer, Fetch",
+          "SC, UC",
+          "Invalid, Clean"
+        ],
+        [
+          "ReadUnique",
+          "Invalid, Transfer, Fetch",
+          "SD, UD",
+          "Invalid, Clean, Dirty"
+        ],
+        [
+          "MakeReadUnique",
+          "Invalid",
+          "SC",
+          "Invalid, Clean"
+        ],
+        [
+          "MakeReadUnique",
+          "Invalid",
+          "SD",
+          "Invalid, Clean, Dirty"
+        ],
+        [
+          "MakeReadUnique",
+          "Transfer[a]",
+          "SC",
+          "Clean"
+        ],
+        [
+          "MakeReadUnique",
+          "Transfer[a]",
+          "SD",
+          "Clean, Dirty"
+        ]
+      ],
+      "footnotes": [
+        "a：发出TagOp值为Transfer的MakeReadUnique时，要求请求方同时持有数据与标签的副本。"
+      ],
+      "source_page": 436
+    }
+  ]
+}

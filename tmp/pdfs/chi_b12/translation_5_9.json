@@ -1,0 +1,650 @@
+{
+  "range": [
+    437,
+    444
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.5 写事务（Write transactions）",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "用于支持 MTE 的不同字段分布在写事务的 Request 消息和 Data 消息中。TagOp 字段表示要对 WriteData 消息中的标签执行的操作，Request 消息和 WriteData 消息中都包含该字段。Request 还包含 TagGroupID 字段，用于为需要执行标签匹配（Tag Match）操作的请求所对应的通过/失败响应提供标识符。当 Request 中的 TagOp 字段为 Match 时，Excl 字段必须为零。",
+      "source_page": 437
+    },
+    {
+      "type": "note",
+      "text": "TagGroupID 字段的具体用法取决于实现（IMPLEMENTATION SPECIFIC）。通常，可以使用 TagGroupID 来标识一个响应所对应的异常级别（Exception level）和 TTBR。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "WriteData 消息中的 TagOp 值通常与 Request 消息中的值相同，除非写数据已被侦听取走，或者写操作已被取消。当 WriteData 与写请求中的 TagOp 值不同时，必须根据 WriteData 中的 TagOp 值来决定是否执行标签匹配。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "WriteData 消息还为每个标签包含一个标签更新（Tag Update，TU）位。当 TagOp 为 Update 时，该位适用。",
+      "source_page": 437
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.5.1 允许的 TagOp 值",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "本节针对写请求消息中每一种允许的 TagOp 值，说明 WriteData 中允许采用的 TagOp 值。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "当 Request 中的 TagOp 字段为 Invalid 时，WriteData 中的内存标签相关字段必须设置为 0，且完成方必须忽略这些字段。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "在 Request 的 TagOp 为 Transfer 的 WriteCleanFull 事务中，不允许将写数据中的 TagOp 更改为 Update。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "WriteCleanFull 事务完成后，无论 TagOp 值如何，都允许请求方在本地保留任何 Clean 标签的副本。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "当请求中的 TagOp 字段为 Update 时，WriteData 中的 TagOp 字段可以为：",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "Update：必须将 Dirty 标签缓存起来或写入内存。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "Transfer：标签为 Clean。如果 Dirty 标签已被侦听取走，就可能出现这种情况。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "Invalid：只有在已缓存的副本被无效化，或者写事务被取消时，才可能出现这种情况。",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "当请求中的 TagOp 字段为 Match 时，WriteData 中的 TagOp 字段可以为：",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "Match：必须在完成方执行相应的标签匹配。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "Invalid：只有在写事务被取消时，才可能出现这种情况。",
+      "source_page": 437
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.5.2 TagOp、TU 与标签之间的关系",
+      "source_page": 437
+    },
+    {
+      "type": "p",
+      "text": "本节说明不同写事务中 TagOp、TU 与标签之间的关系：",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "对于所有 TagOp 为 Invalid 的写请求，内存标签相关字段必须为零，且完成方必须忽略这些字段。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteBackFull 和 WriteCleanFull，各 TagOp 值的要求如下：",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：所有 TU 位必须为 1。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：不允许。",
+      "source_page": 437
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteBackPtl，各 TagOp 值的要求如下：",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteNoSnpFull，各 TagOp 值的要求如下：",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：TU 位不适用，且必须为零。允许从请求节点向 Home 节点传输 Clean 标签，也允许从 Home 节点向从属节点传输 Clean 标签。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：所有 TU 位必须为 1。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：TU 位不适用，且必须为零。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteNoSnpDef，各 TagOp 值的要求如下：",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteUniqueFull 和 WriteUniqueFullStash，各 TagOp 值的要求如下：",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：所有 TU 位必须为 1。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：TU 位不适用，且必须为零。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteNoSnpPtl、WriteUniquePtl 和 WriteUniquePtlStash，各 TagOp 值的要求如下：",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：TU 位和 BE 位可以采用任意置 1 组合，包括全部为 1 或全部为 0。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：TU 位不适用，且必须为零。仅对于至少有一个对应 BE 位为 1 的标签，必须执行标签匹配。当所有 BE 位都设置为 0 时，不得执行标签匹配。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteEvictFull 和 WriteEvictOrEvict，各 TagOp 值的要求如下：",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：不允许。",
+      "source_page": 438
+    },
+    {
+      "type": "bullet",
+      "text": "对于 WriteNoSnpZero 和 WriteUniqueZero，仅允许 TagOp 为 Invalid。",
+      "source_page": 438
+    },
+    {
+      "type": "p",
+      "text": "对于 TagOp 为 Match 的写请求，由 Size 确定的回绕边界内的标签可以取任意值；Size 范围之外的标签不适用，也可以取任意值。",
+      "source_page": 438
+    },
+    {
+      "type": "p",
+      "text": "在 WriteDataCancel 写数据响应中，无论写请求中的 TagOp 值如何，MTE 字段均不适用，且必须为零。",
+      "source_page": 438
+    },
+    {
+      "type": "p",
+      "text": "在 TagOp 为 Invalid 的写数据中，所有 TU 位和所有 Tag 位都必须为零。",
+      "source_page": 438
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.6 无数据事务（Dataless transactions）",
+      "source_page": 439
+    },
+    {
+      "type": "p",
+      "text": "MakeUnique 是唯一支持使用 TagOp 字段的无数据事务。在所有其他无数据事务中，TagOp 字段均不适用，且必须全部为零。",
+      "source_page": 439
+    },
+    {
+      "type": "p",
+      "text": "MakeUnique 请求中的 TagOp 值只能为 Invalid 或 Update。请求的 TagOp 值为 Update，表示请求方在更新数据的同时也更新标签。在响应 MakeUnique 时，只有请求的 TagOp 值为 Update，或者 Home 节点知道被侦听方没有 Dirty 标签，才允许 Home 节点使用 SnpMakeInvalid。",
+      "source_page": 439
+    },
+    {
+      "type": "p",
+      "text": "MakeUnique 响应中唯一允许的 TagOp 值为 Invalid。",
+      "source_page": 439
+    },
+    {
+      "type": "p",
+      "text": "缓存维护操作（Cache Maintenance Operations）必须同时作用于数据及其对应的内存标签。对于允许丢弃 Dirty 数据而不将其写入内存的 MakeInvalid，仍然必须将 Dirty 标签写入内存。",
+      "source_page": 439
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.7 原子事务（Atomic transactions）",
+      "source_page": 440
+    },
+    {
+      "type": "p",
+      "text": "TagOp 适用于原子事务。该字段允许的值为 Invalid 和 Match。",
+      "source_page": 440
+    },
+    {
+      "type": "p",
+      "text": "要进行匹配的物理标签（Physical Tags）在写数据中提供，并对应于 AtomicLoad、AtomicStore 和 AtomicSwap 中的有效数据字节。在这些原子事务中，由于最大数据大小为 8 字节，只有一组标签位适用。该集合中其余的标签位不适用，且必须为零。",
+      "source_page": 440
+    },
+    {
+      "type": "p",
+      "text": "在数据大小不超过 16 字节的 AtomicCompare 中，有效数据仍然只对应一组标签位。",
+      "source_page": 440
+    },
+    {
+      "type": "p",
+      "text": "在数据大小为 32 字节的 AtomicCompare 中，compare 数据和 swap 数据各自仅为 16 字节。当 TagOp 设置为 Match 时，只需要对一组物理标签位进行匹配。必须复制物理标签，使其同时覆盖 Compare 数据和 Swap 数据。允许完成方使用任意一组物理标签来执行标签匹配。",
+      "source_page": 440
+    },
+    {
+      "type": "p",
+      "text": "非存储型原子事务（Non-store Atomic transactions）的 CompData 响应中，允许的 TagOp 值为 Invalid 和 Transfer。",
+      "source_page": 440
+    },
+    {
+      "type": "p",
+      "text": "对于 TagOp 为 Invalid 的原子事务，其写数据中的所有 TU 位和所有 Tag 位都必须设置为 0。",
+      "source_page": 440
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.8 Stash 事务",
+      "source_page": 441
+    },
+    {
+      "type": "p",
+      "text": "在 StashOnce 和 StashOnceSep 事务中，允许 TagOp 值为 Invalid 和 Transfer。",
+      "source_page": 441
+    },
+    {
+      "type": "p",
+      "text": "有关 Stash 侦听与内存标签之间的交互，请参阅 B12.9.3“Stash 侦听”。",
+      "source_page": 441
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "title": "B12.9 侦听请求（Snoop requests）",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "本节说明 Home 节点如何按规则使用以下侦听类型：",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "B12.9.1 非转发侦听",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "B12.9.2 转发侦听",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "B12.9.3 Stash 侦听",
+      "source_page": 442
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.9.1 非转发侦听（Non-forwarding snoops）",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "当请求需要标签时，Home 节点可以使用任何适用的非转发侦听。如果侦听响应向 Home 节点返回了数据但未返回标签，则 Home 节点必须先获取标签，然后才能向请求方返回数据响应。",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "Home 节点在响应 WriteUniqueFull、WriteUniqueFullStash、MakeUnique 和 MakeInvalid 时，不得使用 SnpMakeInvalid 侦听请求，除非满足以下任一条件：",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "事务为 TagOp 值为 Update 的 WriteUniqueFull、WriteUniqueFullStash 或 MakeUnique。",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "Home 节点能够确定被侦听方未持有 Dirty 标签。",
+      "source_page": 442
+    },
+    {
+      "type": "note",
+      "text": "请求方发送 TagOp 为 Fetch 的 ReadUnique，表示它将更新整个缓存行，但不更新标签。Home 节点不得使用 SnpMakeInvalid 来响应该请求，以避免丢失被侦听方处已修改的标签。\n\nHome 节点能够确定被侦听方未持有 Dirty 标签的一种情况是：最初向该被侦听方提供缓存行时，该行处于 SC 状态且标签为 Clean。当 Home 节点将被侦听方跟踪为 Unique 状态时，不得使用 SnpMakeInvalid，因为被侦听方可能已在本地以不通知 Home 节点的方式将标签变为 Dirty。",
+      "source_page": 442
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.9.2 转发侦听（Forwarding snoops）",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "只有请求不需要获取标签时，才允许 Home 节点使用转发侦听。即使被侦听方持有 Valid 标签，也允许发送转发侦听。如果被侦听方在响应转发侦听时持有 Dirty 标签，则不得将 Dirty 标签转发给请求方，也不得将标签与数据的 Dirty 属性或 Unique 属性分离。",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "始终允许被侦听方向请求方转发 Clean 标签。",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "当标签为 Clean 时，被侦听方必须遵循与非 MTE 情形相同的数据传输规则。",
+      "source_page": 442
+    },
+    {
+      "type": "p",
+      "text": "当标签为 Dirty 时，被侦听方必须遵循以下规则：",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "对于会使缓存行无效化的转发侦听 SnpUniqueFwd，以及按无效化侦听处理的 SnpPreferUniqueFwd：",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "不得向请求方转发数据。",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "必须将数据和标签返回给 Home 节点。",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "对于不会使缓存行无效化的转发侦听 SnpCleanFwd、SnpSharedFwd、SnpNotSharedDirtyFwd，以及按非无效化侦听处理的 SnpPreferUniqueFwd：",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "必须将该侦听按 SnpCleanFwd 处理。",
+      "source_page": 442
+    },
+    {
+      "type": "note",
+      "text": "与 SnpNotSharedDirtyFwd 相同。",
+      "source_page": 442
+    },
+    {
+      "type": "bullet",
+      "text": "对于 SnpOnceFwd：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "允许将 Dirty 标签返回给 Home 节点。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "如果未向 Home 节点传输数据，则必须将 Dirty 标签保留在被侦听方处。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "如果缓存行正被无效化，或者 Dirty 数据正被写回 Home 节点，则必须将 Dirty 标签写回 Home 节点。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "允许被侦听方将任意转发侦听转换为其对应的非转发侦听，但不要求这样做。",
+      "source_page": 443
+    },
+    {
+      "type": "note",
+      "text": "这一特性与非 MTE 情形中的特性类似。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "更多详细信息，请参阅 B12.9.4“侦听响应中允许的 TagOp 值”。",
+      "source_page": 443
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.9.3 Stash 侦听",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "由于 SNP 通道不包含 TagOp 字段，Home 节点无法将请求方的 TagOp 意图转发给 Stash 目标。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "侦听响应中允许的 TagOp 值如下：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "响应 SnpStash* 时，为 Invalid。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "响应 SnpUniqueStash 时，为 Invalid、Transfer 或 Update。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "响应 SnpMakeInvalidStash 时，为 Invalid。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "更多详细信息，请参阅 B12.9.4“侦听响应中允许的 TagOp 值”。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "侦听响应中的 Data Pull 请求隐含一个读请求；确定该读请求中的 TagOp 值时，要求如下：",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "响应 SnpStash* 时：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "如果原始请求中的 TagOp 值为 Transfer，建议在响应 DataPull 请求时返回 Clean 标签。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "如果原始请求中的 TagOp 值为 Invalid，且标签可用，建议在响应 DataPull 请求时返回 Clean 标签。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "响应 SnpUniqueStash 时：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "如果返回数据时标签可用，则无论侦听响应中是否包含数据，也无论缓存状态为何，均建议在响应 DataPull 请求时返回 Clean 标签。",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "响应 SnpMakeInvalidStash 时：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "如果 Clean 标签可用，建议在响应 DataPull 请求时返回这些标签。",
+      "source_page": 443
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "title": "B12.9.4 侦听响应中允许的 TagOp 值",
+      "source_page": 443
+    },
+    {
+      "type": "p",
+      "text": "侦听响应中允许的标签字段值如下：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "对于 SnpResp，TagOp 字段不适用，且必须为零。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "对于 SnpRespDataPtl，允许的 TagOp 值为 Invalid。TU 字段和 Tag 字段都必须设置为 0，且接收方必须忽略这些字段。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "text": "对于 SnpRespData：",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Invalid：所有 Tag 字段必须为零。",
+      "source_page": 443
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。",
+      "source_page": 444
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Update：所有 TU 位必须为 1。数据状态必须包含 Pass Dirty。",
+      "source_page": 444
+    },
+    {
+      "type": "bullet",
+      "indent": 1,
+      "text": "Match：不允许。",
+      "source_page": 444
+    }
+  ]
+}
