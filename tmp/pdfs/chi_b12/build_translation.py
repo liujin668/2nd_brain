@@ -64,9 +64,9 @@ def markup(value):
     text = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', text)
     # Preserve literal wildcard opcodes such as Atomic* and SnpStash*.
     # TagOp enumeration values are italicized; cache states stay roman.
-    text = re.sub(r'(?<![A-Za-z])(Transfer|Update|Fetch)(?![A-Za-z])', r'<font name="Helvetica-Oblique">\1</font>', text)
+    text = re.sub(r'(?<!Tag )(?<![A-Za-z])(Transfer|Update|Fetch)(?![A-Za-z])', r'<font name="Helvetica-Oblique">\1</font>', text)
     text = re.sub(r'(?<!Tag )(?<![A-Za-z])(Match)(?![A-Za-z])', r'<font name="Helvetica-Oblique">\1</font>', text)
-    text = re.sub(r'(TagOp[^。；，：:\n<>]{0,18}?)(Invalid)', r'\1<font name="Helvetica-Oblique">\2</font>', text)
+    text = re.sub(r'(TagOp\s*(?:字段\s*)?(?:的\s*)?(?:(?:取值|值)\s*)?(?:可以|只能|仅允许)?\s*(?:为|是)?\s*)(Invalid)', r'\1<font name="Helvetica-Oblique">\2</font>', text)
     text = re.sub(r'^(Invalid)(?=[：:])', r'<font name="Helvetica-Oblique">\1</font>', text)
     text = re.sub(r'(值为\s*)(Invalid)(\s*的\s*TagOp)', r'\1<font name="Helvetica-Oblique">\2</font>\3', text)
     return text.replace('\n', '<br/>')
@@ -154,7 +154,8 @@ for i, block in enumerate(blocks):
     kind = block['type']
     source = block.get('source_page')
     if source != last_source and source is not None:
-        story.append(para(f'原文第 {source} 页', 'source'))
+        if kind != 'table':
+            story.append(para(f'原文第 {source} 页', 'source'))
         last_source = source
     counts[kind] += 1
     if kind == 'heading':
@@ -183,9 +184,10 @@ for i, block in enumerate(blocks):
         columns = block['columns']
         rows = block['rows']
         assert all(len(row) == len(columns) for row in rows), caption
-        if caption:
-            story.append(para(caption, 'caption'))
-        data = [[para(cell, 'th') for cell in columns]]
+        table_caption = f'{caption}  · 原文第 {source} 页'
+        header = [Paragraph('<font name="Helvetica-Oblique">Invalid</font>', STYLES['th'])
+                  if cell == 'Invalid' else para(cell, 'th') for cell in columns]
+        data = [[para(table_caption, 'caption')] + ['']*(len(columns)-1), header]
         for row in rows:
             rendered = []
             for j, cell in enumerate(row):
@@ -194,16 +196,19 @@ for i, block in enumerate(blocks):
                     value = value.replace('Invalid', '<font name="Helvetica-Oblique">Invalid</font>')
                 rendered.append(Paragraph(value, STYLES['cell']))
             data.append(rendered)
-        table = Table(data, colWidths=table_widths(columns, rows), repeatRows=1,
+        table = Table(data, colWidths=table_widths(columns, rows), repeatRows=2,
                       hAlign='LEFT', splitByRow=1, spaceAfter=7)
         table.setStyle(TableStyle([
-            ('BACKGROUND',(0,0),(-1,0),ACCENT),
-            ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,PALE]),
+            ('SPAN',(0,0),(-1,0)),
+            ('BACKGROUND',(0,0),(-1,0),colors.white),
+            ('BACKGROUND',(0,1),(-1,1),ACCENT),
+            ('ROWBACKGROUNDS',(0,2),(-1,-1),[colors.white,PALE]),
             ('VALIGN',(0,0),(-1,-1),'TOP'),
-            ('LINEBELOW',(0,0),(-1,0),.7,ACCENT),
-            ('LINEBELOW',(0,1),(-1,-1),.3,RULE),
+            ('LINEBELOW',(0,1),(-1,1),.7,ACCENT),
+            ('LINEBELOW',(0,2),(-1,-1),.3,RULE),
             ('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6),
             ('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),
+            ('LEFTPADDING',(0,0),(-1,0),0),
         ]))
         story.append(table)
         for footnote in block.get('footnotes',[]):

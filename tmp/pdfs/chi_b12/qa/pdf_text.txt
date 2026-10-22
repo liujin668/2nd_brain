@@ -87,7 +87,7 @@ Tag Operation（标签操作）。指示对相应 DAT 通道中的标签执行�
  适用于 REQ、DAT 和 RSP 通道。
  大小为 2 位。
  表 B13.31 给出了取值编码。
-表 B12.1：TagOp 编码与标签操作
+表 B12.1：TagOp 编码与标签操作 · 原文第 431 页
 TagOp[1:0]
 标签操作
 0b00
@@ -222,7 +222,7 @@ Invalid 的请求。通常，通过在执行 Exclusive Load 事务时同时获�
 B12.4.2 允许的初始 MTE 标签状态
 表 B12.2 列出了不同读事务允许的初始数据状态及标签状态，以及相应请求中允许的 TagOp 值。标签与数据状态的
 组合必须遵循 B12.3“标签一致性”中所述的一致性规则。
-表 B12.2：读事务中允许的初始标签状态与请求 TagOp 值
+表 B12.2：读事务中允许的初始标签状态与请求 TagOp 值 · 原文第 435 页
 请求
 TagOp
 数据状态
@@ -259,13 +259,7 @@ ReadClean
 Transfer
 I, UCE, UDP
 Invalid
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 7 页
-原文第 436 页
-表 B12.2（续）：读事务中允许的初始标签状态与请求 TagOp 值
+表 B12.2（续）：读事务中允许的初始标签状态与请求 TagOp 值 · 原文第 436 页
 请求
 TagOp
 数据状态
@@ -294,6 +288,16 @@ ReadPreferUnique
 Transfer
 I, UCE, UDP
 Invalid
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 7 页
+表 B12.2（续）：读事务中允许的初始标签状态与请求 TagOp 值 · 原文第 436 页
+请求
+TagOp
+数据状态
+标签状态
 ReadPreferUnique
 Transfer
 SC, UC
@@ -346,17 +350,17 @@ B12.5.1 允许的 TagOp 值
 本节针对写请求消息中每一种允许的 TagOp 值，说明 WriteData 中允许采用的 TagOp 值。
 当 Request 中的 TagOp 字段为 Invalid 时，WriteData 中的内存标签相关字段必须设置为 0，且完成方必须忽略这
 些字段。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 8 页
 在 Request 的 TagOp 为 Transfer 的 WriteCleanFull 事务中，不允许将写数据中的 TagOp 更改为 Update。
 WriteCleanFull 事务完成后，无论 TagOp 值如何，都允许请求方在本地保留任何 Clean 标签的副本。
 当请求中的 TagOp 字段为 Update 时，WriteData 中的 TagOp 字段可以为：
  Update：必须将 Dirty 标签缓存起来或写入内存。
  Transfer：标签为 Clean。如果 Dirty 标签已被侦听取走，就可能出现这种情况。
  Invalid：只有在已缓存的副本被无效化，或者写事务被取消时，才可能出现这种情况。
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 8 页
 当请求中的 TagOp 字段为 Match 时，WriteData 中的 TagOp 字段可以为：
  Match：必须在完成方执行相应的标签匹配。
  Invalid：只有在写事务被取消时，才可能出现这种情况。
@@ -385,11 +389,6 @@ B12.5.2 TagOp、TU 与标签之间的关系
 – Transfer：不允许。
 – Update：所有 TU 位必须为 1。
 – Match：TU 位不适用，且必须为零。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 9 页
  对于 WriteNoSnpPtl、WriteUniquePtl 和 WriteUniquePtlStash，各 TagOp 值的要求如下：
 – Transfer：不允许。
 – Update：TU 位和 BE 位可以采用任意置 1 组合，包括全部为 1 或全部为 0。
@@ -398,6 +397,11 @@ BE 位都设置为 0 时，不得执行标签匹配。
  对于 WriteEvictFull 和 WriteEvictOrEvict，各 TagOp 值的要求如下：
 – Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。
 – Update：不允许。
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 9 页
 – Match：不允许。
  对于 WriteNoSnpZero 和 WriteUniqueZero，仅允许 TagOp 为 Invalid。
 对于 TagOp 为 Match 的写请求，由 Size 确定的回绕边界内的标签可以取任意值；Size 范围之外的标签不适用，也
@@ -426,16 +430,16 @@ Match 时，只需要对一组物理标签位进行匹配。必须复制物理�
 许完成方使用任意一组物理标签来执行标签匹配。
 非存储型原子事务（Non-store Atomic transactions）的 CompData 响应中，允许的 TagOp 值为 Invalid 和 
 Transfer。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 10 页
 对于 TagOp 为 Invalid 的原子事务，其写数据中的所有 TU 位和所有 Tag 位都必须设置为 0。
 原文第 441 页
 B12.8 Stash 事务
 在 StashOnce 和 StashOnceSep 事务中，允许 TagOp 值为 Invalid 和 Transfer。
 有关 Stash 侦听与内存标签之间的交互，请参阅 B12.9.3“Stash 侦听”。
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 10 页
 原文第 442 页
 B12.9 侦听请求（Snoop requests）
 本节说明 Home 节点如何按规则使用以下侦听类型：
@@ -464,11 +468,6 @@ Dirty 属性或 Unique 属性分离。
  对于会使缓存行无效化的转发侦听 SnpUniqueFwd，以及按无效化侦听处理的 SnpPreferUniqueFwd：
 – 不得向请求方转发数据。
 – 必须将数据和标签返回给 Home 节点。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 11 页
  对于不会使缓存行无效化的转发侦听 SnpCleanFwd、SnpSharedFwd、SnpNotSharedDirtyFwd，以及按非无
 效化侦听处理的 SnpPreferUniqueFwd：
 – 必须将该侦听按 SnpCleanFwd 处理。
@@ -476,6 +475,11 @@ B12  内存标签 | 中文译文
 原文第 443 页
  对于 SnpOnceFwd：
  允许将 Dirty 标签返回给 Home 节点。
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 11 页
  如果未向 Home 节点传输数据，则必须将 Dirty 标签保留在被侦听方处。
  如果缓存行正被无效化，或者 Dirty 数据正被写回 Home 节点，则必须将 Dirty 标签写回 Home 节点。
 允许被侦听方将任意转发侦听转换为其对应的非转发侦听，但不要求这样做。
@@ -504,15 +508,15 @@ B12.9.4 侦听响应中允许的 TagOp 值
 些字段。
  对于 SnpRespData：
 – Invalid：所有 Tag 字段必须为零。
+原文第 444 页
+– Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。
+– Update：所有 TU 位必须为 1。数据状态必须包含 Pass Dirty。
+– Match：不允许。
 
 AMBA CHI · ARM IHI 0050 Issue H
 B12  内存标签 | 中文译文
 非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
 译文第 12 页
-原文第 444 页
-– Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。
-– Update：所有 TU 位必须为 1。数据状态必须包含 Pass Dirty。
-– Match：不允许。
 原文第 445 页
 B12.10 Home 节点到从属节点的事务
 对于发往从属节点的 Read 请求：
@@ -543,15 +547,15 @@ B12.11.1 标签匹配
 请求中的 TagOp 值为 Match 的 Write 和 Atomic 事务，必须返回标签匹配操作的结果。结果通过 TagMatch 消息
 返回。无论标签匹配结果如何，事务都必须正常继续进行。即使 WriteData 被取消，或者没有执行标签匹配，也必
 须发送 TagMatch 响应。
+注：使用单独的 TagMatch 消息，会增加 Write 和 Atomic 事务的复杂度并引入额外消息，但其优点是提供了足够精确的
+响应机制。使用单独的响应不会延迟 Comp 响应的发送。
+TagMatch 消息具有以下特征：
+ 由执行标签匹配操作的 Home 节点或从属节点发送 TagMatch 响应。
 
 AMBA CHI · ARM IHI 0050 Issue H
 B12  内存标签 | 中文译文
 非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
 译文第 13 页
-注：使用单独的 TagMatch 消息，会增加 Write 和 Atomic 事务的复杂度并引入额外消息，但其优点是提供了足够精确的
-响应机制。使用单独的响应不会延迟 Comp 响应的发送。
-TagMatch 消息具有以下特征：
- 由执行标签匹配操作的 Home 节点或从属节点发送 TagMatch 响应。
  消息中的 TgtID 值从以下字段复制：
 – 如果完成方是 Home 节点，则从请求中的 SrcID 复制。
 – 如果完成方是从属节点，则从请求中的 ReturnNID 复制。ReturnNID 可以指向请求方，也可以指向 Home 节
@@ -582,23 +586,18 @@ B12.11.3 不支持 MTE
 当收到 TagOp 为 Match 的 Write 请求，而完成方对于请求中的地址不支持 MTE 时，仍然要求完成方发送 
 TagMatch 响应。Resp 字段值必须指示标签匹配失败。允许完成方在发送 TagMatch 响应之前等待写数据，但不要
 求这样做。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 14 页
 原文第 448 页
 B12.12 请求及允许的标签操作
 表 B16.24 汇总了不同请求中允许的 TagOp 字段值。所使用的符号含义如下：
 译注：原文此处引用表 B16.24，紧接的本章汇总表编号为 B12.3。此处保留原文引用。
 Y：是，允许。
--：不允许。
 
 AMBA CHI · ARM IHI 0050 Issue H
 B12  内存标签 | 中文译文
 非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 15 页
-表 B12.3：各请求类型允许的 TagOp 值
+译文第 14 页
+-：不允许。
+表 B12.3：各请求类型允许的 TagOp 值 · 原文第 448 页
 请求
 Invalid
 Transfer
@@ -761,13 +760,7 @@ Y
 Y
 Y
 -
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 16 页
-原文第 449 页
-表 B12.3：各请求类型允许的 TagOp 值（续）
+表 B12.3：各请求类型允许的 TagOp 值（续） · 原文第 449 页
 请求
 Invalid
 Transfer
@@ -786,6 +779,18 @@ Y
 Y
 Y
 -
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 15 页
+表 B12.3：各请求类型允许的 TagOp 值（续） · 原文第 449 页
+请求
+Invalid
+Transfer
+Update
+Match
+Fetch
 WriteUniqueFullStash
 Y
 -
@@ -914,11 +919,6 @@ Y
 -
 ReqLCrdReturn、DatLCrdReturn 和 RspLCrdReturn 中的 TagOp 字段不适用，可以取任意值。
 DatLCrdReturn 中的 Tag 和 TU 字段不适用，可以取任意值。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 17 页
 原文第 450 页
 B12.13 TagOp 字段使用汇总
 以下内容汇总了不同通道的消息中 TagOp 字段的使用情况：
@@ -927,6 +927,11 @@ REQ 通道消息：
 – TagOp 字段可以为 Invalid、Transfer 或 Fetch。
 – 仅在 ReadUnique、ReadNoSnp 和 ReadNoSnpSep 事务中允许使用 TagOp Fetch。
 – TagOp 字段的 Transfer 值指示是否必须随读数据一起返回分配标签。
+
+AMBA CHI · ARM IHI 0050 Issue H
+B12  内存标签 | 中文译文
+非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
+译文第 16 页
 – TagOp 字段的 Fetch 值指示仅要求返回有效标签。不要求返回的数据有效。
 – 对于所有其他 REQ 通道消息，TagOp 字段不适用，并且必须为零。
 译注：本段“其他 REQ 通道消息”的概括性表述在原文中重复出现，与下列具体请求规则及 B12.12 中 ReqLCrdReturn
@@ -954,11 +959,6 @@ DAT 通道消息：
  对于侦听数据，TagOp 字段指示在侦听响应中发送的分配标签是 Invalid、Clean 还是 Dirty。
  对于写数据，TagOp 字段指示写数据中发送的分配标签是 Invalid、Clean、Dirty，还是需要进行匹配检查。
 TagOp 值必须与请求消息中的值相同，除非侦听已使标签状态降级，或者写操作已被取消。
-
-AMBA CHI · ARM IHI 0050 Issue H
-B12  内存标签 | 中文译文
-非官方译文 · 原文页码见正文 · 原文 © Arm Limited or its affiliates
-译文第 18 页
 原文第 451 页
 RSP 通道消息：
  对于 Comp 响应，TagOp 字段仅在响应 MakeReadUnique 事务时使用，用于指示是否将 Dirty 标签的责任转移
