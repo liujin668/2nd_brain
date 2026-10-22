@@ -489,19 +489,19 @@
     },
     {
       "type": "bullet",
-      "indent": 1,
+      "indent": 0,
       "text": "允许将 Dirty 标签返回给 Home 节点。",
       "source_page": 443
     },
     {
       "type": "bullet",
-      "indent": 1,
+      "indent": 0,
       "text": "如果未向 Home 节点传输数据，则必须将 Dirty 标签保留在被侦听方处。",
       "source_page": 443
     },
     {
       "type": "bullet",
-      "indent": 1,
+      "indent": 0,
       "text": "如果缓存行正被无效化，或者 Dirty 数据正被写回 Home 节点，则必须将 Dirty 标签写回 Home 节点。",
       "source_page": 443
     },

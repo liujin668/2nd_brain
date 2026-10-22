@@ -1,0 +1,772 @@
+B12 内存标签（Memory Tagging）
+本章介绍内存标签机制，包含以下各节：
+B12.1 引言
+B12.2 消息扩展
+B12.3 标签一致性
+B12.4 读事务规则
+B12.5 写事务
+B12.6 无数据事务
+B12.7 原子事务
+B12.8 Stash事务
+B12.9 侦听请求
+B12.10 Home节点到从属节点的事务
+B12.11 错误响应
+B12.12 请求及允许的标签操作
+B12.13 TagOp字段使用汇总
+B12.1 引言
+内存标签扩展（Memory Tagging Extension，MTE）是一种用于检查内存中所存数据是否被正确使用的机制。当某个内存位置被分配用于特定用途时，也可以为其指定一个内存标签。该内存标签与对应数据一同保存在内存中，称为分配标签（Allocation Tag）。以后访问该内存位置时，请求方同时使用该位置的地址，以及请求方认为与该位置关联的标签值。此标签称为物理地址标签（Physical Address Tag）或物理标签（Physical Tag）。
+对于启用了标签检查的任何访问，都会将物理标签与分配标签进行比较。访问始终正常进行，而标签检查的结果决定是否报告错误情况。
+MTE确保内存访问符合其预期用途，而不是错误或恶意访问。MTE可在运行时识别许多常见的程序内存错误，例如缓冲区溢出和释放后使用。
+内存中每个按16字节对齐的16字节数据块，都关联一个4位的内存标签。
+支持以下行为：
+仅允许在面向Normal WriteBack存储器的请求中使用内存标签。
+读事务在事务请求中包含一项指示，用于确定是否必须随数据一起返回分配标签值。
+由请求方执行返回的物理标签与分配标签之间的检查。
+译注：上一句原文为“Checking of the returned Physical Tag against the Allocation Tag is performed by the Requester.”，其中“returned Physical Tag”与前句所述返回Allocation Tag存在表述不一致；此处保留原文含义。B12.4.1明确说明，请求方将Physical Tag与随读数据收到的Allocation Tag进行比较。
+如果缓存中保存了数据值，但未保存分配标签值，则必须执行同时返回数据和标签的读事务。返回的数据不要求有效。
+需要获取标签的读请求不得使用Forwarding snoop（转发侦听）。
+请求分配标签的StashOnce事务。预期分配标签随数据的stash操作一起被存入。
+随写数据一起提供物理标签、且该物理标签必须与分配标签进行比较的写事务。
+由完成方（Completer）执行物理标签与分配标签之间的检查。如果不匹配，则要求发出失败通知。
+将分配标签更新为新值的写事务。
+这些写事务通常同时更新数据。不过，允许令BE=0，从而仅更新标签。
+将Dirty或Clean缓存行传递到下游缓存或内存控制器、且既不更新也不检查标签的写事务。这些写事务始终包含数据，并提供一项指示，说明是否也随数据传递分配标签值。如果标签为Clean，则可以选择是否在写事务中提供这些标签。
+返回数据的侦听事务也可以返回关联的分配标签。如果标签为Dirty，则必须返回。如果标签为Clean，则可以选择是否返回。
+缓存维护操作（Cache Maintenance Operations）必须同时作用于数据及其对应的内存标签。
+B12.2 消息扩展
+通过对CHI消息定义进行以下扩展来支持内存标签：
+Tag
+提供一组4位标签，每个标签关联一个按16字节对齐的16字节数据块。
+仅适用于DAT通道。
+大小为Data_Width/32位。
+更多信息参见Tag。
+TU
+Tag Update（标签更新）。指示必须更新哪些分配标签。
+仅适用于DAT通道。
+大小为Data_Width/128位。
+更多信息参见TU。
+TagOp
+Tag Operation（标签操作）。指示对相应DAT通道中的标签执行何种操作。
+适用于REQ、DAT和RSP通道。
+大小为2位。
+表B13.31给出了取值编码。
+表B12.1：TagOp编码与标签操作
+TagOp[1:0]
+标签操作
+0b00
+Invalid
+0b01
+Transfer
+0b10
+Update
+0b11
+Match或Fetch
+更多信息参见TagOp。
+注：为便于区分，下文中的TagOp取值使用斜体，以区别于数据及缓存行的取值。
+B12.3 标签一致性
+本节概述标签一致性的特性。
+被缓存的分配标签由硬件保持一致性。一致性机制与数据一致性机制相同。
+适用的标签缓存状态为Invalid、Clean和Dirty。处于Clean或Dirty状态的缓存行为Valid。
+数据缓存状态与标签缓存状态之间的组合约束如下：
+仅当数据为Valid时，标签才能为Valid。
+数据为Valid时，标签可以为Invalid。
+缓存行处于Unique状态时，数据和标签均为Unique。
+缓存行处于Shared状态时，数据和标签均为Shared。
+当带有Dirty标签的缓存行被逐出时：
+数据和标签均必须按Dirty处理。
+标签必须写回内存，或者由Home节点以传递Dirty[_PD]的方式传给另一个缓存。
+当Clean标签从缓存中被逐出时，可以将其发送到其他缓存，也可以直接丢弃而不发送通知。
+当Clean标签与Dirty数据一同被逐出时，Clean标签可以随Dirty数据一起传输到PoC下游。
+B12.4 读事务规则
+读操作可以选择随数据一起获取标签。是否需要随读数据一起返回标签，由请求中的TagOp取值决定。
+B12.4.1 TagOp取值
+当请求中的TagOp值为Transfer时：
+要求随数据一起返回标签。
+返回标签的状态必须是所使用请求允许的适当缓存状态。
+待返回的标签数量由返回的数据大小决定。
+当访问要求执行匹配检查时，由请求方将物理标签与随读数据收到的分配标签进行比较。
+当请求中的TagOp值为Fetch时：
+要求随数据一起返回标签。
+返回的数据不要求有效。无论标签匹配结果如何，请求方都必须忽略接收到的数据。
+请求中的Size字段必须为64B。
+必须返回一个缓存行对应的全部标签。
+返回标签的状态必须为Clean或Dirty。
+如果返回Dirty标签，则必须保留这些标签（除非对其进行更新），并将其写回内存。
+当请求中的TagOp值为Invalid时：
+允许但不要求随数据一起返回标签。
+如果随数据一起返回标签，则标签必须为Clean。
+B12.4.1.1 将标签从Shared转换为Unique
+当请求方同时持有处于Shared状态的数据和标签，并且为了更新数据、标签或两者而需要将缓存行转为Unique状态时，预期使用TagOp值为Transfer的MakeReadUnique事务。也允许请求方使用TagOp值为Transfer的ReadUnique。
+B12.4.1.2 已持有数据时获取标签
+如果请求方持有某个缓存行的缓存副本，其中数据为Valid，但分配标签不是Valid，并且请求方要求执行Tag Match，则请求方必须使用读请求获取所需标签。
+在上述场景中：
+如果请求方能够保证无论Tag Match结果如何都写入完整的缓存行，则允许使用以下任一种方式：
+如果目标内存位置为Non-snoopable，则使用TagOp为Fetch的ReadNoSnp。返回的数据不要求有效，并且必须丢弃。必须返回Clean标签。缓存行中的全部标签都必须为Valid。
+如果目标内存位置为Snoopable，则使用TagOp为Fetch的ReadUnique。返回的数据不要求有效，并且必须丢弃。必须返回Clean或Dirty标签。缓存行中的全部标签都必须为Valid。
+如果请求方不能保证无论Tag Match结果如何都写入完整的缓存行：
+建议使用：
+TagOp为Transfer的ReadPreferUnique。
+注：在Issue G之前，发送ReadPreferUnique时，不允许初始缓存状态为UC、UD和UDP。Issue G放宽了此约束，允许TagOp为Transfer的ReadPreferUnique使用任意初始状态。因此，当请求方已经持有数据的Unique副本时，与下述方式相比，它提供了一种性能更好的MTE标签获取方式：
+• TagOp为Transfer的ReadClean：存在其他非独占读取方时，此方式较为保守，请求方可能始终只能收到Shared Clean数据。
+• TagOp为Transfer的ReadUnique：存在独占访问时不安全。
+允许使用以下任一种方式：
+TagOp为Transfer的ReadClean。
+TagOp为Transfer的ReadUnique。
+请求方缓存状态转换参见表B4.38。
+响应ReadPreferUnique或ReadClean时，如果Home节点使用侦听过滤器（Snoop Filter）跟踪请求方的缓存状态，则不得根据发给请求方的响应中的状态，降低侦听过滤器中该缓存行的状态。也就是说，侦听过滤器不得将此前跟踪为以下状态的缓存行作如下变更：
+从Valid改为Invalid。
+从Unique改为Shared。
+从Dirty改为Clean。
+注：在Issue G之前，ReadPreferUnique事务不允许初始缓存行状态为UC、UD或UDP。使用侦听过滤器跟踪缓存状态的Home节点，可以根据响应中的状态设置缓存行状态。
+B12.4.1.3 允许的响应与标签状态
+必须适当处理随分配标签一同收到的缓存行数据和状态，以免破坏一致性。
+当请求的TagOp值为Transfer时，允许的响应字段取值为：
+Transfer：表示返回的标签为Clean。
+Update：表示返回的标签为Dirty。数据响应必须传递Dirty[_PD]。
+当请求的TagOp值为Fetch时，允许的响应字段取值为：
+Transfer：表示返回的标签为Clean。
+Update：表示返回的标签为Dirty。数据响应必须传递Dirty[_PD]。
+当请求的TagOp值为Invalid时，允许的响应字段取值为：
+Invalid：表示返回的标签为Invalid。
+Transfer：表示返回的标签为Clean。
+当读数据中的TagOp值为Invalid时，TU必须全为0。Tag不适用，可以取任意值。
+在读事务中，当数据与响应分开发送时，TagOp字段仅适用于Data-only（仅数据）消息。TagOp不适用于Non-data（无数据）响应消息，且必须设置为0。
+标签必须保持的缓存状态应与读请求类型一致：
+对于TagOp值为Invalid的所有读请求，必须返回Invalid或Clean标签。
+对于TagOp值为Transfer或Fetch的ReadNoSnp，必须返回Clean标签。
+对于TagOp值为Transfer的ReadClean、ReadOnce、ReadOnceCleanInvalid和ReadOnceMakeInvalid，必须返回Clean标签。
+对于TagOp值为Transfer的ReadNotSharedDirty，必须返回Clean或Dirty标签。仅当缓存行状态为Unique时，才允许返回Dirty标签。
+对于TagOp值为Transfer的ReadShared，必须返回Clean或Dirty标签。
+对于TagOp值为Transfer或Fetch的ReadUnique，必须返回Clean或Dirty标签。返回的缓存行状态必须为Unique。
+对于TagOp值为Invalid的MakeReadUnique，必须返回Invalid或Clean标签。仅允许在带数据的响应中返回Clean标签。
+对于TagOp值为Transfer的MakeReadUnique，如果响应包含数据，则必须返回Clean或Dirty标签。
+允许在带数据的响应中返回Clean标签。
+仅当响应正在转移更新Dirty数据的责任时，才允许返回Dirty标签，即响应包含[UD_PD]。
+使用Comp_UC或Comp_SC的无数据响应，即使实际上没有发生标签传输，也允许指示正在传输Clean标签。
+返回Dirty标签时，返回的缓存行必须包含传递Dirty的指示[_PD]。
+当目标地址不支持MTE时，响应必须使用值为Invalid的TagOp。
+对于独占访问序列，获取标签时必须避免使用任何会在执行Exclusive Store事务之前使该缓存行其他副本变为Invalid的请求。通常，通过在执行Exclusive Load事务时同时获取标签来满足这一要求。
+B12.4.2 允许的初始MTE标签状态
+表B12.2列出了不同读事务允许的初始数据状态及标签状态，以及相应请求中允许的TagOp值。标签与数据状态的组合必须遵循B12.3“标签一致性”中所述的一致性规则。
+表B12.2：读事务中允许的初始标签状态与请求TagOp值
+请求
+TagOp
+数据状态
+标签状态
+ReadNoSnp
+Invalid, Transfer, Fetch
+I
+Invalid
+ReadOnce
+Invalid, Transfer
+I
+Invalid
+ReadOnceMakeInvalid
+Invalid, Transfer
+I
+Invalid
+ReadOnceCleanInvalid
+Invalid, Transfer
+I
+Invalid
+ReadNotSharedDirty
+Invalid, Transfer
+I, UCE
+Invalid
+ReadShared
+Invalid, Transfer
+I, UCE
+Invalid
+ReadClean
+Invalid
+I, UCE
+Invalid
+ReadClean
+Transfer
+I, UCE, UDP
+Invalid
+表B12.2（续）：读事务中允许的初始标签状态与请求TagOp值
+请求
+TagOp
+数据状态
+标签状态
+ReadClean
+Transfer
+SC, UC
+Invalid, Clean
+ReadClean
+Transfer
+SD, UD
+Invalid, Clean, Dirty
+ReadPreferUnique
+Invalid
+I, UCE
+Invalid
+ReadPreferUnique
+Invalid
+SC
+Invalid, Clean
+ReadPreferUnique
+Invalid
+SD
+Invalid, Clean, Dirty
+ReadPreferUnique
+Transfer
+I, UCE, UDP
+Invalid
+ReadPreferUnique
+Transfer
+SC, UC
+Invalid, Clean
+ReadPreferUnique
+Transfer
+SD, UD
+Invalid, Clean, Dirty
+ReadUnique
+Invalid, Transfer, Fetch
+I, UCE
+Invalid
+ReadUnique
+Invalid, Transfer, Fetch
+SC, UC
+Invalid, Clean
+ReadUnique
+Invalid, Transfer, Fetch
+SD, UD
+Invalid, Clean, Dirty
+MakeReadUnique
+Invalid
+SC
+Invalid, Clean
+MakeReadUnique
+Invalid
+SD
+Invalid, Clean, Dirty
+MakeReadUnique
+Transfer[a]
+SC
+Clean
+MakeReadUnique
+Transfer[a]
+SD
+Clean, Dirty
+a：发出TagOp值为Transfer的MakeReadUnique时，要求请求方同时持有数据与标签的副本。
+B12.5 写事务（Write transactions）
+用于支持 MTE 的不同字段分布在写事务的 Request 消息和 Data 消息中。TagOp 字段表示要对 WriteData 消息中的标签执行的操作，Request 消息和 WriteData 消息中都包含该字段。Request 还包含 TagGroupID 字段，用于为需要执行标签匹配（Tag Match）操作的请求所对应的通过/失败响应提供标识符。当 Request 中的 TagOp 字段为 Match 时，Excl 字段必须为零。
+注：TagGroupID 字段的具体用法取决于实现（IMPLEMENTATION SPECIFIC）。通常，可以使用 TagGroupID 来标识一个响应所对应的异常级别（Exception level）和 TTBR。
+WriteData 消息中的 TagOp 值通常与 Request 消息中的值相同，除非写数据已被侦听取走，或者写操作已被取消。当 WriteData 与写请求中的 TagOp 值不同时，必须根据 WriteData 中的 TagOp 值来决定是否执行标签匹配。
+WriteData 消息还为每个标签包含一个标签更新（Tag Update，TU）位。当 TagOp 为 Update 时，该位适用。
+B12.5.1 允许的 TagOp 值
+本节针对写请求消息中每一种允许的 TagOp 值，说明 WriteData 中允许采用的 TagOp 值。
+当 Request 中的 TagOp 字段为 Invalid 时，WriteData 中的内存标签相关字段必须设置为 0，且完成方必须忽略这些字段。
+在 Request 的 TagOp 为 Transfer 的 WriteCleanFull 事务中，不允许将写数据中的 TagOp 更改为 Update。
+WriteCleanFull 事务完成后，无论 TagOp 值如何，都允许请求方在本地保留任何 Clean 标签的副本。
+当请求中的 TagOp 字段为 Update 时，WriteData 中的 TagOp 字段可以为：
+Update：必须将 Dirty 标签缓存起来或写入内存。
+Transfer：标签为 Clean。如果 Dirty 标签已被侦听取走，就可能出现这种情况。
+Invalid：只有在已缓存的副本被无效化，或者写事务被取消时，才可能出现这种情况。
+当请求中的 TagOp 字段为 Match 时，WriteData 中的 TagOp 字段可以为：
+Match：必须在完成方执行相应的标签匹配。
+Invalid：只有在写事务被取消时，才可能出现这种情况。
+B12.5.2 TagOp、TU 与标签之间的关系
+本节说明不同写事务中 TagOp、TU 与标签之间的关系：
+对于所有 TagOp 为 Invalid 的写请求，内存标签相关字段必须为零，且完成方必须忽略这些字段。
+对于 WriteBackFull 和 WriteCleanFull，各 TagOp 值的要求如下：
+Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。
+Update：所有 TU 位必须为 1。
+Match：不允许。
+对于 WriteBackPtl，各 TagOp 值的要求如下：
+Transfer：不允许。
+Update：不允许。
+Match：不允许。
+对于 WriteNoSnpFull，各 TagOp 值的要求如下：
+Transfer：TU 位不适用，且必须为零。允许从请求节点向 Home 节点传输 Clean 标签，也允许从 Home 节点向从属节点传输 Clean 标签。
+Update：所有 TU 位必须为 1。
+Match：TU 位不适用，且必须为零。
+对于 WriteNoSnpDef，各 TagOp 值的要求如下：
+Transfer：不允许。
+Update：不允许。
+Match：不允许。
+对于 WriteUniqueFull 和 WriteUniqueFullStash，各 TagOp 值的要求如下：
+Transfer：不允许。
+Update：所有 TU 位必须为 1。
+Match：TU 位不适用，且必须为零。
+对于 WriteNoSnpPtl、WriteUniquePtl 和 WriteUniquePtlStash，各 TagOp 值的要求如下：
+Transfer：不允许。
+Update：TU 位和 BE 位可以采用任意置 1 组合，包括全部为 1 或全部为 0。
+Match：TU 位不适用，且必须为零。仅对于至少有一个对应 BE 位为 1 的标签，必须执行标签匹配。当所有 BE 位都设置为 0 时，不得执行标签匹配。
+对于 WriteEvictFull 和 WriteEvictOrEvict，各 TagOp 值的要求如下：
+Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。
+Update：不允许。
+Match：不允许。
+对于 WriteNoSnpZero 和 WriteUniqueZero，仅允许 TagOp 为 Invalid。
+对于 TagOp 为 Match 的写请求，由 Size 确定的回绕边界内的标签可以取任意值；Size 范围之外的标签不适用，也可以取任意值。
+在 WriteDataCancel 写数据响应中，无论写请求中的 TagOp 值如何，MTE 字段均不适用，且必须为零。
+在 TagOp 为 Invalid 的写数据中，所有 TU 位和所有 Tag 位都必须为零。
+B12.6 无数据事务（Dataless transactions）
+MakeUnique 是唯一支持使用 TagOp 字段的无数据事务。在所有其他无数据事务中，TagOp 字段均不适用，且必须全部为零。
+MakeUnique 请求中的 TagOp 值只能为 Invalid 或 Update。请求的 TagOp 值为 Update，表示请求方在更新数据的同时也更新标签。在响应 MakeUnique 时，只有请求的 TagOp 值为 Update，或者 Home 节点知道被侦听方没有 Dirty 标签，才允许 Home 节点使用 SnpMakeInvalid。
+MakeUnique 响应中唯一允许的 TagOp 值为 Invalid。
+缓存维护操作（Cache Maintenance Operations）必须同时作用于数据及其对应的内存标签。对于允许丢弃 Dirty 数据而不将其写入内存的 MakeInvalid，仍然必须将 Dirty 标签写入内存。
+B12.7 原子事务（Atomic transactions）
+TagOp 适用于原子事务。该字段允许的值为 Invalid 和 Match。
+要进行匹配的物理标签（Physical Tags）在写数据中提供，并对应于 AtomicLoad、AtomicStore 和 AtomicSwap 中的有效数据字节。在这些原子事务中，由于最大数据大小为 8 字节，只有一组标签位适用。该集合中其余的标签位不适用，且必须为零。
+在数据大小不超过 16 字节的 AtomicCompare 中，有效数据仍然只对应一组标签位。
+在数据大小为 32 字节的 AtomicCompare 中，compare 数据和 swap 数据各自仅为 16 字节。当 TagOp 设置为 Match 时，只需要对一组物理标签位进行匹配。必须复制物理标签，使其同时覆盖 Compare 数据和 Swap 数据。允许完成方使用任意一组物理标签来执行标签匹配。
+非存储型原子事务（Non-store Atomic transactions）的 CompData 响应中，允许的 TagOp 值为 Invalid 和 Transfer。
+对于 TagOp 为 Invalid 的原子事务，其写数据中的所有 TU 位和所有 Tag 位都必须设置为 0。
+B12.8 Stash 事务
+在 StashOnce 和 StashOnceSep 事务中，允许 TagOp 值为 Invalid 和 Transfer。
+有关 Stash 侦听与内存标签之间的交互，请参阅 B12.9.3“Stash 侦听”。
+B12.9 侦听请求（Snoop requests）
+本节说明 Home 节点如何按规则使用以下侦听类型：
+B12.9.1 非转发侦听
+B12.9.2 转发侦听
+B12.9.3 Stash 侦听
+B12.9.1 非转发侦听（Non-forwarding snoops）
+当请求需要标签时，Home 节点可以使用任何适用的非转发侦听。如果侦听响应向 Home 节点返回了数据但未返回标签，则 Home 节点必须先获取标签，然后才能向请求方返回数据响应。
+Home 节点在响应 WriteUniqueFull、WriteUniqueFullStash、MakeUnique 和 MakeInvalid 时，不得使用 SnpMakeInvalid 侦听请求，除非满足以下任一条件：
+事务为 TagOp 值为 Update 的 WriteUniqueFull、WriteUniqueFullStash 或 MakeUnique。
+Home 节点能够确定被侦听方未持有 Dirty 标签。
+注：请求方发送 TagOp 为 Fetch 的 ReadUnique，表示它将更新整个缓存行，但不更新标签。Home 节点不得使用 SnpMakeInvalid 来响应该请求，以避免丢失被侦听方处已修改的标签。
+
+Home 节点能够确定被侦听方未持有 Dirty 标签的一种情况是：最初向该被侦听方提供缓存行时，该行处于 SC 状态且标签为 Clean。当 Home 节点将被侦听方跟踪为 Unique 状态时，不得使用 SnpMakeInvalid，因为被侦听方可能已在本地以不通知 Home 节点的方式将标签变为 Dirty。
+B12.9.2 转发侦听（Forwarding snoops）
+只有请求不需要获取标签时，才允许 Home 节点使用转发侦听。即使被侦听方持有 Valid 标签，也允许发送转发侦听。如果被侦听方在响应转发侦听时持有 Dirty 标签，则不得将 Dirty 标签转发给请求方，也不得将标签与数据的 Dirty 属性或 Unique 属性分离。
+始终允许被侦听方向请求方转发 Clean 标签。
+当标签为 Clean 时，被侦听方必须遵循与非 MTE 情形相同的数据传输规则。
+当标签为 Dirty 时，被侦听方必须遵循以下规则：
+对于会使缓存行无效化的转发侦听 SnpUniqueFwd，以及按无效化侦听处理的 SnpPreferUniqueFwd：
+不得向请求方转发数据。
+必须将数据和标签返回给 Home 节点。
+对于不会使缓存行无效化的转发侦听 SnpCleanFwd、SnpSharedFwd、SnpNotSharedDirtyFwd，以及按非无效化侦听处理的 SnpPreferUniqueFwd：
+必须将该侦听按 SnpCleanFwd 处理。
+注：与 SnpNotSharedDirtyFwd 相同。
+对于 SnpOnceFwd：
+允许将 Dirty 标签返回给 Home 节点。
+如果未向 Home 节点传输数据，则必须将 Dirty 标签保留在被侦听方处。
+如果缓存行正被无效化，或者 Dirty 数据正被写回 Home 节点，则必须将 Dirty 标签写回 Home 节点。
+允许被侦听方将任意转发侦听转换为其对应的非转发侦听，但不要求这样做。
+注：这一特性与非 MTE 情形中的特性类似。
+更多详细信息，请参阅 B12.9.4“侦听响应中允许的 TagOp 值”。
+B12.9.3 Stash 侦听
+由于 SNP 通道不包含 TagOp 字段，Home 节点无法将请求方的 TagOp 意图转发给 Stash 目标。
+侦听响应中允许的 TagOp 值如下：
+响应 SnpStash* 时，为 Invalid。
+响应 SnpUniqueStash 时，为 Invalid、Transfer 或 Update。
+响应 SnpMakeInvalidStash 时，为 Invalid。
+更多详细信息，请参阅 B12.9.4“侦听响应中允许的 TagOp 值”。
+侦听响应中的 Data Pull 请求隐含一个读请求；确定该读请求中的 TagOp 值时，要求如下：
+响应 SnpStash* 时：
+如果原始请求中的 TagOp 值为 Transfer，建议在响应 DataPull 请求时返回 Clean 标签。
+如果原始请求中的 TagOp 值为 Invalid，且标签可用，建议在响应 DataPull 请求时返回 Clean 标签。
+响应 SnpUniqueStash 时：
+如果返回数据时标签可用，则无论侦听响应中是否包含数据，也无论缓存状态为何，均建议在响应 DataPull 请求时返回 Clean 标签。
+响应 SnpMakeInvalidStash 时：
+如果 Clean 标签可用，建议在响应 DataPull 请求时返回这些标签。
+B12.9.4 侦听响应中允许的 TagOp 值
+侦听响应中允许的标签字段值如下：
+对于 SnpResp，TagOp 字段不适用，且必须为零。
+对于 SnpRespDataPtl，允许的 TagOp 值为 Invalid。TU 字段和 Tag 字段都必须设置为 0，且接收方必须忽略这些字段。
+对于 SnpRespData：
+Invalid：所有 Tag 字段必须为零。
+Transfer：必须返回 Clean 标签。TU 位不适用，且必须为零。
+Update：所有 TU 位必须为 1。数据状态必须包含 Pass Dirty。
+Match：不允许。
+B12.10 Home 节点到从属节点的事务
+对于发往从属节点的 Read 请求：
+允许的 TagOp 值为 Invalid、Transfer 和 Fetch。
+对于发往从属节点的 Write 请求：
+允许的 TagOp 值为 Invalid、Transfer、Update 和 Match。
+对于发往从属节点的 Atomic 请求：
+允许的 TagOp 值为 Invalid 和 Match。
+Home 节点与从属节点之间是否支持 MTE，由 MTE_Support 属性定义。
+TagOp 为 Transfer 或 Fetch 的 ReadNoSnp 或 ReadNoSnpSep 可用于从从属节点获取标签。标签可以由从属节点直接返回给 Home 节点，也可以使用 DMT 发送给请求方。使用 TagOp Fetch 时，不要求从属节点返回有效数据。
+需要更新内存中的标签时，必须使用 TagOp 为 Update 的 WriteNoSnp。如果只需要更新标签，可以将数据的 BE 位全部置为 0。
+当 TagOp 为 Match 时，发往从属节点的 WriteNoSnp 和 Atomic 事务中的 TagGroupID 适用，并且必须在 TagMatch 响应中返回这些值。
+当 Atomic 操作在从属节点执行时，允许 Home 节点在发往从属节点的 Atomic 请求中携带 TagOp Match。如果标签匹配在从属节点执行，那么对于非 Store Atomic 事务和 Store Atomic 事务，TagMatch 响应的 TgtID 都必须取自请求中的 ReturnNID 值。为支持这一功能，要求从 Home 节点发往从属节点的 AtomicStore 中的 ReturnNID 适用，并且必须将其设置为与请求中的 SrcID 相同的值。
+注：本规范的上一版本已经要求 ReturnNID 在非 Store Atomic 事务中适用。
+B12.11 错误响应
+以下各小节介绍下列情况的错误响应处理：
+B12.11.1 标签匹配
+B12.11.2 非标签匹配错误
+B12.11.3 不支持 MTE
+B12.11.1 标签匹配
+请求中的 TagOp 值为 Match 的 Write 和 Atomic 事务，必须返回标签匹配操作的结果。结果通过 TagMatch 消息返回。无论标签匹配结果如何，事务都必须正常继续进行。即使 WriteData 被取消，或者没有执行标签匹配，也必须发送 TagMatch 响应。
+注：使用单独的 TagMatch 消息，会增加 Write 和 Atomic 事务的复杂度并引入额外消息，但其优点是提供了足够精确的响应机制。使用单独的响应不会延迟 Comp 响应的发送。
+TagMatch 消息具有以下特征：
+由执行标签匹配操作的 Home 节点或从属节点发送 TagMatch 响应。
+消息中的 TgtID 值从以下字段复制：
+如果完成方是 Home 节点，则从请求中的 SrcID 复制。
+如果完成方是从属节点，则从请求中的 ReturnNID 复制。ReturnNID 可以指向请求方，也可以指向 Home 节点。当从属节点将 TagMatch 响应返回给 Home 节点时，Home 节点负责将该响应转发给请求方。
+响应必须返回请求中的 TagGroupID 值。
+TraceTag 字段不适用，可以取任意值。
+响应中的 Resp 字段值指示标签匹配状态是通过还是失败。参见 B13.10.46“响应状态，Resp”。
+完成方一旦能够确定结果，就可以发送 TagMatch 响应。允许不等待数据便发送 TagMatch。完成方不支持 MTE 时，可能出现这种情况。
+TagMatch 响应中的 Resp 值必须满足以下要求：
+不支持 MTE 时，必须为 Fail。
+支持 MTE 但未执行标签匹配时，必须为 Pass。例如，某次写操作的目标位置支持 MTE，但未通过访问权限检查。
+如果执行了匹配，则必须准确反映匹配结果。
+B12.11.2 非标签匹配错误
+允许针对请求返回的数据错误响应和非数据错误响应，与是否存在内存标签无关。
+TagMatch 响应中允许的 RespErr 字段值为 OK、DERR 和 NDERR。参见 B9.1.4“按事务类型使用错误响应”。
+当响应中的 RespErr 字段为 NDERR 时：
+返回给请求方的响应中的 TagOp 不适用，可以取任意值。
+侦听响应必须为 Invalid。
+不支持对标签使用 Poison。参见 B9.2.1“Poison”。
+B12.11.3 不支持 MTE
+如果完成方对于请求中的地址不支持 MTE，那么在响应 TagOp 值为 Transfer 或 Fetch 的 Read 事务时，完成方必须发送值为 Invalid 的 TagOp。返回的标签必须为零。请求方可以将返回的标签缓存为 Clean 状态。
+完成方在响应针对 Non-cacheable 或 Device 内存位置的 Read 请求时，必须将响应中的 TagOp 值设置为 Invalid。预期完成方会对 MTE 操作返回 OK 响应，除非对于等效的非 MTE 操作也可以返回不同的响应。
+当收到 TagOp 为 Match 的 Write 请求，而完成方对于请求中的地址不支持 MTE 时，仍然要求完成方发送 TagMatch 响应。Resp 字段值必须指示标签匹配失败。允许完成方在发送 TagMatch 响应之前等待写数据，但不要求这样做。
+B12.12 请求及允许的标签操作
+表 B16.24 汇总了不同请求中允许的 TagOp 字段值。所使用的符号含义如下：
+译注：原文此处引用表 B16.24，紧接的本章汇总表编号为 B12.3。此处保留原文引用。
+Y：是，允许。
+-：不允许。
+表 B12.3：各请求类型允许的 TagOp 值
+请求
+Invalid
+Transfer
+Update
+Match
+Fetch
+ReadOnce
+Y
+Y
+-
+-
+-
+ReadClean
+Y
+Y
+-
+-
+-
+ReadShared
+Y
+Y
+-
+-
+-
+ReadNotSharedDirty
+Y
+Y
+-
+-
+-
+ReadPreferUnique
+Y
+Y
+-
+-
+-
+ReadOnceMakeInvalid
+Y
+Y
+-
+-
+-
+ReadOnceCleanInvalid
+Y
+Y
+-
+-
+-
+ReadUnique
+Y
+Y
+-
+-
+Y
+ReadNoSnp
+Y
+Y
+-
+-
+Y
+ReadNoSnpSep
+Y
+Y
+-
+-
+Y
+MakeReadUnique
+Y
+Y
+-
+-
+-
+CleanShared
+Y
+-
+-
+-
+-
+CleanSharedPersist
+Y
+-
+-
+-
+-
+CleanSharedPersistSep
+Y
+-
+-
+-
+-
+CleanUnique
+Y
+-
+-
+-
+-
+CleanInvalid
+Y
+-
+-
+-
+-
+CleanInvalidPoPA
+Y
+-
+-
+-
+-
+CleanInvalidStorage
+Y
+-
+-
+-
+-
+MakeInvalid
+Y
+-
+-
+-
+-
+MakeUnique
+Y
+-
+Y
+-
+-
+Evict
+Y
+-
+-
+-
+-
+StashOnceUnique
+Y
+Y
+-
+-
+-
+StashOnceSepUnique
+Y
+Y
+-
+-
+-
+StashOnceShared
+Y
+Y
+-
+-
+-
+StashOnceSepShared
+Y
+Y
+-
+-
+-
+WriteNoSnpFull
+Y
+Y
+Y
+Y
+-
+表 B12.3：各请求类型允许的 TagOp 值（续）
+请求
+Invalid
+Transfer
+Update
+Match
+Fetch
+WriteNoSnpDef
+Y
+-
+-
+-
+-
+WriteUniqueFull
+Y
+-
+Y
+Y
+-
+WriteUniqueFullStash
+Y
+-
+Y
+Y
+-
+WriteNoSnpPtl
+Y
+-
+Y
+Y
+-
+WriteUniquePtl
+Y
+-
+Y
+Y
+-
+WriteUniquePtlStash
+Y
+-
+Y
+Y
+-
+WriteBackFull
+Y
+Y
+Y
+-
+-
+WriteCleanFull
+Y
+Y
+Y
+-
+-
+WriteBackPtl
+Y
+-
+-
+-
+-
+WriteEvictFull
+Y
+Y
+-
+-
+-
+WriteEvictOrEvict
+Y
+Y
+-
+-
+-
+WriteNoSnpFull + (P)CMO
+Y
+Y
+Y
+-
+-
+WriteNoSnpPtl + (P)CMO
+Y
+-
+Y
+-
+-
+WriteUniqueFull + (P)CMO
+Y
+-
+-
+-
+-
+WriteUniquePtl + (P)CMO
+Y
+-
+-
+-
+-
+WriteBackFull + (P)CMO
+Y
+Y
+Y
+-
+-
+WriteCleanFull + (P)CMO
+Y
+Y
+Y
+-
+-
+WriteNoSnpZero
+Y
+-
+-
+-
+-
+WriteUniqueZero
+Y
+-
+-
+-
+-
+Atomic*
+Y
+-
+-
+Y
+-
+PrefetchTgt
+Y
+Y
+-
+-
+-
+PCrdReturn
+Y
+-
+-
+-
+-
+DVMOp
+Y
+-
+-
+-
+-
+ReqLCrdReturn、DatLCrdReturn 和 RspLCrdReturn 中的 TagOp 字段不适用，可以取任意值。
+DatLCrdReturn 中的 Tag 和 TU 字段不适用，可以取任意值。
+B12.13 TagOp 字段使用汇总
+以下内容汇总了不同通道的消息中 TagOp 字段的使用情况：
+REQ 通道消息：
+Read* 和 MakeReadUnique 事务：
+TagOp 字段可以为 Invalid、Transfer 或 Fetch。
+仅在 ReadUnique、ReadNoSnp 和 ReadNoSnpSep 事务中允许使用 TagOp Fetch。
+TagOp 字段的 Transfer 值指示是否必须随读数据一起返回分配标签。
+TagOp 字段的 Fetch 值指示仅要求返回有效标签。不要求返回的数据有效。
+对于所有其他 REQ 通道消息，TagOp 字段不适用，并且必须为零。
+译注：本段“其他 REQ 通道消息”的概括性表述在原文中重复出现，与下列具体请求规则及 B12.12 中 ReqLCrdReturn 等消息的任意取值规则并不完全一致。译文保留原文表述，使用时请结合具体事务条款核对。
+Write 事务：
+TagOp 字段可以为 Invalid、Transfer、Match 或 Update。
+TagOp 字段的 Transfer 值指示正在传输 Clean 标签，并且标签可以与数据一起被缓存。
+TagOp 字段的 Match 值指示需要对消息中的物理标签与该内存位置的分配标签进行匹配检查。
+TagOp 字段的 Update 值指示正在传递 Dirty 标签，必须使用这些标签更新分配标签的值。
+Exclusive 事务中不得使用 TagOp 字段的 Match 值。
+MakeUnique 事务：
+TagOp 字段可以为 Invalid 或 Update。
+TagOp 字段的 Update 值指示所有标签均被写入。
+Atomic 事务：
+TagOp 字段可以为 Invalid 或 Match。
+TagOp 字段的 Match 值指示是否需要进行标签匹配。
+StashOnce 事务：
+TagOp 字段可以为 Invalid 或 Transfer。
+TagOp 字段的 Transfer 值指示是否应将分配标签与 Stash 数据一起暂存。
+PrefetchTgt 事务：
+TagOp 值可以为 Invalid 或 Transfer。
+对于所有其他 REQ 通道消息，TagOp 字段不适用，并且必须为零。
+DAT 通道消息：
+对于读数据，TagOp 字段指示随数据一起发送的分配标签是 Invalid、Clean 还是 Dirty。
+对于侦听数据，TagOp 字段指示在侦听响应中发送的分配标签是 Invalid、Clean 还是 Dirty。
+对于写数据，TagOp 字段指示写数据中发送的分配标签是 Invalid、Clean、Dirty，还是需要进行匹配检查。TagOp 值必须与请求消息中的值相同，除非侦听已使标签状态降级，或者写操作已被取消。
+RSP 通道消息：
+对于 Comp 响应，TagOp 字段仅在响应 MakeReadUnique 事务时使用，用于指示是否将 Dirty 标签的责任转移给请求方。
+对于所有其他 RSP 通道消息，TagOp 字段不适用，并且必须为零。
+SNP 消息：
+SNP 通道中不存在 TagOp 字段。

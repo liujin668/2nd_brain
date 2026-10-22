@@ -1,0 +1,67 @@
+{
+  "pdf": "C:\\Users\\jinliu01\\OneDrive - ARM China\\文档\\Obsidian Vault\\2nd_brain\\2nd_brain\\output\\pdf\\AMBA_CHI_IHI0050H_B12_内存标签_中文译文.pdf",
+  "blocks": {
+    "heading": 31,
+    "p": 110,
+    "bullet": 193,
+    "note": 12,
+    "table": 5
+  },
+  "tables": [
+    {
+      "caption": "表B12.1：TagOp编码与标签操作",
+      "rows": 4,
+      "columns": 2,
+      "source_page": 431
+    },
+    {
+      "caption": "表B12.2：读事务中允许的初始标签状态与请求TagOp值",
+      "rows": 8,
+      "columns": 4,
+      "source_page": 435
+    },
+    {
+      "caption": "表B12.2（续）：读事务中允许的初始标签状态与请求TagOp值",
+      "rows": 15,
+      "columns": 4,
+      "source_page": 436
+    },
+    {
+      "caption": "表 B12.3：各请求类型允许的 TagOp 值",
+      "rows": 26,
+      "columns": 6,
+      "source_page": 448
+    },
+    {
+      "caption": "表 B12.3：各请求类型允许的 TagOp 值（续）",
+      "rows": 23,
+      "columns": 6,
+      "source_page": 449
+    }
+  ],
+  "source_pages": [
+    429,
+    430,
+    431,
+    432,
+    433,
+    434,
+    435,
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442,
+    443,
+    444,
+    445,
+    446,
+    447,
+    448,
+    449,
+    450,
+    451
+  ]
+}

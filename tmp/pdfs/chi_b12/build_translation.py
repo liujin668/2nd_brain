@@ -55,16 +55,28 @@ for level, size, leading in [(1,16,23),(2,13,20),(3,11,18),(4,10,17)]:
 
 
 def markup(value):
-    text = escape(str(value))
+    text = str(value)
+    text = re.sub(r'([\u4e00-\u9fff])([A-Za-z0-9])', r'\1 \2', text)
+    text = re.sub(r'([A-Za-z0-9])([\u4e00-\u9fff])', r'\1 \2', text)
+    text = escape(text)
     # Respect explicit lightweight emphasis in translator inputs.
     text = re.sub(r'`([^`]+)`', r'<font name="Mono">\1</font>', text)
     text = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', text)
-    text = re.sub(r'(?<!\*)\*([^*\n]+)\*(?!\*)', r'<i>\1</i>', text)
+    # Preserve literal wildcard opcodes such as Atomic* and SnpStash*.
+    # TagOp enumeration values are italicized; cache states stay roman.
+    text = re.sub(r'(?<![A-Za-z])(Transfer|Update|Fetch)(?![A-Za-z])', r'<font name="Helvetica-Oblique">\1</font>', text)
+    text = re.sub(r'(?<!Tag )(?<![A-Za-z])(Match)(?![A-Za-z])', r'<font name="Helvetica-Oblique">\1</font>', text)
+    text = re.sub(r'(TagOp[^。；，：:\n<>]{0,18}?)(Invalid)', r'\1<font name="Helvetica-Oblique">\2</font>', text)
+    text = re.sub(r'^(Invalid)(?=[：:])', r'<font name="Helvetica-Oblique">\1</font>', text)
+    text = re.sub(r'(值为\s*)(Invalid)(\s*的\s*TagOp)', r'\1<font name="Helvetica-Oblique">\2</font>\3', text)
     return text.replace('\n', '<br/>')
 
 
 def para(text, style='body'):
-    return Paragraph(markup(text), STYLES[style])
+    selected = STYLES[style]
+    if style == 'body' and str(text).rstrip().endswith(('：', ':')):
+        selected = ParagraphStyle('lead_in', parent=selected, keepWithNext=True)
+    return Paragraph(markup(text), selected)
 
 
 class Heading(Paragraph):
@@ -162,7 +174,8 @@ for i, block in enumerate(blocks):
     elif kind == 'bullet':
         indent = int(block.get('indent', 0))
         style = ParagraphStyle(f'bullet_{i}', parent=STYLES['body'], leftIndent=12+indent*12,
-            firstLineIndent=0, bulletIndent=indent*12, spaceAfter=4)
+            firstLineIndent=0, bulletIndent=indent*12, spaceAfter=4,
+            keepWithNext=block['text'].rstrip().endswith(('：', ':')))
         story.append(Paragraph(markup(block['text']), style, bulletText='•' if indent == 0 else '–'))
         all_text.append(block['text'])
     elif kind == 'table':
@@ -173,7 +186,14 @@ for i, block in enumerate(blocks):
         if caption:
             story.append(para(caption, 'caption'))
         data = [[para(cell, 'th') for cell in columns]]
-        data.extend([[para(cell,'cell') for cell in row] for row in rows])
+        for row in rows:
+            rendered = []
+            for j, cell in enumerate(row):
+                value = markup(cell)
+                if (j == 1 and ('TagOp' in columns[j] or 'B12.1' in caption)):
+                    value = value.replace('Invalid', '<font name="Helvetica-Oblique">Invalid</font>')
+                rendered.append(Paragraph(value, STYLES['cell']))
+            data.append(rendered)
         table = Table(data, colWidths=table_widths(columns, rows), repeatRows=1,
                       hAlign='LEFT', splitByRow=1, spaceAfter=7)
         table.setStyle(TableStyle([
