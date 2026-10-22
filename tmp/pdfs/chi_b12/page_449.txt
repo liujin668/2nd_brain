@@ -1,0 +1,53 @@
+Chapter B12.  Memory Tagging
+B12.12.  Requests and permitted tag operations
+
+                                                                                                                               Table B12.3 – Continued from previous page
+
+                            Requests                                              Tag operation
+                                                                                         Invalid                Transfer              Update               Match      Fetch
+                            WriteNoSnpDef         Y                        -                          -                          -              -
+                            WriteUniqueFull       Y                        -                          Y                        Y             -
+                            WriteUniqueFullStash
+                            WriteNoSnpPtl            Y                        -                          Y                        Y             -
+                            WriteUniquePtl
+                            WriteUniquePtlStash
+                            WriteBackFull              Y                        Y                        Y                        -              -
+                            WriteCleanFull
+                            WriteBackPtl                  Y                        -                          -                          -              -
+                            WriteEvictFull             Y                        Y                        -                          -              -
+                            WriteEvictOrEvict
+                            WriteNoSnpFull+ (P)CMO                Y                        Y                        Y                        -              -
+                            WriteNoSnpPtl+ (P)CMO                  Y                        -                          Y                        -              -
+                            WriteUniqueFull+ (P)CMO                Y                        -                          -                          -              -
+                            WriteUniquePtl+ (P)CMO                  Y                        -                          -                          -              -
+                            WriteBackFull+ (P)CMO                   Y                        Y                        Y                        -              -
+                            WriteCleanFull+ (P)CMO                  Y                        Y                        Y                        -              -
+                            WriteNoSnpZero      Y                        -                          -                          -              -
+                            WriteUniqueZero    Y                        -                          -                          -              -
+                            Atomic*                                 Y                        -                          -                          Y             -
+                            PrefetchTgt                       Y                        Y                        -                          -              -
+                            PCrdReturn                       Y                        -                          -                          -              -
+                            DVMOp
+
+
+                      TheTagOpfield inReqLCrdReturn, DatLCrdReturn, and RspLCrdReturn is inapplicable and can take any value.
+                      TheTagandTUfields in DatLCrdReturn are inapplicable and can take any value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                              Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                                                         449
+Issue H                                                                                Non-confidential

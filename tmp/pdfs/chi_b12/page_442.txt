@@ -1,0 +1,57 @@
+           Chapter B12.  Memory Tagging
+           B12.9.  Snoop requests
+
+           B12.9  Snoop requests
+
+                            This section describes the permitted use by Home of the following snoop types:
+                                •B12.9.1  Non-forwarding snoops
+                                •B12.9.2  Forwarding snoops
+                                •B12.9.3  Stash snoops
+
+           B12.9.1Non-forwarding snoops
+                            Home can use any applicable Non-forwarding snoop when tags are needed by the request. If the Snoop response
+                            returns data to Home but not tags, the Home is required to obtain tags before returning the Data response to the
+                            Requester.
+                            A Home inresponse toWriteUniqueFull,WriteUniqueFullStash,MakeUnique, andMakeInvalidmustnot use the
+                            SnpMakeInvalid snoop request unless either:
+                                • ThetransactionisWriteUniqueFull,WriteUniqueFullStash, orMakeUniquewithaTagOpvalueof                                                                        Update.
+                                •The Home can determine that the Snoopee does not hold Dirty tags.
+
+
+
+
+
+
+
+
+
+
+
+
+           B12.9.2Forwarding snoops
+                            The use by Home of the Forwarding snoop is permitted only if the request does not need to fetch tags. A
+                            Forwarding snoop is permitted to be sent even when the Snoopee has Valid tags. If the Snoopee has Dirty tags
+                            when responding to a Forwarding snoop, Dirty tags must not be forwarded to the Requester nor split dirtiness or
+                            uniqueness of tags and data.
+                            A Snoopee is always permitted to forward Clean tags to the Requester.
+                            When tags are Clean, the Snoopee must follow the same data transfer rules as in the non-MTE case.
+                            When tags are Dirty, the Snoopee must follow the rules:
+                                • FortheinvalidatingForwardingsnoopSnpUniqueFwd andSnpPreferUniqueFwdhandledas aninvalidating
+                                   snoop:
+                                     –  Must not forward data to the Requester.
+                                     –  Must return data and tags to the Home.
+                                •For the Non-invalidating Forwarding snoops SnpCleanFwd, SnpSharedFwd, SnpNotSharedDirtyFwd,
+                                   SnpPreferUniqueFwd handled as a non-invalidating snoop:
+                                     –  Must treat the snoop as SnpCleanFwd.
+
+
+
+Note
+BysendingaReadUniquewithTagOp                             Fetch,aRequesterisindicatingthatitwillupdatethefullcacheline
+butnotthetags. HomemustnotuseSnpMakeInvalidinresponsetosucharequest,toavoidlosingmodified
+tags at the Snoopee.ARM IHI 0050           Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                   442
+An example of when the Home establishes that a Snoopee does not hold Dirty tags would be when thatIssue HNon-confidential
+SnoopeewasoriginallygiventhelineinanSCstatewithCleantags. WhentheSnoopeeistrackedbyHome
+Note
+as being Unique, a SnpMakeInvalid must not be used as the Snoopee might have created Dirty tags locally
+and silently.Same as SnpNotSharedDirtyFwd.

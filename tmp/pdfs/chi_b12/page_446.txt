@@ -1,0 +1,56 @@
+           Chapter B12.  Memory Tagging
+           B12.11.  Error response
+
+           B12.11  Error response
+
+                            The following sub-sections describe Error response handling for:
+                                •B12.11.1  Tag Match
+                                •B12.11.2  Non-Tag Match errors
+                                •B12.11.3  MTE not supported
+
+           B12.11.1Tag Match
+                            Write and Atomic transactions that haveTagOpvalue of           Matchin the Request must return the results of the Tag
+                            Match operation. The results are returned using the TagMatch message. The transaction must proceed as normal
+                            irrespective of the Tag Match result. The TagMatch response must be sent even if the WriteData is canceled or a
+                            Tag Match is not performed.
+
+
+
+
+
+
+
+
+                            The TagMatch message characteristics are:
+                                •The Home Node or Subordinate Node performing the Tag Match operation sends the TagMatch response.
+                                •TheTgtIDvalue in the message is copied from:
+                                     –  SrcIDin the request if the Completer is a Home Node.
+                                     –  ReturnNIDin the request if the Completer is a Subordinate Node. TheReturnNIDcan point to the
+                                        RequesterortheHome. WhentheSubordinatereturnstheTagMatchresponsetotheHome,theHomeis
+                                        responsible for forwarding the response to the Requester.
+                                •The response must return theTagGroupIDvalue from the request.
+                                •TheTraceTagfield is inapplicable and can take any value.
+                                •TheRespfield value in the response indicates the Tag Match state as either pass or fail. SeeB13.10.46
+                                   Response status, Resp.
+                                •The TagMatch response can be sent as soon as the Completer can determine the result. TagMatch is
+                                   permitted to be sent without waiting for data. This can occur when the Completer does not support MTE.
+                                •TheRespvalue in the TagMatch response must be:
+                                     – A Fail when MTE is not supported.
+                                     – APasswhenMTE issupportedbuttheTagMatchisnot performed. Forexample, whenawritetargets
+                                        an MTE capable location, but fails an access permissions check.
+                                     – Accurate, if the match is performed.
+
+           B12.11.2Non-Tag Match errors
+                            Permitted Data and Non-data Error responses to requests are independent of the presence or absence of Memory
+                            Tagging.
+                            PermittedRespErrfield values inthe TagMatch response areOK, DERR,and NDERR.SeeB9.1.4                            Error response
+                            use by transaction type.
+                            When theRespErrfield in a response is NDERR:
+                                •TheTagOpin the response to the Requester is inapplicable and can take any value.
+
+
+Note       ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                   446
+           Issue H                                                           Non-confidential
+Using a separate TagMatch message adds complexity and extra messages to the Write and Atomic
+transactions but has the advantage that it provides a sufficiently accurate response mechanism. Using a
+separate response does not delay the sending of the Comp response.

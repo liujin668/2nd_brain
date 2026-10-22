@@ -1,0 +1,75 @@
+Chapter B12.  Memory Tagging
+B12.11.  Error response
+
+                     •The Snoop response must be Invalid.
+                 Poisonon tags is not supported. SeeB9.2.1                 Poison.
+
+B12.11.3MTE not supported
+                 When a Completer does not support MTE for the address in the request, the Completer must send aTagOpvalue
+                 ofInvalid in response to a Read transaction with aTagOpvalue of           Transfer orFetch. The returned tags must be
+                 zero. The returned tags can be cached as Clean by the Requester.
+                 A Completer in response to a Read request to a Non-cacheable or Device memory location must set theTagOp
+                 value in the response toInvalid. A Completer is expected to give an OK response to an MTE operation, unless a
+                 different response can be given to an equivalent non-MTE operation.
+                 WhenaWriterequestwithTagOp       MatchisreceivedandaCompleterdoesnotsupportMTEfortheaddressinthe
+                 request, the Completer is still required to send a TagMatch response. TheRespfield value must indicate that the
+                 Tag Match failed. The Completer is permitted, but not required, to wait for the write data before sending the
+                 TagMatch response.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                    Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                      447
+Issue H                                                            Non-confidential

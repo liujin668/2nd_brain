@@ -1,0 +1,77 @@
+Chapter B12.  Memory Tagging
+B12.6.  Dataless transactions
+
+B12.6  Dataless transactions
+
+                 MakeUniqueis the only Dataless transaction that supports the use of theTagOpfield. In all other Dataless
+                 transactions, theTagOpfield is inapplicable and must be all zeros.
+                 TheTagOpvalue inMakeUniquerequest can be Invalid or Update only. A RequestTagOpvalue of                                                      Updateis an
+                 indicationthatthe Requester updatesthetagsalongwith data. Home,inresponsetoMakeUnique, ispermittedto
+                 use SnpMakeInvalid only when either the RequestTagOpvalue is                      Updateor the Home knows that the Snoopee
+                 does not have Dirty tags.
+                 The only permittedTagOpvalue in response toMakeUniqueis                                         Invalid.
+                 CacheMaintenanceOperationsmustoperateonboththedataandthecorrespondingmemorytags. AMakeInvalid
+                 that permits dropping of Dirty data without writing to memory must write Dirty tags to memory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                       439
+Issue H                                                             Non-confidential

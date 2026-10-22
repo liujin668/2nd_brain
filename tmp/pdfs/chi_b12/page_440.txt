@@ -1,0 +1,75 @@
+Chapter B12.  Memory Tagging
+B12.7.  Atomic transactions
+
+B12.7  Atomic transactions
+
+                 TagOpis applicable in Atomic transactions. The permitted values for the field are         Invalid and Match.
+                 The Physical Tags to be matched are provided in the write data and correspond to the valid data bytes in
+                 AtomicLoad,AtomicStore,andAtomicSwap. OnlyonesetoftagbitsareapplicableintheseAtomictransactions
+                 because the maximum data size is 8-byte. The remaining tag bits in the set are not applicable and must be zero.
+                 InAtomicComparewith a data size of up to 16 bytes, the valid data still corresponds to only one set of tag bits.
+                 InAtomicComparewithdatasizeof32-bytestheindividualcompareandswapdataisonly16-bytes. Onlyoneset
+                 of Physical Tag bits is required to be matched whenTagOpis set to                  Match. Physical Tags must be duplicated to
+                 coverbothCompareandSwapdata. TheCompleterispermittedtouseeithersetofPhysicalTagstoperformTag
+                 Match.
+                 The permittedTagOpvalues inthe CompData response to Non-store Atomic transactions are                        Invalid and Transfer.
+                 TheWritedataforAtomictransactionswhereTagOpis                   Invalid musthaveallTUbitsandalltheTagbitssetto0.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                    Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                     440
+Issue H                                                           Non-confidential

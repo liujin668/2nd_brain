@@ -1,0 +1,54 @@
+            Chapter B12.  Memory Tagging
+            B12.9.  Snoop requests
+
+                                 •For SnpOnceFwd:
+                                 •Permitted to return Dirty tags to the Home.
+                                 •Dirty tags must be kept at the Snoopee if the data transfer to Home is not performed.
+                                 •Dirty tags must be written back to Home if the cache line is being invalidated or Dirty data is being written
+                                    back to Home.
+                             A Snoopee is permitted, but not required, to convert any Forwarding snoop to its corresponding Non-forwarding
+                             snoop.
+
+
+
+
+
+
+                             SeeB12.9.4      Permitted TagOp values in Snoop responsesfor more details.
+
+            B12.9.3Stash snoops
+                             Because the SNP channel does not include aTagOpfield, the Home cannot forward theTagOpintentions of the
+                             Requester to the Stash target.
+                             The permittedTagOpvalues in Snoop responses are:
+                                 • Invalid in response to SnpStash*.
+                                 • Invalid,Transfer, and Updatein response to SnpUniqueStash.
+                                 • Invalid in response to SnpMakeInvalidStash.
+                             SeeB12.9.4      Permitted TagOp values in Snoop responsesfor more details.
+                             The requirements for determining theTagOpvalue in the Read request implied from the Data Pull request in the
+                             Snoop response are as follows:
+                             In response to SnpStash*:
+                                 •If theTagOpvalue in the original request is               Transfer, it is recommended that Clean tags are returned in
+                                    response to the DataPull request.
+                                 •If theTagOpvalue in the original request is               Invalid, it is recommended that Clean tags are returned in
+                                    response to the DataPull request if tags are available.
+                             In response to SnpUniqueStash:
+                                 •If tags are available when data is returned, irrespective of the presence or absence of data in the Snoop
+                                    responseandforanycachestate,itisrecommendedthattheCleantagsarereturnedinresponsetoaDataPull
+                                    request.
+                             In response to SnpMakeInvalidStash:
+                                 •If Clean tags are available, it is recommended that they are returned in response to a DataPull request.
+
+            B12.9.4Permitted TagOp values in Snoop responses
+                             The permitted tag field values in Snoop responses are:
+                                 •For SnpResp, theTagOpfield is inapplicable and must be zero.
+                                 •For SnpRespDataPtl, the permittedTagOpvalue is Invalid. Both theTUand theTagfield must be set to 0
+                                    and ignored by the receiver.
+                                 •For SnpRespData:
+                                       –  Invalid. AllTagfields must be zero.
+
+
+            ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                       443
+            Issue H                                                             Non-confidential
+
+Note
+This property is similar to that in the non-MTE case.

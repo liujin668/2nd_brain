@@ -1,0 +1,48 @@
+Chapter B12.  Memory Tagging
+B12.4.  Read transaction rules
+
+B12.4  Read transaction rules
+
+                 A read can optionally fetch tags along with the data. The need to return tags along with read data is determined
+                 from the value ofTagOpin the request.
+
+B12.4.1TagOp values
+                 WhenTagOpvalue in the request is                   Transfer:
+                     •Tags are required to be returned along with the data.
+                     •The state of the returned tags must be the appropriate permitted cache state for the request being used.
+                     •The number of tags to be returned is determined by the size ofDatathat is returned.
+                     • When required bythe access, matchingof Physical Tagsagainst the Allocation Tags that are received along
+                       with read data is done at the Requester.
+                 WhenTagOpvalue in the Request is                   Fetch:
+                     •Tags are required to be returned along with data.
+                     • Returneddataisnotrequiredtobevalid. TheRequestermustignorethereceiveddatairrespectiveofthetag
+                       match result.
+                     •TheSizefield in the Request must be 64B.
+                     •All tags corresponding to a cache line must be returned.
+                     •The state of the returned tags must be Clean or Dirty.
+                     •If Dirty tags are returned, they must be preserved, unless updated, and written back to memory.
+                 WhenTagOpvalue in the request is                   Invalid:
+                     •It is permitted, but not required, that tags are returned along with the data.
+                     •If tags are returned along with the data, they must be Clean.
+                 B12.4.1.1Converting tags from Shared to Unique
+                 Toupdate eitherthedataorthetagsorboth,whenboththe dataandthetagsarepresentattheRequesterinShared
+                 state,andtheRequesterrequirestomovethecachelinetoaUniquestate,theMakeReadUniquetransactionwitha
+                 TagOpvalue of         Transfer is expected to be used. The Requester is permitted to useReadUniquewith aTagOp
+                 value of Transfer.
+                 B12.4.1.2Fetching tags when Data is present
+                 If a Requester has a cached copy of a cache line, with data Valid but Allocation tags are not Valid, and the
+                 Requesterrequires aTag Matchto beperformed, theRequestermust usea Readrequest tofetch the requiredtags.
+                 In the above scenario:
+                     •Ifa Requester canguaranteetowrite afullcacheline irrespectiveoftheTagMatch result,itis permitted to
+                       use either:
+                          –  ReadNoSnpwith                    Fetchif the target memory location is Non-snoopable. The returned data is not
+                             required to be valid and must be dropped. Clean tags must be returned. All tags within the cache line
+                             must be Valid.
+                          –  ReadUniquewith                    Fetch, if thetarget memory location isSnoopable. The returned data is not requiredto
+                             bevalidandmustbedropped. CleanorDirtytagsmustbereturned. Alltagswithinthecachelinemust
+                             be Valid.
+                     •If a Requester cannot guarantee to write a full cache line irrespective of the Tag Match result:
+                          –  It is recommended to use:
+
+ARM IHI 0050                    Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                     433
+Issue H                                                           Non-confidential

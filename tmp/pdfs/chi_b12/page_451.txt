@@ -1,0 +1,79 @@
+Chapter B12.  Memory Tagging
+B12.13.  TagOp field use summary
+
+                 RSP channel message:
+                     • ForaCompresponse,theTagOpfieldisonlyusedin responsetoaMakeReadUniquetransactionandisused
+                        to indicate if responsibility for Dirty tags is being passed to the Requester or not.
+                     •For all other RSP channel messages, theTagOpfield is inapplicable and must be zero.
+                 SNP message:
+                     •TheTagOpfield is not present in the SNP channel.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                     451
+Issue H                                                            Non-confidential

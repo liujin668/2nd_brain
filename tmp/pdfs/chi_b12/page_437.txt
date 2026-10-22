@@ -1,0 +1,56 @@
+            Chapter B12.  Memory Tagging
+            B12.5.  Write transactions
+
+            B12.5  Write transactions
+
+                             Differentfields tosupportMTE are distributed betweentheRequest andDatamessage ofaWrite transaction. The
+                             TagOpfield, which indicates the operation to be performed on the tags in the WriteData message, is included in
+                             boththeRequestandWriteDatamessage. TheRequestalsoincludestheTagGroupIDfieldtoprovideanidentifier
+                             forthepass/failresponseforarequestthatrequiresaTagMatchoperation. WhentheTagOpfieldintheRequestis
+                             Match, theExclfield must be zero.
+
+
+
+
+
+
+
+                             TheTagOpvalueintheWriteDatamessageistypicallythesameasthevalueintheRequestmessage,exceptwhen
+                             either the write data is snooped out or the write is canceled. Whether or not to perform a Tag Match must be
+                             decided based on theTagOpvalue in the WriteData, when theTagOpvalues in the WriteData and Write request
+                             are different.
+                             The WriteData message also includes a Tag Update (TU) bit per tag, which is applicable whenTagOpis                        Update.
+
+            B12.5.1Permitted TagOp values
+                             Thissectiondescribes thepermittedWriteDataTagOpvaluesforeach ofthepermittedTagOpvaluesintheWrite
+                             request message.
+                             When theTagOpfield inthe Request is              Invalid, the MemoryTagging fieldsin the WriteData mustbe set to 0and
+                             ignored by the Completer.
+                             InaWriteCleanFulltransactionwheretheRequestTagOpis                                                Transfer,theTagOpintheWritedataisnotpermitted
+                             to be changed toUpdate.
+                             Upon completion of aWriteCleanFulltransaction, regardless of theTagOpvalue, the Requester is permitted to
+                             keep a copy of any Clean tags locally.
+                             When theTagOpfield in the request is              Update, theTagOpfield in the WriteData can be:
+                                 • Update: The Dirty tags must be cached or written to memory.
+                                 • Transfer: The Tags are Clean. This is possible if the Dirty tags have been snooped out.
+                                 • Invalid: This is possible only if either the cached copy is invalidated or the Write transaction is canceled.
+                             When theTagOpfield in the request is              Match theTagOpfield in the WriteData can be:
+                                 • Match: The appropriate Tag Match must be performed at the Completer.
+                                 • Invalid: This is possible only if the Write transaction is canceled.
+
+            B12.5.2TagOp, TU, and tags relationship
+                             This section describes the relationship betweenTagOp,TU, and tags in different Write transactions:
+                                 •For all Write requests withTagOp         Invalid, the Memory Tagging fields must be zero and ignored by the
+                                    Completer.
+                                 •ForWriteBackFullandWriteCleanFullwithTagOp:
+                                      –  Transfer: Clean tags must be returned.TUbits are inapplicable and must be zero.
+                                      –  Update: AllTUbits must be 1.
+                                      –  Match: Not permitted.
+
+
+
+            ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                     437
+            Issue H                                                            Non-confidential
+Note
+The use of theTagGroupIDfield is                             IMPLEMENTATION SPECIFIC. Typically,TagGroupIDcan be used to
+identify the Exception level and TTBR which a response relates to.

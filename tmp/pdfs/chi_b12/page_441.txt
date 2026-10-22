@@ -1,0 +1,81 @@
+Chapter B12.  Memory Tagging
+B12.8.  Stash transactions
+
+B12.8  Stash transactions
+
+                  InStashOnceandStashOnceSeptransactions,TagOpvalues of                                                                               Invalid and Transfer are permitted.
+                  For Stash snoop interaction with Memory Tagging seeB12.9.3      Stash snoops.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                       Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                             441
+Issue H                                                                Non-confidential

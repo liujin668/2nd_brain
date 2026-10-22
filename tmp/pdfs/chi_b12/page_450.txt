@@ -1,0 +1,47 @@
+Chapter B12.  Memory Tagging
+B12.13.  TagOp field use summary
+
+B12.13  TagOp field use summary
+
+                 The following sections give a summary of the use of theTagOpfield in messages in different channels:
+                 REQ channel message:
+                     •Read* andMakeReadUniquetransaction:
+                          –  TagOpfield can be         Invalid,Transfer, or Fetch.
+                          –  TagOp Fetchis permitted only inReadUnique,ReadNoSnp, andReadNoSnpSeptransactions.
+                          –  TagOpfield         Transfer indicates whether Allocation Tags must be returned alongside read data.
+                          –  TagOpfield         Fetchindicatesonlyvalid tagsarerequiredto bereturned. Returned dataisnotrequired to
+                             be valid.
+                          –  For all other REQ channel messages, theTagOpfield is inapplicable and must be zero.
+                     •Write transaction:
+                          –  TagOpfield can be         Invalid,Transfer,Match orUpdate.
+                          –  TagOpfield         Transfer indicates Clean tags are being transferred and tags can be cached alongside the
+                             data.
+                          –  TagOpfield         Matchindicates a Match check is required between the Physical Tags in the message and
+                             the Allocation Tags at the memory location.
+                          –  TagOpfield         UpdateindicatesDirtytagsarebeing passed,whichmustupdatetheAllocation Tagvalues.
+                          –  TagOpfield         Matchcannot be used in an Exclusive transaction.
+                     •MakeUniquetransaction:
+                          –  TagOpfield can be         Invalid orUpdate.
+                          –  TagOpfield         Updateindicates all tags are written to.
+                     •Atomic transaction:
+                          –  TagOpfield can be         Invalid orMatch.
+                          –  TagOpfield         Matchindicates whether a Tag Match is required.
+                     •StashOncetransaction:
+                          –  TagOpfield can be:         Invalid orTransfer.
+                          –  TagOpfield         Transfer indicates whether Allocation Tags should be stashed alongside Stash data.
+                     •PrefetchTgttransaction:
+                          –  TagOpvalue can be         Invalid or Transfer.
+                     •For all the other REQ channel messages, theTagOpfield is inapplicable and must be zero.
+                 DAT channel message:
+                     •For Read data, theTagOpfield indicates whether the Allocation Tags sent along with the data are Invalid,
+                        Clean, or Dirty.
+                     • ForSnoopdata,theTagOpfieldindicateswhethertheAllocationTagssentintheSnoopresponseareInvalid,
+                        Clean, or Dirty.
+                     • Forwritedata,theTagOpfieldindicateswhethertheAllocationTagssentinthewritedataareInvalid,Clean,
+                        Dirty, or a Match check is required. TheTagOpvalue must be the same as in the Request message except
+                       when a snoop has downgraded the state of the tags or the write has been canceled.
+
+
+
+ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                      450
+Issue H                                                            Non-confidential

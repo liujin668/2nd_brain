@@ -1,0 +1,49 @@
+Chapter B12.  Memory Tagging
+B12.4.  Read transaction rules
+
+                  The cache state that the tags must be held in is consistent with the type of the Read request:
+                      •For all Read requests with aTagOpvalue of            Invalid, Invalid or Clean tags must be returned.
+                      •ForReadNoSnpwith aTagOpvalue of                                   Transfer orFetch, Clean tags must be returned.
+                      •ForReadClean,ReadOnce,ReadOnceCleanInvalid, andReadOnceMakeInvalidwith aTagOpvalue of
+                         Transfer, Clean tags must be returned.
+                      •ForReadNotSharedDirtywith aTagOpvalue of                                                 Transfer, Clean or Dirty tags must be returned. Dirty tags
+                         are permitted to be returned only if the cache line state is Unique.
+                      •ForReadSharedwith aTagOpvalue of                                   Transfer, Clean or Dirty tags must be returned.
+                      • ForReadUniquewithaTagOpvalueof                                  Transfer orFetch,CleanorDirtytagsmustbereturned. Thereturned
+                         cache line state must be Unique.
+                      • ForMakeReadUniquewithaTagOpvalueof                                    Invalid,InvalidorCleantagsmustbereturned. Cleantagsare
+                         only permitted in responses with data.
+                      • ForMakeReadUniquewithaTagOpvalueof                                   Transfer,ifdataisincludedintheresponse,CleanorDirtytags
+                         must be returned.
+                           –  Clean tags are permitted in responses with data.
+                           –  DirtytagsareonlypermittedwhentheresponseistransferringtheresponsibilityofupdatingDirtydata,
+                               that is, the response includes [UD_PD].
+                           –  Dataless responses using Comp_UC or Comp_SC are permitted to signal Clean tags are being
+                               transferred, despite no Tag transfer occurring.
+                      •In the case where Dirty tags are returned, the cache line returned must include pass Dirty [_PD].
+                  When MTE is not supported for the targeted address, the response must useTagOpof              Invalid.
+                  ForanExclusiveaccesssequence,thefetchingoftagsmustavoidanyformofrequestthatInvalidatesothercopies
+                  ofthecache linebeforetheExclusive Storetransactionisperformed. Typically,this isachievedbyfetching tagsat
+                  the same time the Exclusive Load transaction is performed.
+
+B12.4.2Permitted initial MTE tag states
+                  TableB12.2showsthepermittedinitialdatastatealongwithtagstatefordifferentReadtransactionsandpermitted
+                  TagOpvaluein thecorrespondingrequest. The combinationoftagand datastatesmustobeythe coherencyrules
+                  described inB12.3    Tag coherency.
+
+                                   Table B12.2: Permitted initial Tag states and request TagOp values in Read transactions
+
+                              Request                 TagOp                             Data state          Tag state
+                              ReadNoSnp                         Invalid, Transfer, Fetch             I                          Invalid
+                              ReadOnce                           Invalid, Transfer                       I                          Invalid
+                              ReadOnceMakeInvalid
+                              ReadOnceCleanInvalid
+                              ReadNotSharedDirty          Invalid, Transfer                       I, UCE                Invalid
+                              ReadShared
+                              ReadClean                           Invalid                                       I, UCE                Invalid
+                                                                 Transfer                                    I,UCE,UDP        Invalid
+                                                                                                                                 Continued on next page
+
+
+ARM IHI 0050                      Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                           435
+Issue H                                                               Non-confidential

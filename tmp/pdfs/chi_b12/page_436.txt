@@ -1,0 +1,67 @@
+Chapter B12.  Memory Tagging
+B12.4.  Read transaction rules
+
+                                                                                                                      Table B12.2 – Continued from previous page
+                                   Request                 TagOp                             Data state          Tag state
+                                                                                                                          SC, UC               Invalid, Clean
+                                                                                                                          SD, UD              Invalid, Clean, Dirty
+                                   ReadPreferUnique              Invalid                                       I,UCE                 Invalid
+                                                                                                                          SC                      Invalid, Clean
+                                                                                                                          SD                      Invalid, Clean, Dirty
+                                                                            Transfer                                    I,UCE,UDP        Invalid
+                                                                                                                          SC, UC               Invalid, Clean
+                                                                                                                          SD, UD              Invalid, Clean, Dirty
+                                   ReadUnique                        Invalid, Transfer, Fetch             I, UCE                Invalid
+                                                                                                                          SC, UC               Invalid, Clean
+                                                                                                                          SD, UD              Invalid, Clean, Dirty
+                                   MakeReadUnique               Invalid                                       SC                      Invalid, Clean
+                                                                                                                          SD                      Invalid, Clean, Dirty
+                                                                            Transfera                                   SC                      Clean
+                                                                                                                          SD                      Clean, Dirty
+
+
+
+                                   a To issue aMakeReadUniquewith aTagOpvalue of Transfer, it is required that the Requester has copies of both the data and the tags.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                            Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                                              436
+Issue H                                                                          Non-confidential

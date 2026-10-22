@@ -1,0 +1,71 @@
+            Chapter B12.  Memory Tagging
+            B12.10.  Home to Subordinate transactions
+
+            B12.10  Home to Subordinate transactions
+
+                             For a Read request to the Subordinate:
+                                 •The permittedTagOpvalues are                          Invalid,Transfer, and Fetch.
+                             For a Write request to the Subordinate:
+                                 •The permittedTagOpvalues are                          Invalid,Transfer,Update, and Match.
+                             For an Atomic request to the Subordinate:
+                                 •The permittedTagOpvalues are                          Invalid, and Match.
+                             Support for MTE between a Home and a Subordinate is defined by theMTE_Supportproperty.
+                             AReadNoSnporReadNoSnpSepwithTagOp                                                          Transfer orFetch can be used to fetch tags from the Subordinate.
+                             Tagscanbe returnedfromaSubordinate totheHomedirectly orsenttotheRequester usingDMT.WhenTagOp
+                             Fetch is used, the Subordinate is not required to return valid data.
+                             When memory needs to be updated with tags,WriteNoSnpwithTagOp                                   Update must be used. When only tags
+                             need to be updated the dataBEbits can be set to all 0.
+                             WhenTagOpis                  Match,theTagGroupIDinWriteNoSnpandAtomictransactionstotheSubordinateareapplicable,
+                             and these values must be returned in the TagMatch response.
+                             WhenAtomicoperationsareperformedattheSubordinateNode,theHomeispermittedtoincludeTagOp            Match
+                             in Atomic requests to the Subordinate. Where the tag match is performed at the Subordinate, in both non-Store
+                             AtomicandStoreAtomictransactions,theTagMatchresponseTgtIDmustbeobtainedfromtheReturnNIDvalue
+                             in the request. To support thisfeature, it is required thattheReturnNIDin the AtomicStore from a HomeNode to
+                             a Subordinate Node is applicable and must be set to the same value as theSrcIDin the request.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                     445
+            Issue H                                                            Non-confidential
+Note
+Applicability of theReturnNIDin non-Store Atomic transactions is already a requirement in the previous
+version of this specification.

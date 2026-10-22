@@ -1,0 +1,47 @@
+Chapter B12.  Memory Tagging
+B12.12.  Requests and permitted tag operations
+
+B12.12  Requests and permitted tag operations
+
+                    TableB16.24shows a summaryof the permittedTagOpfield values inthe different requests. Thefollowing key is
+                    used:
+                    Y Yes, permitted
+                    -   Not permitted
+
+                                                                                       Table B12.3: Permitted TagOp values for each request type
+
+
+                         Requests                                              Tag operation
+                                                                                  Invalid                Transfer              Update               Match      Fetch
+                         ReadOnce                            Y                        Y                        -                          -              -
+                         ReadClean
+                         ReadShared
+                         ReadNotSharedDirty
+                         ReadPreferUnique
+                         ReadOnceMakeInvalid
+                         ReadOnceCleanInvalid
+                         ReadUnique                     Y                        Y                        -                          -              Y
+                         ReadNoSnp                       Y                        Y                        -                          -              Y
+                         ReadNoSnpSep
+                         MakeReadUnique          Y                        Y                        -                          -              -
+                         CleanShared                    Y                        -                          -                          -              -
+                         CleanSharedPersist
+                         CleanSharedPersistSep
+                         CleanUnique                   Y                        -                          -                          -              -
+                         CleanInvalid
+                         CleanInvalidPoPA
+                         CleanInvalidStorage
+                         MakeInvalid
+                         MakeUnique                           Y                        -                          Y                        -              -
+                         Evict                                            Y                        -                          -                          -              -
+                         StashOnceUnique   Y                        Y                        -                          -              -
+                         StashOnceSepUnique
+                         StashOnceShared
+                         StashOnceSepShared
+                         WriteNoSnpFull        Y                        Y                        Y                        Y             -
+                                                                                                                                                   Continued on next page
+
+
+
+ARM IHI 0050                           Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                                             448
+Issue H                                                                         Non-confidential

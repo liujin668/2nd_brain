@@ -1,0 +1,59 @@
+            Chapter B12.  Memory Tagging
+            B12.4.  Read transaction rules
+
+                                             * ReadPreferUniquewith                              Transfer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                       –  It is permitted to use either:
+                                             * ReadCleanwith                  Transfer
+                                             * ReadUniquewith                    Transfer
+                              SeeTableB4.38for Requester cache state transitions.
+                              When respondingto aReadPreferUniqueorReadClean, a Home thatuses a Snoop Filterto track the cachedstate
+                              at the Requester, must not downgrade the state of the cache line in the Snoop Filter based on the state in the
+                              response to the Requester. That is, the Snoop filter must not change a line previously tracked as:
+                                  •Valid, to being tracked as Invalid.
+                                  •Unique, to being tracked as Shared.
+                                  •Dirty, to being tracked as Clean.
+
+
+
+
+
+
+
+                              B12.4.1.3Permitted responses and tag state
+                              ThedataandstateofthecachelinereceivedwiththeAllocationTagsmustbeappropriatelyhandledtonotbreak
+                              coherency.
+                              When the requestTagOpvalue is                     Transfer, the permitted response field values are:
+                                  • Transfer. Indicates the returned tags are Clean.
+                                  • Update. Indicates the returned tags are Dirty. Data response must pass Dirty [_PD].
+                              When the requestTagOpvalue is                     Fetch, the permitted response field values are:
+                                  • Transfer. Indicates the returned tags are Clean.
+                                  • Update. Indicates the returned tags are Dirty. Data response must pass Dirty [_PD].
+                              When the requestTagOpvalue is                     Invalid, the permitted response field values are:
+                                  • Invalid. Indicates the returned tags are Invalid.
+Note                              • Transfer. Indicates the returned tags are Clean.
+Prior to Issue G, the UC, UD, and UDP initial cache states at the sending of aWhen theTagOpvalue in Read data is invalid,TUmust be all zeros.Tagis inapplicable and can take any value.
+ReadPreferUniquewere not permitted.When data and response are separately sent in a Read transaction, theTagOpfield is only applicable in the
+Issue G relaxes this constraint, allowing any start state forReadPreferUniqueData-only message.TagOpis inapplicable in the Non-data response message and must be set to 0.with                                   Transfer,
+
+providingamoreperformantwaytoobtainMTEtagswhentheRequesterhasaUniquecopy
+of the data already, when compared against:ARM IHI 0050Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                434
+Note        Issue H                                                              Non-confidential
+Prior to Issue G, UC, UD, or UDP were not permitted initial cache line states for theReadPreferUnique· ReadCleanwith                   Transfer: pessimistic in the presence of other non-exclusive readers,
+transaction. TheHomethatusedaSnoopFiltertotrackthecachedstateswaspermittedtosetthestateofthewhere the Requester could always get Shared Clean data returned.
+cached line based on the state in the response.· ReadUniquewith                     Transfer: unsafe in the presence of exclusives.

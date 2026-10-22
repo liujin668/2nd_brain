@@ -1,0 +1,63 @@
+            Chapter B12.  Memory Tagging
+            B12.2.  Message extensions
+
+            B12.2  Message extensions
+
+                             The following extensions to the CHI message definitions are used to support Memory Tagging:
+                             Tag       Provides sets of 4-bit tags, each associated with an aligned 16 bytes of data.
+                                          –Applicable on the DAT channel only.
+                                          –Sizeis        Data_Width/32  bits                       .
+                                        SeeTagfor more information.
+                             TU        TagUpdate. Indicates which of the Allocation Tags must be updated.
+                                          –Applicable on the DAT channel only.
+                                          –Sizeis        Data_Width/128  bits                       .
+                                        SeeTUfor more information.
+                             TagOp TagOperation. Indicates the operation to be performed on the tags present in the corresponding DAT
+                                        channel.
+                                          –Applicable on the REQ, DAT, and RSP channels.
+                                          –Sizeis 2 bits.
+                                          –TableB13.31shows the value encodings.
+
+                                                                                                 Table B12.1: TagOp encodings and Tag operations
+
+                                                                                                               TagOp[1:0]       Tag operation
+                                                                                                               0b00                 Invalid
+                                                                                                               0b01                 Transfer
+                                                                                                               0b10                 Update
+                                                                                                               0b11                 Match or Fetch
+
+
+                                        SeeTagOpfor more information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ARM IHI 0050                     Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                       431
+            Issue H                                                             Non-confidential
+Note
+For clarity, in the following sectionsTagOpvalues are italicized to differentiate them from data and
+cache line values.

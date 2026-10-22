@@ -1,0 +1,81 @@
+Chapter B12.  Memory Tagging
+B12.9.  Snoop requests
+
+                            –  Transfer. Clean tags must be returned.TUbits are inapplicable and must be zero.
+                            –  Update. AllTUbits must be 1. The data state must include Pass Dirty.
+                            –  Match. Not permitted.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARM IHI 0050                      Copyright © 2014, 2017-2025 Arm Limited or its affiliates. All rights reserved.                                            444
+Issue H                                                               Non-confidential
