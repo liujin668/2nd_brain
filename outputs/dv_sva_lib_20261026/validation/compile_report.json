@@ -1,7 +1,7 @@
 {
   "mode": "static_only",
   "actual_sva_simulations": false,
-  "timestamp_utc": "2026-10-26T06:49:13.450651+00:00",
+  "timestamp_utc": "2026-10-26T08:41:29.087178+00:00",
   "compiler": "pyslang",
   "compiler_version": "12.1.0",
   "source_files": [
@@ -11,6 +11,7 @@
     "examples/demo_pipe.sv",
     "examples/demo_pipe_bind.sv",
     "examples/dv_sva_custom_rules.sv",
+    "examples/dv_sva_timing_catalog.sv",
     "examples/tb_bind_example.sv",
     "tests/dv_sva_tb.sv"
   ],

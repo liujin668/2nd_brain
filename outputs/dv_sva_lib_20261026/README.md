@@ -217,3 +217,6 @@ X/Z 用例要求四态能力，结束前未完成响应用例要求 strong 结�
 - [IEEE 1800-2017 SystemVerilog 标准（MIT 镜像）](https://fpga.mit.edu/6205/_static/F25/documentation/1800-2017.pdf)：第 16 章给出 SVA、采样、disable iff 与 strong 语义；§23.11 定义 bind。
 - [slang / pyslang 官方仓库](https://github.com/MikePopoloski/slang)：静态检查前端及 Python bindings。
 
+## DV_SVA_ASSERT 详解与时序模板
+
+[逐项解释、波形与时序模板库](docs/DV_SVA_ASSERT_详解与时序库.md)。可编译示例源码为 [dv_sva_timing_catalog.sv](examples/dv_sva_timing_catalog.sv)，包含 9 个独立教学模块；按协议选择使用，不要求同时实例化。

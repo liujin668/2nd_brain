@@ -40,3 +40,7 @@ python scripts/run_tests.py --sim questa
 仿真器需已安装并可使用许可证。负例只有在预期 assertion ID 全部出现、没有额外 ID、且到达完成标记时才算通过；编译失败、缺工具或崩溃均不能算通过。未实现完整 SVA/四态/strong 结束语义的工具可能拒绝编译或使测试失败，本库不会自动削弱规则来换取通过。
 
 测试结束前保留 drain 周期。NEXT/PULSE/HOLD 使用普通非重叠蕴含，不保证在仿真尾部报告所有未完成义务；response_window 另外使用 strong，专用 response_pending_end 用例用于核对目标工具的尾部行为。
+
+## 时序模板补充
+
+新增 examples/dv_sva_timing_catalog.sv 的 9 个独立模块与宏详解文档后，已重新纳入全部四种静态编译配置。最新结果见 validation/compile_report.json；原有 24 个动态用例没有改动，仍未在本机仿真。
