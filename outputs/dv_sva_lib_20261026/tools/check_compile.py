@@ -45,6 +45,9 @@ endpackage
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--pyslang-path', type=Path, help='Optional pip --target directory')
     parser.add_argument('--stage-root', type=Path, help='Optional parent for a compiler staging directory')

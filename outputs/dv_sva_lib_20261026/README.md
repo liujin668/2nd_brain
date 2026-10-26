@@ -190,6 +190,7 @@ DV_SVA_FAIL a_hold_on_stall | <instance hierarchy> | <message>
 ```sh
 python -m pip install "pyslang>=12.1,<13"
 python tools/check_compile.py
+python tools/test_runner.py
 ```
 
 如依赖安装到独立目录，可用 `--pyslang-path <目录>` 指定。静态检查验证语法、宏展开和 elaboration 等编译问题，不执行时序检查，不验证故意违规是否被检出。

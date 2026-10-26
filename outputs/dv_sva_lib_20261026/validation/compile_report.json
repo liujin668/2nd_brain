@@ -1,0 +1,48 @@
+{
+  "mode": "static_only",
+  "actual_sva_simulations": false,
+  "timestamp_utc": "2026-10-26T06:49:13.450651+00:00",
+  "compiler": "pyslang",
+  "compiler_version": "12.1.0",
+  "source_files": [
+    "checkers/dv_sva_fifo.sv",
+    "checkers/dv_sva_ready_valid.sv",
+    "checkers/dv_sva_response_window.sv",
+    "examples/demo_pipe.sv",
+    "examples/demo_pipe_bind.sv",
+    "examples/dv_sva_custom_rules.sv",
+    "examples/tb_bind_example.sv",
+    "tests/dv_sva_tb.sv"
+  ],
+  "uvm_signature_stub_only": true,
+  "results": [
+    {
+      "variant": "default",
+      "errors": 0,
+      "diagnostic_count": 0,
+      "diagnostics": "",
+      "passed": true
+    },
+    {
+      "variant": "assertions_disabled",
+      "errors": 0,
+      "diagnostic_count": 0,
+      "diagnostics": "",
+      "passed": true
+    },
+    {
+      "variant": "covers_disabled",
+      "errors": 0,
+      "diagnostic_count": 0,
+      "diagnostics": "",
+      "passed": true
+    },
+    {
+      "variant": "uvm_report_signature",
+      "errors": 0,
+      "diagnostic_count": 0,
+      "diagnostics": "",
+      "passed": true
+    }
+  ]
+}
