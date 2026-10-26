@@ -68,19 +68,19 @@ endmodule
 
 下表省略共有的可选末尾参数 `CLK=clk, RST_N=rst_n`；仅 `ASSERT_IMMEDIATE` 没有这两个参数。`PROP` 是原生 SVA property 表达式，`SEQ` 是覆盖的序列/property 表达式。
 
-| 宏及主要参数 | 检查含义 |
-|---|---|
-| `DV_SVA_ASSERT(NAME, PROP)` | 按统一时钟、复位和报告方式断言 `PROP` |
-| `DV_SVA_ASSERT_MSG(NAME, PROP, MESSAGE)` | 同上，附自定义失败消息 |
-| `DV_SVA_COVER(NAME, SEQ)` | 覆盖序列；不是断言，也不替代覆盖率分析 |
-| `DV_SVA_KNOWN(NAME, SIGNAL)` | 信号所有位均不含 X/Z |
-| `DV_SVA_KNOWN_WHEN(NAME, SIGNAL, ENABLE)` | ENABLE 为真时检查信号已知；ENABLE 的已知性须另查 |
-| `DV_SVA_ONEHOT(NAME, SIGNAL)` | 所有位已知，且恰好一位为 1 |
-| `DV_SVA_ONEHOT0(NAME, SIGNAL)` | 所有位已知，且最多一位为 1，允许全零 |
-| `DV_SVA_PULSE(NAME, SIGNAL)` | 信号已知，且每个高样本的下一样本必须为低 |
-| `DV_SVA_NEXT(NAME, ANTECEDENT, CONSEQUENT)` | 前件每个高样本都要求下一样本满足后件 |
+| 宏及主要参数                                               | 检查含义                                    |
+| ---------------------------------------------------- | --------------------------------------- |
+| `DV_SVA_ASSERT(NAME, PROP)`                          | 按统一时钟、复位和报告方式断言 `PROP`                  |
+| `DV_SVA_ASSERT_MSG(NAME, PROP, MESSAGE)`             | 同上，附自定义失败消息                             |
+| `DV_SVA_COVER(NAME, SEQ)`                            | 覆盖序列；不是断言，也不替代覆盖率分析                     |
+| `DV_SVA_KNOWN(NAME, SIGNAL)`                         | 信号所有位均不含 X/Z                            |
+| `DV_SVA_KNOWN_WHEN(NAME, SIGNAL, ENABLE)`            | ENABLE 为真时检查信号已知；ENABLE 的已知性须另查         |
+| `DV_SVA_ONEHOT(NAME, SIGNAL)`                        | 所有位已知，且恰好一位为 1                          |
+| `DV_SVA_ONEHOT0(NAME, SIGNAL)`                       | 所有位已知，且最多一位为 1，允许全零                     |
+| `DV_SVA_PULSE(NAME, SIGNAL)`                         | 信号已知，且每个高样本的下一样本必须为低                    |
+| `DV_SVA_NEXT(NAME, ANTECEDENT, CONSEQUENT)`          | 前件每个高样本都要求下一样本满足后件                      |
 | `DV_SVA_HOLD_WHEN_STALLED(NAME, VALID, READY, DATA)` | 本拍 VALID 且非 READY，下一拍仍有 VALID 且 DATA 不变 |
-| `DV_SVA_ASSERT_IMMEDIATE(NAME, EXPR)` | 立即断言，放在过程语句位置；没有隐含时钟或复位 |
+| `DV_SVA_ASSERT_IMMEDIATE(NAME, EXPR)`                | 立即断言，放在过程语句位置；没有隐含时钟或复位                 |
 
 脉冲宏检查的是**采样宽度**，不检测两个采样点之间的毛刺，也不保证物理脉宽。`HOLD_WHEN_STALLED` 不代替控制和有效数据的 X/Z 检查；需要完整组合时优先用 ready/valid 检查模块。
 
