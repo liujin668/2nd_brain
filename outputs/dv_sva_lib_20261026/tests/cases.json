@@ -1,0 +1,30 @@
+{
+  "top": "dv_sva_tb",
+  "description": "Each case is a separate simulation. Negative cases pass only when the expected assertion IDs fire, no other library IDs fire, and the test reaches its completion marker.",
+  "cases": [
+    {"name": "positive", "expect": "pass", "expected_ids": []},
+    {"name": "rv_change_data", "expect": "fail", "expected_ids": ["a_hold_on_stall"]},
+    {"name": "rv_drop_valid", "expect": "fail", "expected_ids": ["a_hold_on_stall"]},
+    {"name": "response_timeout", "expect": "fail", "expected_ids": ["a_response_window"]},
+    {"name": "response_same_cycle_only", "expect": "fail", "expected_ids": ["a_response_window"]},
+    {"name": "response_late", "expect": "fail", "expected_ids": ["a_response_window"]},
+    {"name": "response_minmax", "expect": "pass", "expected_ids": []},
+    {"name": "response_overlap_shared", "expect": "pass", "expected_ids": []},
+    {"name": "response_pending_end", "expect": "fail", "expected_ids": ["a_response_window"], "requires": ["strong_end_of_simulation"]},
+    {"name": "fifo_overflow", "expect": "fail", "expected_ids": ["a_no_overflow"]},
+    {"name": "fifo_underflow", "expect": "fail", "expected_ids": ["a_no_underflow"]},
+    {"name": "fifo_count", "expect": "fail", "expected_ids": ["a_count_increment"]},
+    {"name": "fifo_flags", "expect": "fail", "expected_ids": ["a_full_flag"]},
+    {"name": "fifo_depth1", "expect": "pass", "expected_ids": []},
+    {"name": "pulse_wide", "expect": "fail", "expected_ids": ["a_test_pulse"]},
+    {"name": "onehot0_violation", "expect": "fail", "expected_ids": ["a_test_onehot0"]},
+    {"name": "onehot_zero", "expect": "fail", "expected_ids": ["a_test_onehot"]},
+    {"name": "known_x", "expect": "fail", "expected_ids": ["a_test_known"], "requires": ["four_state"]},
+    {"name": "known_when_x", "expect": "fail", "expected_ids": ["a_test_known_when"], "requires": ["four_state"]},
+    {"name": "known_when_off", "expect": "pass", "expected_ids": [], "requires": ["four_state"]},
+    {"name": "control_x", "expect": "fail", "expected_ids": ["a_control_known"], "requires": ["four_state"]},
+    {"name": "reset_unknown", "expect": "pass", "expected_ids": [], "requires": ["four_state"]},
+    {"name": "reset_abort", "expect": "pass", "expected_ids": []},
+    {"name": "rv_first_after_reset", "expect": "fail", "expected_ids": ["a_hold_on_stall"]}
+  ]
+}

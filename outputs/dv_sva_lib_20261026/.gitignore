@@ -1,0 +1,9 @@
+build/
+__pycache__/
+*.pyc
+work/
+transcript
+vsim.wlf
+simv*
+csrc/
+xcelium.d/

@@ -4,7 +4,7 @@
 
 module dv_sva_fifo #(
   parameter int unsigned DEPTH = 4,
-  parameter int unsigned COUNT_WIDTH = (DEPTH < 1 ? 1 : $clog2(DEPTH + 1)),
+  parameter int unsigned COUNT_WIDTH = (DEPTH < 1 ? 1 : $clog2(64'(DEPTH) + 64'd1)),
   parameter bit ALLOW_FULL_REPLACE = 1'b1,
   parameter bit ALLOW_EMPTY_BYPASS = 1'b0
 ) (
@@ -33,7 +33,7 @@ module dv_sva_fifo #(
 
   `DV_SVA_KNOWN(a_control_known, ({push_i, pop_i, full_i, empty_i}))
   `DV_SVA_KNOWN(a_count_known, count_i)
-  `DV_SVA_ASSERT(a_count_range, {1'b0, count_i} <= DEPTH_EXT)
+  `DV_SVA_ASSERT(a_count_range, ({1'b0, count_i} <= DEPTH_EXT))
   `DV_SVA_ASSERT(a_full_flag, full_i == (count_i == DEPTH_COUNT))
   `DV_SVA_ASSERT(a_empty_flag, empty_i == (count_i == '0))
 
