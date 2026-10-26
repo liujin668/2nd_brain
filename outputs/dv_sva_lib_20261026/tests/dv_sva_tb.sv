@@ -151,7 +151,9 @@ module dv_sva_tb;
       end
       "rv_drop_valid", "rv_first_after_reset": begin
         // The first active sample creates the obligation. No extra history guard.
-        rv_rst_n = 1; rv_valid = 1; rv_ready = 0; rv_data = 8'hA5;
+        rv_rst_n = 1;
+        if (case_name == "rv_drop_valid") tick(2);
+        rv_valid = 1; rv_ready = 0; rv_data = 8'hA5;
         tick();
         rv_valid = 0; rv_ready = 1;
         tick(2);
@@ -267,6 +269,8 @@ module dv_sva_tb;
         known_sig = 'x; conditional_sig = 'x;
         onehot_sig = 'x; onehot0_sig = 'x; pulse_sig = 'x;
         tick(3); // 0/X/Z reset policy disables checks while reset is unknown.
+        macro_rst_n = 1'bz;
+        tick(2);
         macro_rst_n = 0;
         known_sig = 8'h12; conditional_sig = 8'h34;
         onehot_sig = 4'b0001; onehot0_sig = 0; pulse_sig = 0;
