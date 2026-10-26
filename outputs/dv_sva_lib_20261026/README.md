@@ -11,7 +11,7 @@
 ```text
 include/dv_sva_macros.svh       公共宏、复位及报告约定
 checkers/                      三个可实例化检查模块
-examples/dv_sva_usage.sv        宏调用示例
+examples/dv_sva_custom_rules.sv        宏调用示例
 examples/demo_pipe_bind.sv      bind 示例
 examples/bind_example.f         bind 示例文件列表
 tests/cases.json                各用例及预期失败 ID

@@ -12,6 +12,8 @@ module dv_sva_ready_valid #(
   input logic                  ready_i,
   input logic [DATA_WIDTH-1:0] data_i
 );
+  timeunit 1ns;
+  timeprecision 1ps;
 
   initial begin : p_parameter_checks
     if (DATA_WIDTH < 1)

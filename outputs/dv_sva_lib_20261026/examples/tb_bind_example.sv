@@ -1,7 +1,7 @@
 module tb_bind_example;
   timeunit 1ns;
   timeprecision 1ps;
-  bit clk = 1'b0;
+  logic clk = 1'b0;
   always #5ns clk = ~clk;
   logic rst_n = 1'b0;
   logic in_valid = 1'b0;

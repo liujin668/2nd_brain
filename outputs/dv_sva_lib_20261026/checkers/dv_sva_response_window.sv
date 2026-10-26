@@ -12,6 +12,8 @@ module dv_sva_response_window #(
   input logic req_i,
   input logic rsp_i
 );
+  timeunit 1ns;
+  timeprecision 1ps;
 
   initial begin : p_parameter_checks
     if (MIN_CYCLES < 0 || MAX_CYCLES < MIN_CYCLES)

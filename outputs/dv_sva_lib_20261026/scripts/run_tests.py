@@ -20,7 +20,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 FAILURE_RE = re.compile(r"DV_SVA_FAIL\s+([A-Za-z_][A-Za-z_0-9$]*)\b")
 HARD_ERROR_RE = re.compile(
-    r"(?:\*\*\s*Fatal:|UVM_FATAL|segmentation fault|internal (?:error|fatal)|"
+    r"(?:\bFatal\s*:|\*F,|UVM_FATAL|segmentation fault|internal (?:error|fatal)|"
     r"license (?:checkout|check.?out).*fail|no valid license|Self-test timeout|Unknown CASE:)",
     re.IGNORECASE,
 )

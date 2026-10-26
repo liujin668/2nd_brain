@@ -16,6 +16,8 @@ module dv_sva_fifo #(
   input logic                   empty_i,
   input logic [COUNT_WIDTH-1:0] count_i
 );
+  timeunit 1ns;
+  timeprecision 1ps;
 
   // push_i/pop_i describe EXECUTED operations at this edge, not requests that
   // may be rejected by a full/empty FIFO. count_i is PRE-operation occupancy.
@@ -27,7 +29,7 @@ module dv_sva_fifo #(
   initial begin : p_parameter_checks
     if (DEPTH < 1)
       $fatal(1, "dv_sva_fifo: DEPTH must be at least 1");
-    if (COUNT_WIDTH < 1 || COUNT_WIDTH < $clog2(64'(DEPTH) + 64'd1))
+    if (COUNT_WIDTH < 1 || COUNT_WIDTH < $unsigned($clog2(64'(DEPTH) + 64'd1)))
       $fatal(1, "dv_sva_fifo: COUNT_WIDTH cannot represent all values 0..DEPTH");
   end
 
@@ -41,11 +43,11 @@ module dv_sva_fifo #(
   // push/pop is configurable bypass. Two executed operations keep count fixed.
   // 满时替换、空时直通分别配置；默认允许满时替换，不允许空时直通。
   `DV_SVA_ASSERT(a_no_overflow,
-    (push_i && (count_i == DEPTH_COUNT))
-      |-> (ALLOW_FULL_REPLACE && pop_i))
+    (!(push_i && (count_i == DEPTH_COUNT)))
+      || (ALLOW_FULL_REPLACE && pop_i))
   `DV_SVA_ASSERT(a_no_underflow,
-    (pop_i && (count_i == '0))
-      |-> (ALLOW_EMPTY_BYPASS && push_i))
+    (!(pop_i && (count_i == '0)))
+      || (ALLOW_EMPTY_BYPASS && push_i))
 
   // Widen before arithmetic to catch wrap-around rather than accepting it.
   // 增减两侧扩宽一位，避免计数器回绕与预期运算同时溢出而漏检。
