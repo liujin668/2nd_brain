@@ -1,0 +1,11 @@
+{
+  "pages": 13,
+  "md_nonempty_lines_matched": 219,
+  "missing_text_lines": [],
+  "body_bounds_violations": [],
+  "relative_image_links_ok": 4,
+  "zip_files": 13,
+  "pdf_sha256": "e4827b10aff9a8c5cee9563681cd75aee1907c0724e3ea06fef4d710b3d6295d",
+  "illustrative_model": "4 cases checked by model assertions; 3 plotted cases match all 5 plotted data signals and event/consumer times",
+  "rtl_simulation_run": false
+}

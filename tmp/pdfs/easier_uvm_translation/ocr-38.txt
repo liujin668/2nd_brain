@@ -1,0 +1,54 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+
+The top-level test bench <top>_tb instantiates the DUT within a test harness
+module named <top>_th, calls run_test to run the UVM test, and sets virtual
+interfaces in the configuration database. The test harness module instantiates the
+DUT and by default contains example code to generate the clock and reset signals.
+If if_clock and if reset ports are specified in the interface template files, then these
+ports will be connected to the clock and reset signals, respectively, of the test
+harness. You will most likely want to modify the clock and reset generation code in
+the test harness according to the details of your DUT interfaces. This can be done
+by setting the th_generate_clock_and_reset = no and th_inc_inside_module
+variables in the common template file and supplying an include file to replace the
+automatically generated code. The test bench and test harness are generated in the
+following files:
+<project>/tb/<top>_tb/sv/<top>_tb.sv
+<project>/thb/<top>_tb/sv/<top>_th.sv
+Back to the top.
+Making Minimal Extensions to the Generated Code
+In order to have the verification environment send signals to the DUT, you can
+provide the code executed by the run_phase tasks of each of the UVM drivers. To
+avoid having to modify the generated source code, you can provide code
+fragments to be included in the drivers in the <inc_path> directory. You must set
+the value of driver_inc in the interface template file to the name of the include file,
+and also make a single if clock setting in the same template file. driver inc relies
+on the name of the clock given by the if_clock setting. You must ensure that the
+included filename does not clash with the name of any generated file. The code
+fragment in the include file must follow the following pattern:
+task <agent_name>_driver:do_drive();
+
+// This is an example. Do whatever you need to do to drive the pins of the
+interface.
+
+// The transaction is named req
+
+// The virtual interface variable is named vif
+
+// The signal names are from the .tpl file for the particular interface
+
+// vifemd <= req.cmd;
+
+// vifaddr <= req.addr;
+
+// vifwdata <= req.data;
+
+// @(posedge vif.clock);
+endtask
+In order to have the verification environment monitor the pins of the DUT
+interfaces, you can provide the code for the run_phase tasks of each of the UVM
+monitors. To avoid having to modify the generated source code, you can provide
+code fragments to be included in the monitors in the <inc_path> directory. You
+must set the value of monitor inc in the interface template file to the name of the
+include file. You must ensure that the included filename does not clash with the
+
+read://https_www.doulos.com/?uri=https%3A%2F %2Fwww.doulos.com%2Fknowhow?%2F systemverilog%2Fuvm®2F easier-uvm%2F easier-uv. 38/42

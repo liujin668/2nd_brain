@@ -1,0 +1,34 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+m_agent_0_config.n = m_config.n_0;
+m_agent_1_config.n = m_config.n_1;
+agent_env_inc_before_class = <filename> [inline]
+agent_env_inc_inside_class = <filename> [inline]
+agent_env_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated agent env class (not
+the top-level env class, which can be controlled from the common template file).
+agent_env_prepend_to_build_phase = <filename> [inline]
+agent_env_append_to_build_phase = <filename> [inline]
+agent_env_append_to_connect phase = <filename> [inline]
+Include user-defined code from the given file in the build phase or connect phase
+methods of the generated agent env class. Requires
+agent env generate methods after class = yes (which is the default).
+reg_cover_inc_before_class = <filename> [inline]
+reg_cover_inc_inside_class = <filename> [inline]
+reg_cover_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated agent env coverage
+(subscriber) class.
+adapter_inc_before_class = <filename> [inline] [2016-02-19]
+adapter _inc_inside class = <filename> [inline]
+adapter_inc_after class = <filename> [inline]
+Include user-defined code from the given file in the generated register adapter
+class.
+agent _seq_inc = <filename> [inline]
+Include user-defined code from the given file at the end of the file
+<agent>_seq_lib.sv that contains <agent>_default_seq.
+agent_env_seq_inc = <filename> [inline]
+reg_seq_inc = <filename> [inline]
+Include user-defined code from the given file at the end of the file
+<agent>_env_seq_lib.sv that contains <agent>_env_default seq. (reg seq inc is
+an alias for agent_env_seq_inc, retained for backward compatibility.)
+agent_factory_set = <original-classname> <replacement-classname>
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 15/42

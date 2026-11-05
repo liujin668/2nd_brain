@@ -1,0 +1,38 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+trans_generate_methods_inside_class = <yes or no>
+trans_generate_methods_after_class = <yes or no>
+If no, suppresses the generation of the do_copy, do_compare, do_print,
+do_record, and convert2string methods of the transaction (sequence item) class.
+agent_generate_methods_inside_class = <yes or no>
+agent _generate_methods_after class = <yes or no>
+If no, suppresses the generation of the build_phase and connect _phase methods
+of the agent class.
+agent_env_generate_methods_inside_class = <yes or no>
+agent_env_generate_methods_after class = <yes or no>
+If no, suppresses the generation of the build_phase and connect phase methods
+of the agent env class (not the top-level env, which can be controlled from the
+common template file).
+agent_config_generate_methods inside class = <yes or no> [2016-02-
+19]
+agent_config_generate_methods_after_class = <yes or no>
+If no, suppresses the generation of the new method of the agent configuration
+(uvm_object) class. If no, you must provide a constructor in an include file using the
+setting agent_config_inc_inside_class and/or agent _config_inc_after_class.
+agent_cover generate_methods_inside class = <yes or no>
+agent_cover_generate_methods_after_class = <yes or no>
+If no, suppresses the generation of the new, write, and report_phase methods and
+covergroup m_cov of the agent coverage (subscriber) class. If no, you must
+provide a constructor in an include file using the setting
+agent _cover inc _inside_class and/or agent _cover inc_after class.
+reg_cover generate_methods inside class = <yes or no>
+reg_cover_generate_methods_after_class = <yes or no>
+If no, suppresses the generation of the new, write, and report_phase methods and
+covergroup m_cov of the agent env coverage (subscriber) class. If no, you must
+provide a constructor in an include file.
+adapter _generate_methods inside class = <yes or no> [2016-02-19]
+adapter_generate_methods_after_class = <yes or no>
+If no, suppresses the generation of the reg2bus and bus2reg methods of the
+register adapter (uvm_reg_adapter) class. If no, you must provide the methods in
+an include file.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 12/42

@@ -1,0 +1,13 @@
+PDF与Markdown内容对应，Markdown图片位于assets目录，搬移时请保留目录结构。
+时序模型位于timing_model目录，仅为明确假设下的说明性Python模型，不是RTL仿真。
+本次未运行VCS，未完成CDC/RDC/STA签核；acs_cdc_capt_sync内部实现尚未提供。
+{
+  "date": "2026-10-28",
+  "pages": 13,
+  "pdf_bytes": 904470,
+  "pdf_sha256": "e4827b10aff9a8c5cee9563681cd75aee1907c0724e3ea06fef4d710b3d6295d",
+  "markdown_chars": 9836,
+  "figures": 4,
+  "rtl_simulation_run": false,
+  "scope": "Visible RTL lines 23-93; synchronizer internals unavailable."
+}

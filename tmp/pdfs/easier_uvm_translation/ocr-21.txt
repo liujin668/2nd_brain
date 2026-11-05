@@ -1,0 +1,40 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Include user-defined boilerplate code from the given file at the top of every file
+immediately before the automatically generated file header. The file header text is
+always inlined (no ‘include). It is possible to have an automatically generated file
+header, a user-defined file header, neither, or both. If you want the header text to
+be substantially different in each file, use the * inc_before class settings instead.
+timeunit = <integer> <unit>
+timeprecision = <integer> <unit>
+timeunit and timeprecision specify the values of SystemVerilog timeunit and
+timeprecision declarations to be included in the generated SystemVereilog
+modules. If none are specified, the defaults are 1ns/1ps.
+backup = <yes or no>
+backup specifies whether or not to make a backup of any existing project directory
+before overwriting it with a new project directory of the same name. The backup
+directory has the filename extension .bak. The default is yes.
+comments_at_include_locations = <yes or no>
+Specifies whether or not to generate comments that show the locations at which
+user-defined code may be inserted using settings in the template files and
+comments that show where automatically generated code can be suppressed. The
+default is yes.
+common _pkg = <filename>
+common_env_pkg = <filename>
+common_pkg, if present, specifies the name of a file that must contain a package
+declaration. The file must be in the dut_source path directory. The filename need
+not match the package name. The common package will be visible to the DUT and
+the entire UVM environment, meaning that the common package will be compiled
+first and package import declarations placed in the generated code.
+common _env pkg, if present, specifies the name of a file that must contain a
+package declaration. The file must be in the inc_path directory. The filename need
+not match the package name. The common env package will be visible to the entire
+UVM environment, meaning that the common env package will be compiled first
+and package import declarations placed in the generated code, but will not be
+visible to the DUT.
+If present, these two packages will be the first two packages imported by every
+package in the automatically generated code. Thus, in the absence of forward
+typedefs, they cannot contain references to automatically generated classes. There
+can only be one common package and one common env package.
+regmodel_file = <filename>
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 21/42

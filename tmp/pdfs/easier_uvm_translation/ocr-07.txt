@@ -1,0 +1,39 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+converting to the enumeration value, but this is not strictly necessary (trans_var
+values are formatted as integers).
+trans_meta = <declaration> [2015-11]
+trans_enum_meta = <declaration> [2015-11]
+Each trans_meta and trans_enum_meta declaration will be included in the
+generated transaction (uvm_sequence item) class but the variables so declared
+will not be included within the generated do_compare, do_pack, and do_unpack
+methods. These variables represent metadata that is present in each transaction
+object but does not represent data sent to and from the DUT. The setting
+trans_enum_meta is only relevant to convert2string since metadata anyway does
+not get packed and unpacked. In other words, the only difference between
+trans_meta and trans_enum_meta is how the value of the variable is formatted by
+the generated convert2string method. A typedef can be given as a trans var, a
+trans_enum_var, a trans_meta, or as a trans_enum_meta, the only difference
+being in the resultant declaration ordering within the transaction class.
+The settings trans _var, trans_enum var, trans_meta, and trans_enum_meta each
+allow any number of packed array dimensions and a single unpacked array
+dimension. The unpacked dimension must be specified as a size as opposed to a
+range. All dimensions may be given as expressions involving parameter names. For
+example:
+trans_var = rand bit [7:0][7:0] square; # Two packed dimensions
+trans_var = rand int unsigned table [16]; # One unpacked dimension
+[2015-11]
+trans_enum_meta = typedef enum logic [1:0] {red, green, blue} color _t;
+[2015-11]
+trans_enum_meta = color_t [N-1:0][N-1:0] lookup [M]; [2015-11]
+The UVM macros for packing and unpacking fields do not support arrays of
+enumeration type. Because of this, trans_enum_var does not allow an unpacked
+array dimension if the do_pack and do_unpack methods are being generated.
+(trans_enum_meta works above because metadata is anyway not included in the
+do_pack/unpack methods.)
+Unpacked arrays are not included in the automatically generated transaction
+covergroup.
+trans_var constraint = <constraint_block>
+trans_var_constraint = <constraint_block>
+If present, each trans_var_constraint specifies a constraint block, which will be
+included as a constraint within the transaction (sequence item) class, e.g.
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 7/42

@@ -1,0 +1,482 @@
+[
+  {
+    "id": "b0128",
+    "type": "p",
+    "text": "If no , suppresses the generation of the new , write , and report_phase methods and covergroup m_cov of the agent env coverage (subscriber) class. If no , you must provide a constructor in an include file.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0130",
+    "type": "p",
+    "text": "If no , suppresses the generation of the reg2bus and bus2reg methods of the register adapter (uvm_reg_adapter) class. If no , you must provide the methods in an include file.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0132",
+    "type": "p",
+    "text": "driver_inc , monitor_inc , agent_cover_inc , and reg_cover_inc offer a convenient way for beginners to get started in that they require the user to provide the minimum of user-defined code. They are described below in the section Extending the Generated Code . The following settings provide more flexibility.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0133",
+    "type": "p",
+    "text": "The following settings specify the names of include files for inserting user-defined code within automatically generated code. Each setting does nothing except insert some code, so these settings can be freely combined with other settings. By default, each setting generates one `include directive. If inline is given as a second parameter, the user-defined code is copied inline instead of being included using an `include directive. With or without inline , the included files are copied to the <project>/tb/include directory. Any files referenced by nested `include directives will not be copied to the <project>/tb/include directory.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0135",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated interface.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0137",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated transaction (sequence item) class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0139",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated agent class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0141",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the build_phase or connect_phase methods of the generated agent class. Requires agent_generate_methods_after_class = yes (which is the default).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0143",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated sequencer class. Requires uvm_seqr_class = yes .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0145",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated driver class. Operates independently from driver_inc .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0147",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated monitor class. Operates independently from monitor_inc .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0149",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated agent coverage (subscriber) class. Operates independently from agent_cover_inc .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0151",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated agent configuration class (not the top-level configuration class, which can be controlled from the common template file).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0153",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the build_phase method of the generated top-level env class in order to copy any user-defined configuration variables from the top-level configuration object (see config_var in the common template file) to the agent configuration object (see config_var in the interface template file). agent_copy_config_vars is primarily intended for use with nested_config_objects = no , which is the default. It does work with nested_config_objects = yes , although it is not usually necessary because there is less need to copy variables between configuration objects when they are nested.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0154",
+    "type": "p",
+    "text": "If number_of_instances is greater than 1, the given file will only be included once and may contain assignments for multiple instances of the configuration object corresponding to multiple instances of the agent. For example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0157",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated agent env class (not the top-level env class, which can be controlled from the common template file).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0159",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the build_phase or connect_phase methods of the generated agent env class. Requires agent_env_generate_methods_after_class = yes (which is the default).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0161",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated agent env coverage (subscriber) class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0163",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated register adapter class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0165",
+    "type": "p",
+    "text": "Include user-defined code from the given file at the end of the file <agent>_seq_lib.sv that contains <agent>_default_seq .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0167",
+    "type": "p",
+    "text": "Include user-defined code from the given file at the end of the file <agent>_env_seq_lib.sv that contains <agent>_env_default_seq . ( reg_seq_inc is an alias for agent_env_seq_inc , retained for backward compatibility.)",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0169",
+    "type": "p",
+    "text": "Generates a call to set_type_override in the build_phase method of the <top>_test class. Can be used with agent_seq_inc or agent_env_seq_inc to replace a default sequence with a user-defined sequence. top_factory_set and agent_factory_set have identical behavior since both do a factory overrride by type. agent_seq_inc , agent_env_seq_inc , req_seq_inc , and agent_factory_set are described in more detail in the sections Adding a User-Defined Sequence and Adding a User-Defined Register Sequence below.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0171",
+    "type": "p",
+    "text": "<agent> must be the name of the agent, the same name as given by agent_name . <mode> must be WR (write/read), WO (write only), or RO (read only). reg_access_name is deprecated and has been replaced by reg_access_mode .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0173",
+    "type": "p",
+    "text": "Specifies that the agent will be connected to a register model and that user-defined register sequences may access registers with the given mode. <mode> can be WR (write/read), WO (write only), or RO (read only). The actual value of <mode> is relevant to the code generated within the uvm_reg_adapter . (Replaces reg_access_name .)",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0175",
+    "type": "p",
+    "text": "Specifies the name of the variable that represents the root address map used to access registers through this agent. Each agent used for register access must be connected to a distinct root map in the root (top-level) uvm_reg_block class of the register model, regardless of where the registers themselves are located in the register model. The generated code connects this map to the associated adapter, predictor, and sequencer. The default is <agent>_map (for backward compatibility with earlier versions of the code generator). If number_of_instances is greater than 1, the map variable names are distinguished by adding the suffix _0, _1, _2, ..., though this will be handled differently in future versions.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0177",
+    "type": "p",
+    "text": "Specifies the object path of the uvm_reg_block instance in the register model that will be used as the root when accessing registers from a register sequence, that is, the register block referred to be the regmodel variables of the generated config, env, coverage, and sequence classes associated with the agent. This value is only relevant to how registers in the register model are accessed from sequences; it is not relevant to the value of the reg_access_map (which is always in the top-level register block). Setting reg_access_block_instance to something other than the top-level register model allows register sequences to access registers independently from their hierarchical location within the register model. The object path can be hierarchical, and can be specified with or without the leading dot (period) character. The default is <agent> (for backward compatibility with earlier versions of the code generator). If number_of_instances is greater than 1, the instance variable names are distinguished by adding the suffix _0, _1, _2, ..., though this will be handled differently in future versions.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0178",
+    "type": "p",
+    "text": "For example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0180",
+    "type": "p",
+    "text": "A register access from a register sequence would take the form:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0182",
+    "type": "p",
+    "text": "where regmodel is a reference to the instance <top-level-regmodel>.a.b.c . Alternatively, the instance name can be set to null as follows:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0184",
+    "type": "p",
+    "text": "in which case any register access from a register sequence would need to be an absolute reference from the top-level register model:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0187",
+    "type": "p",
+    "text": "Specifies the type of the uvm_reg_block class as selected by reg_access_block_instance . This is used by the code generator as the type of the local regmodel variables that appear within generated config, env, coverage, and sequence classes. If reg_access_block_instance is null, reg_access_block_type must specify the type of the top-level register block. If reg_access_block_instance is omitted, reg_access_block_type must specify the type of a variable named <agent> within the top-level register block (for backward compatibility with earlier versions of the code generator).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0189",
+    "type": "p",
+    "text": "<kind> must be the name of the trans_var that represents the access kind (0 = read, 1 = write). <addr> must be the name of the trans_var that represents the address for the register read/write. <data> must be the name of the trans_var that represents the data for the register read/write.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0190",
+    "type": "p",
+    "text": "See the section Register Template File immediately below.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0191",
+    "type": "h1",
+    "text": "Register Template File",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0192",
+    "type": "p",
+    "text": "The register template file is deprecated. DO NOT USE THE REGISTER TEMPLATE FILE! The capabilities provided by this file can be achieved instead by using settings in the interface and common template files.",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0194",
+    "type": "p",
+    "text": "The register model itself must be provided in the file given by regmodel_file (default regmodel.sv ) in the directory from which the script is run. The script does not generate the register model: It must be generated separately (or written by hand).",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0195",
+    "type": "p",
+    "text": "The reg.tpl file is used to identify the names and structure of the register blocks in the register model. The top-level register block will be instantiated in the top-level env, and each lower-level register block will be instantiated in the env of the agent to which its address map is connected. reg.tpl must be formatted as follows:",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0198",
+    "type": "p",
+    "text": "<top-level-register-block-classname> must be the class name of the top-level uvm_reg_block in the register model. <register-model-filename> must be the name of the file containing the register model, relative to the directory in which the script is run. If this parameter is omitted, the filename defaults to regmodel.sv . <register-sub-block-classname> must be the class name of a uvm_reg_block in the register model associated with a specific agent. <instance/agent-name> must be the variable name of that specific sub-block in the top-level register block class. Furthermore, that variable name must be the name of the agent associated with the particular register sub-block.",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0199",
+    "type": "p",
+    "text": "In addition to the register template file, the interface template file for each agent must specify the mapping between the specific variables of the transaction and the kind, address, and data required for the generic register access.",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0200",
+    "type": "p",
+    "text": "If an agent is associated with a register block, agent_has_env must NOT be set to no . In other words, the register block associated with an agent must be instantiated in an env dedicated to that specific agent. You can combine agents that have a register block with agents that don't, and provided the agents with a register block each have their own env, there is no restriction on whether the remaining agents have agent_has_env = yes or no .",
+    "section": "Register Template File"
+  },
+  {
+    "id": "b0201",
+    "type": "h1",
+    "text": "Common Template File",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0202",
+    "type": "p",
+    "text": "In addition to the interface template files listed on the command line, there must be a single common template file which contains all the code generator settings that do not relate to a specific agent/interface. The common template file is named common.tpl by default, though a different filename may be selected using the -m command line flag.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0203",
+    "type": "p",
+    "text": "There is one mandatory setting, dut_top :",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0205",
+    "type": "p",
+    "text": "dut_top must be the SystemVerilog module name (not the instance name) of the top-level module of the DUT.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0206",
+    "type": "p",
+    "text": "The remaining settings are all optional:",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0208",
+    "type": "p",
+    "text": "dut_source_path specifies the path to a directory that contains the DUT files. The path must be specified relative to the directory from which the script is run. The script recursively copies the contents of the directory <dut_source_path> into the directory <project>/dut so that the script works on a copy of the DUT files rather than the files themselves. This directory may contain a file named files.f which, if it exists, must contain any SystemVerilog source file names and command line flags necessary to compile the DUT, but should not refer to files from the UVM base class library itself (since these will be included in the automatically generated compilation scripts). If files.f does not exist, the generator will create a files.f that lists all the files in the DUT directory with the extension .sv in alphabetical order. The user must provide a files.f if the source files need to be compiled in anything other than alphabetical order or if any of the source files are not located directly within the DUT directory. If dut_source_path is not specified, the default is dut .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0210",
+    "type": "p",
+    "text": "inc_path specifies the path to a directory that may contain files that contain fragments of user-defined code to be included in the generated code. (This capability was greatly enhanced in the 2015-06 release.) The path must be specified relative to the directory from which the script is run. The script copies the files from the directory <inc_path> into the directory <project>/tb/include so that it works on a copy of the include files rather than the files themselves. Any files referenced by nested `include directives will not be copied to the <project>/tb/include directory. If the include files exist their filenames must be specified using the appropriate template settings in the interface and common template files, such as driver_inc_inside_class . If inc_path is not specified, the default is include .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0211",
+    "type": "p",
+    "text": "The include files within the inc_path directory may by organised into subdirectories. The corresponding settings would then include a relative path name, for example:",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0214",
+    "type": "p",
+    "text": "dut_pfile specifies the path of the DUT pin list file (see below). The default value is pinlist .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0216",
+    "type": "p",
+    "text": "prefix , if present, specifies the prefix used when constructing the names of the files, module, package, and UVM classes associated with the top-level verification environment. The value specified here in the common template file can be overridden using the -p switch on the command line. The default value is top .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0218",
+    "type": "p",
+    "text": "project , if present, specifies the name of the <project> directory, which will be created below the current directory and must be given as a simple directory name, not a path. All the files generated by the script are contained in or below the <project> directory. The default value is generated_tb .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0220",
+    "type": "p",
+    "text": "dut_iname , if present, specifies the instance name of the generated DUT module instance in the test bench module, which will be in the file <project>/tb/<top>_tb/sv/<top>_tb.sv . The default value is uut .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0222",
+    "type": "p",
+    "text": "The copyright text, the name , email , tel , dept , and company of the author, the year and the version , if present, specify text fields that will be inserted within the automatically generated file header at the top of every file. Every file header will be identical with the exception of an automatically generated filename and description contained therein.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0224",
+    "type": "p",
+    "text": "If no , suppresses the generation of the automatically generated file header that includes the text fields specified above.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0226",
+    "type": "p",
+    "text": "Include user-defined boilerplate code from the given file at the top of every file immediately before the automatically generated file header. The file header text is always inlined (no `include). It is possible to have an automatically generated file header, a user-defined file header, neither, or both. If you want the header text to be substantially different in each file, use the * _inc_before_class settings instead.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0228",
+    "type": "p",
+    "text": "timeunit and timeprecision specify the values of SystemVerilog timeunit and timeprecision declarations to be included in the generated SystemVereilog modules. If none are specified, the defaults are 1ns/1ps.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0230",
+    "type": "p",
+    "text": "backup specifies whether or not to make a backup of any existing project directory before overwriting it with a new project directory of the same name. The backup directory has the filename extension .bak . The default is yes .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0232",
+    "type": "p",
+    "text": "Specifies whether or not to generate comments that show the locations at which user-defined code may be inserted using settings in the template files and comments that show where automatically generated code can be suppressed. The default is yes .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0234",
+    "type": "p",
+    "text": "common_pkg , if present, specifies the name of a file that must contain a package declaration. The file must be in the dut_source_path directory. The filename need not match the package name. The common package will be visible to the DUT and the entire UVM environment, meaning that the common package will be compiled first and package import declarations placed in the generated code.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0235",
+    "type": "p",
+    "text": "common_env_pkg , if present, specifies the name of a file that must contain a package declaration. The file must be in the inc_path directory. The filename need not match the package name. The common env package will be visible to the entire UVM environment, meaning that the common env package will be compiled first and package import declarations placed in the generated code, but will not be visible to the DUT.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0236",
+    "type": "p",
+    "text": "If present, these two packages will be the first two packages imported by every package in the automatically generated code. Thus, in the absence of forward typedefs, they cannot contain references to automatically generated classes. There can only be one common package and one common env package.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0238",
+    "type": "p",
+    "text": "regmodel_file , if present, specifies the name of the file containing the register model, relative to the directory in which the script is run. If this parameter is omitted, the filename defaults to regmodel.sv . (This setting has the same effect as regmodel_file in reg.tpl .)",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0240",
+    "type": "p",
+    "text": "top_reg_block_type , if present, specifies the type of the top-level uvm_reg_block class in the register model. This is used by the code generator as the type of the top-level regmodel variables in the top-level env and top-level virtual sequence. This setting is mandatory if a register model is required. (This setting has the same effect as regmodel_name in reg.tpl .)",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0242",
+    "type": "p",
+    "text": "Specifies whether or not to generate nested configuration objects, that is, have references to the agent configuration objects within the top-level configuration object. The default is no for backward compatibility with earlier versions of the code generator.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0243",
+    "type": "p",
+    "text": "If yes (recommended), the top-level configuration object contains references to the agent configuration objects. The top-level configuration object is instantiated from the top-level module, and the agent configuration objects are instantiated from the constructor ( new ) of the top-level configuration object. This approach has the benefit that there is no need to replicate or copy information between the top-level and agent configuration objects, the top-level configuration object can include constraints that reference variables contained within the agent configuration objects, and variables in any of the configuration objects can be assigned from the top-level module or the test class as well as from the top-level env class. By default, the generated top-level configuration object contains nothing but references to the agent configuration objects.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0244",
+    "type": "p",
+    "text": "If no (the default), the top-level configuration object is separate from the agent configuration objects. This approach has the feature that the agent configuration objects are entirely encapsulated within the top-level env class, while the top-level module and the test class can only see the top-level configuration object. The top-level configuration object is instantiated from the top-level module, and the agent configuration objects are instantiated from the top-level env class. The top-level env class is responsible for creating and initializing the agent configuration objects based on information from the top-level configuration object. The variables that are generated by default within each agent configuration class are replicated in the top-level configuration class and are copied across from the top-level configuration to the agent configuration objects in the build_phase method of the top-level env class.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0246",
+    "type": "p",
+    "text": "Each config_var declaration will be included in the generated top-level configuration class. Each <declaration> can be a complete class property (variable) declaration, a typedef, a constraint, or a comment. config_var can also be used in the interface template file to add declarations to the individual agent configuration classes. See agent_copy_config_vars .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0247",
+    "type": "p",
+    "text": "The following settings enable or suppress the automatic generation of certain code inside or immediately after the corresponding class or module. The default is yes in every case. Suppressing the automatic generation of methods allows those methods to be user-defined.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0249",
+    "type": "p",
+    "text": "If no , suppresses the generation of the clock and reset declarations and assignments in the test harness module <project>/tb/<top>_tb/sv/<top>_th.sv . These declarations and assignments rely on the if_clock and if_reset settings in the interface template file. If there exist multiple clocks then every clock will be generated with the same period and duty cycle, and similarly for resets.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0251",
+    "type": "p",
+    "text": "If no , suppresses the generation of the build_phase , connect_phase , and run_phase methods of the top-level env class.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0253",
+    "type": "p",
+    "text": "If no , suppresses the generation of the run_phase method only of the top-level env class. The build_phase and connect_phase will still be generated unless top_env_generate_methods_inside/after_class are also specified.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0255",
+    "type": "p",
+    "text": "If no , suppresses the generation of the end_of_elaboration_phase method of the top-level env class. The generated method prints out the verbosity threshold, topology, and factory overrides to help you debug the verification environment.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0257",
+    "type": "p",
+    "text": "If no , suppresses the generation of the new method of the top-level configuration (uvm_object) class. If no , you must provide a constructor in an include file using the setting top_env_config_inc_inside_class and/or top_env_config_inc_after_class .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0259",
+    "type": "p",
+    "text": "If no , suppresses the generation of the build_phase method of the test class.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0260",
+    "type": "p",
+    "text": "The following settings specify the names of include files for inserting user-defined code within automatically generated code. Each setting does nothing except insert some code, so these settings can be freely combined with other settings. By default, each setting generates one `include directive. If inline is given as a second parameter, the user-defined code is copied inline instead of being included using an `include directive. With or without inline , the included files are copied to the <project>/tb/include directory. Any files referenced by nested `include directives will not be copied to the <project>/tb/include directory.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0262",
+    "type": "p",
+    "text": "Include user-defined code from the given file before the DUT instantiation in the generated test harness module <project>/tb/<top>_tb/sv/<top>_th.sv .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0264",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated top-level test bench module <project>/tb/<top>_tb/sv/<top>_tb.sv .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0266",
+    "type": "p",
+    "text": "Include user-defined code from the given file at the top of (inside) the generated initial block that calls run_test() in the generated top-level test bench module <project>/tb/<top>_tb/sv/<top>_tb.sv .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0268",
+    "type": "p",
+    "text": "Include user-defined code from the given file inside the generated initial block immediately before the call to run_test() in the top-level test bench module <project>/tb/<top>_tb/sv/<top>_tb.sv . tb_inc_before_run_test can be used to assign variables within a configuration object from the top-level module, such as when setting a virtual interface to refer to a user-defined interface instance (see generate_interface_instance ). Aside from virtual interfaces, variables within configuration objects are often best set from a test (see test_prepend_to_build_phase ).",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0270",
+    "type": "p",
+    "text": "If no , suppresses the generation of the initial block that calls run_test() in the generated top-level test bench module <project>/tb/<top>_tb/sv/<top>_tb.sv . You can then use tb_inc_inside_module to provide your own top-level configuration object and your own call to run_test() .",
+    "section": "Common Template File"
+  }
+]

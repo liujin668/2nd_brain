@@ -1,0 +1,43 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Generates a call to set_type_override in the build_phase method of the
+<top>_test class. Can be used with agent_seq_inc or agent_env_seq_inc to
+replace a default sequence with a user-defined sequence. top factory set and
+agent_factory_set have identical behavior since both do a factory overrride by
+type. agent_seq_inc, agent_env_seq inc, req_seq_inc, and agent factory set are
+described in more detail in the sections Adding a User-Defined Sequence and
+Adding a User-Defined Register Sequence below.
+reg_access_name = <agent> <mode> [Deprecated in 2015-06-29]
+<agent> must be the name of the agent, the same name as given by agent_name.
+<mode> must be WR (write/read), WO (write only), or RO (read only).
+reg_access_name is deprecated and has been replaced by reg_access_mode.
+reg_access_mode = <mode>
+Specifies that the agent will be connected to a register model and that user-defined
+register sequences may access registers with the given mode. <mode> can be WR
+(write/read), WO (write only), or RO (read only). The actual value of <mode> is
+relevant to the code generated within the uvm_reg_ adapter. (Replaces
+reg_access_name.)
+reg_access map = <map>
+Specifies the name of the variable that represents the root address map used to
+access registers through this agent. Each agent used for register access must be
+connected to a distinct root map in the root (top-level) uvm _reg_block class of the
+register model, regardless of where the registers themselves are located in the
+register model. The generated code connects this map to the associated adapter,
+predictor, and sequencer. The default is <agent>_map (for backward compatibility
+with earlier versions of the code generator). If number of instances is greater than
+1, the map variable names are distinguished by adding the suffix 0, _1, 2, ...,
+though this will be handled differently in future versions.
+reg_access_block instance = <instance>
+Specifies the object path of the uvm_reg block instance in the register model that
+will be used as the root when accessing registers from a register sequence, that is,
+the register block referred to be the regmodel variables of the generated config,
+env, coverage, and sequence classes associated with the agent. This value is only
+relevant to how registers in the register model are accessed from sequences; it is
+not relevant to the value of the reg_access_map (which is always in the top-level
+register block). Setting reg_access_block instance to something other than the
+top-level register model allows register sequences to access registers
+independently from their hierarchical location within the register model. The object
+path can be hierarchical, and can be specified with or without the leading dot
+(period) character. The default is <agent> (for backward compatibility with earlier
+versions of the code generator). If number of instances is greater than 1, the
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 16/42

@@ -1,0 +1,41 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+The behaviour of reg_cover_inc has been changed to match that of
+agent_cover ing, that is, the include file should contain an entire covergroup
+named m_cov. For backward compatibility with template files from earlier versions
+of the code generator, it is still possible for the reg_cover_inc include file to contain
+only the coverpoints.
+Back to the top.
+Rules for Minimal Include Files
+There are a couple of quirks, depending on which class we are talking about:
+
+« The analysis port of the monitor is instantiated in new rather than in
+build_phase. This contravenes the coding guidelines, but has the
+advantage that the user can provide their own build phase method in the
+include file.
+
+« The subscriber (and only the subscriber) does not provide a new method.
+This allows the user to provide their own new method to instantiate a
+covergroup where needed (this is necessary because SystemVerilog
+requires covergroups to be instantiated in new).
+
+With driver_inc specified, a default run_phase method is generated that calls
+do_drive, which you must overload in the include file. Otherwise you must define
+run_phase in the include file as specified by driver_inc_inside_class, either in-line
+or extern (in which case you would also need to specify driver inc_after class to
+provide the implemention of the extern method). It does not make much sense to
+specify an _after class include file without also specifying the corresponding
+_inside_class include file. If you specify both driver _inc and driver_inc_inside_class,
+the latter could be used to provide methods called from do_drive.
+With monitor _inc specified, a default run_phase method is generated that calls
+do_mon, which you must overload in the include file. Otherwise you must define
+run_phase in the include file as specified by monitor inc inside_class. Again, you
+may specify both monitor_inc and monitor _inc_inside_class.
+With agent_cover_inc specified, you provide a covergroup in the include file.
+Otherwise, if you specify agent_cover_inc_inside_class, you provide the entire
+contents of the subscriber component, which may or may not include a
+covergroup. With neither specified, a default covergroup is generated together
+with the write method to sample that covergroup. agent cover inc and
+agent_cover_inc_inside_class are mutually exclusive.
+Back to the top.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 40/42

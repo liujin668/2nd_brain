@@ -1,0 +1,45 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+if_reset = <name>
+If present, if_clock and if reset are used to identify the clock and reset variables of
+the interface, respectively, which must also be declared as if ports. Note that unlike
+if_port, these settings must specify variables names rather than complete variable
+declarations. The only significant effect of these two settings is to generate
+assignments to the specified clock and reset variables, respectively, from the
+automatically generated clock and reset generation code. These settings have no
+effect if generate interface instance = no in the interface template file (see
+below) or if th_generate_clock_and_reset = no in the common template file; in
+either case the user would be responsible for connecting clock and reset code in
+the test harness to clock and reset variables in the interface, if such connections are
+required. if clock and if reset can be thought of as convenience features for
+automatically connecting clocks and resets to interfaces in simple cases where the
+default generated code is adequate.
+generate_interface_instance = <yes or no> [2016-04-18]
+generate_interface_instance can be set to yes or no. The value is not case
+sensitive. The default is yes, which means that a SystemVerilog interface instance
+will be generated for the interface specified in the current template file, or multiple
+interface instances if number _of instances is greater than 1. The interface instance
+is placed in the generated test harness module. generate _interface_instance = no
+allows you to provide a user-defined instantiation of a parameterized interface that
+overrides the default parameter values.
+If generate_interface_instance = no then no interface instance will be generated
+from the current template file, and the user should include their own interface
+instantiation by using the setting th_inc_inside_module. Any if clock or if reset
+settings in the current interface template file will be ignored, so the user should
+include their own code to connect any clock and reset signals to their own interface
+instantiation. Since an interface is not being instantiated automatically, the virtual
+interface in the corresponding configuration object will not be assigned. This leaves
+two possibilities: either assign the virtual interface with a user-defined code
+fragment (tb_inc_before run test is a suitable setting) or do not access the virtual
+interfaces in the UVM driver or monitor (since they will be null).
+byo interface = <interface_name> [2016-04-18]
+If present, byo_interface specifies the name of a BYO (or Bring Your Own)
+SystemVerilog interface. In other words, instead of instantiating the automatically
+generated interface, the generated test harness module instantiates the named
+interface, which must be provided by the user. The <interface_name> should not
+be <agent>_if or the name would clash with that of the automatically generated
+interface. The source file that contains the interface can be made available as part
+of the DUT code using the dut_source path. The byo interface setting can be
+used with generate_interface instance = yes (the default) or
+generate_interface_instance = no.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 9/42

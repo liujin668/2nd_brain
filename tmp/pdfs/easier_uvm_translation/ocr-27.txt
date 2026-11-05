@@ -1,0 +1,33 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Top-level env Configuration
+cl_syosch_cfg object
+Scoreboard (class cl_syosch)
+DUT REF REF REF DUT DUT Queues
+O O OQ ®) O @)
+peso Joon Producers
+QO Q
+O
+Reference Model
+q
+O @)
+Q Q Q Q Q
+ref_model_input
+TTT, ref_model_input ref_model_output
+Figure: Reference Model and Scoreboard
+The predefined compare methods of the scoreboard compare two transactions that
+originate from the same producer, a transaction from the "DUT" queue that
+represents the actual response and a transaction from the "REF" queue that
+represents the expected response.
+The reference model and scoreboard are controlled by settings in the Common
+Template File as follows:
+syosil_scoreboard_src_path = <path> [2015-11]
+syosil_scoreboard_src_path specifies the path to the directory that contains the
+source files for the Syosil UVM Scoreboard. The path must be specified relative to
+the directory from which the script is run. This directory is named ./src within the
+distribution files, which you can download from www.syosil.com. The Easier UVM
+Code Generator has been tested with version 1.0.2.5 of the Syosil UVM Scoreboard,
+and hopefully will work with this and later versions. This setting is necessary if and
+only if you use the settings that follow to instantiate a reference model and
+scoreboard.
+ref_model_input = <ref_model> <agent_instance_name> [2015-11]
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 27142

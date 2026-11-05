@@ -1,0 +1,12 @@
+{
+  "source_pages": 42,
+  "ocr_pages": 42,
+  "translated_blocks": 264,
+  "code_blocks": 140,
+  "figures": 3,
+  "ocr_prefix_matched": 262,
+  "ocr_prefix_unmatched": [
+    "b0382",
+    "b0406"
+  ]
+}

@@ -1,0 +1,44 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+If present, number_of_instances specifies the number of instances of the given
+agent/interface. The default is 1. If agent_has_env = no, these agent instances will
+be generated in the top-level env. Otherwise, they will be in the agent env. In the
+dut_pfile, multiple instances of the same interface should be differentiated using
+the suffix _0, _1, 2, ...
+For an agent/interface with a register model, the agent will anyway be contained in
+its own env. The register sub-block associated with the agent must have the suffix
+_0, _1, ... to its instance name in the top-level register block. The name of the
+associated map in the top-level register block must have the same suffix. The
+generated sequence <agent>_env_default_seq will have members regmodel_0,
+regmodel_1, ... (i.e. the same suffix) to be used for calls to read/write registers from
+a register sequence.
+trans_var = <declaration>
+trans var = <declaration>
+Each trans_var declaration will be included in the generated transaction (sequence
+item) class. Each variable so declared will be included in the generated do_copy,
+do_compare, do_print, do_record, do_pack, do unpack, and convert2string
+methods of that class. Each <declaration> can be a complete class property
+(variable) declaration or a comment, e.g. rand logic [7:0] data; A trans_var is also
+allowed to define a user-defined type (typedef) or a const or static class property,
+which will not be copied or compared by the generated do_copy and do_compare
+methods. For example:
+trans_var = typedef byte unsigned ubyte;
+trans_var = rand ubyte data;
+trans_var = const ubyte zero = 0;
+trans_var = static int count;
+The formatting of the trans var items is preserved as as they are copied from the
+template file to the generated code, so you may wish to vertically align variable
+names and/or initial values in the template file. The variables will be packed and
+unpacked in the order in which the trans_vars are given.
+trans_enum_var = <declaration> [2015-11]
+trans_enum var = <declaration>
+To be used instead of trans_var for variables of an enumeration type, for example:
+trans_enum_var = typedef enum {up, down} dir t;
+trans_enum_var = rand dir_t dir;
+Note that the enumeration type must be defined separately with a typedef, not
+defined as part of the variable definition. The typedef can be given as a trans_var
+or a trans_enum var. It is necessary to distinguish enumeration from non-
+enumeration variables within the generated do_pack and do_unpack methods, the
+corollary being that it is not necessary to distinguish enumeration variables if you
+suppress the generation of these methods using the -nopack command line switch.
+The generated convert2string method takes advantage trans_var_enum by
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 6/42

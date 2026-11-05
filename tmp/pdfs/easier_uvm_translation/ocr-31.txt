@@ -1,0 +1,33 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+<dut_port_name> must be the name of a port on the DUT.
+<variable_name> must be the name of the corresponding variable in the
+SystemVerilog interface that is to be connected to that DUT port.
+DEC is used to specify local variable declarations, which will be included in the
+generated code before the DUT module instantiation and may be connected to
+ports of the DUT in the list following ! or 'none. In other words, ! or Inone are used
+to specify connections between DUT ports and locally-declared variables, as
+opposed to connections between DUT ports and variables declared in an interface.
+PAR is used to specify parameters to the generated module instantiation
+statement. Each parameter must be given a default value.
+SystemVerilog one-line comments (//, but not /* */) anywhere in the list will be
+copied verbatim into the generated code and can be used, for example, to indicate
+that a group of port connections are associated with a particular interface. Any line
+starting with a # character is treated as a regular comment and will be ignored.
+An interface name generally takes the form <agent>_if. If number _of instances is
+greater than 1, multiple instances of the same interface can be distinguished by
+adding the suffix 0, 1, 2, ... to the interface name in the pin list file. If
+number of instances = 1, the _0 suffix is optional in the pinlist file (though it will
+appear in the generated code).
+If generate_interface_instance = no the interface name should be the user-
+defined interface instance name (regardless of number_of instances). [2016-
+04-18]
+Back to the top.
+Generated Structure
+Viewed as a diagram, the set of generated modules, interfaces, and classes is as
+follows. For each interface template file there is an interface and all the classes
+associated with an agent, including a configuration object and a sequence. If
+agent_has_env = yes or the agent has a register model, each agent would be
+instantiated in its own env, and the env would have its own associated virtual
+sequence (see below).
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 31/42

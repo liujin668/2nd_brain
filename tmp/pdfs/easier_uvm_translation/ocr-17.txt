@@ -1,0 +1,39 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+instance variable names are distinguished by adding the suffix _0, _1, _2, ..., though
+this will be handled differently in future versions.
+For example:
+reg_access_block instance = a.b.c
+A register access from a register sequence would take the form:
+regmodel.<register_name>.write(...);
+regmodel.<register name> read(...);
+where regmodel is a reference to the instance <top-level-regmodel>.a.b.c.
+Alternatively, the instance name can be set to null as follows:
+reg_access_block_instance =
+in which case any register access from a register sequence would need to be an
+absolute reference from the top-level register model:
+regmodel.a.b.c.<register name> .write(...);
+regmodel.a.b.c.<register_name>.read(...);
+reg_access_block_type = <type>
+Specifies the type of the uvm_reg_block class as selected by
+reg access block instance. This is used by the code generator as the type of the
+local regmodel variables that appear within generated config, env, coverage, and
+sequence classes. If reg_access block instance is null, reg access block type
+must specify the type of the top-level register block. If reg_access_block_instance
+is omitted, reg_access_block type must specify the type of a variable named
+<agent> within the top-level register block (for backward compatibility with earlier
+versions of the code generator).
+uvm_reg_kind = <kind>
+uvm_reg_addr = <addr>
+uvm_reg_data = <data>
+<kind> must be the name of the trans_var that represents the access kind (0 =
+read, 1 = write).
+<addr> must be the name of the trans_var that represents the address for the
+register read/write.
+<data> must be the name of the trans_var that represents the data for the register
+read/write.
+See the section Register Template File immediately below.
+Back to the top.
+Register Template File
+The register template file is deprecated. DO NOT USE THE REGISTER TEMPLATE
+FILE! The capabilities provided by this file can be achieved instead by using
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 17142

@@ -1,0 +1,23 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Specifies the value of the repeat count used in the top-level default virtual
+sequence to determine how many times the lower level sequences are started. This
+is a convenience setting that is only relevant if the top-level default virtual
+sequence is actually used to demonstrate or pipe-clean the generated code. This
+setting is irrelevant if the top-level default virtual sequence is replaced with a user-
+defined sequence using a factory override. The default value is 1.
+uvm_cmdline = <flag> <flag> <flag> ... [2015-11]
+Specifies a list of flags that are passed as simulator command line arguments to the
+UVM command line processor. Multiple flags should be separated by spaces.
+Example
+uvm_cmdline = +UVM_VERBOSITY=UVM_HIGH +UVM_OBJECTION_TRACE
+Back to the top.
+Common Template File - Reference Model and Scoreboard
+The code generator can create one or more reference models each associated with
+its own instance of the Syosil UVM Scoreboard. Each reference model receives
+transactions from certain agents and sends transactions to its scoreboard. Each
+scoreboard receives transactions that represent the expected behavior of the DUT
+from its reference model, and also receives transactions that represent the actual
+behavior of the DUT from certain agents. The source code for the Syosil UVM
+Scoreboard itself must be downloaded separately from www.syosil.com. See the
+documentation that accompanies the Syosil UVM Scoreboard for further details.
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 26/42

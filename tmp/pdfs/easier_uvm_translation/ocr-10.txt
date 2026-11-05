@@ -1,0 +1,41 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+With byo_interface and generate_interface_instance = yes (the default), the
+generated interface instance names are as per the default, that is,
+<agent> if <suffix>. The if clock and if reset settings can be used to connect
+automatically generated clocks and resets to the interface instance. Virtual
+interfaces in the configuration object, driver, and monitor are generated and set
+automatically, and their type is changed to virtual <interface_name> so they can
+refer to the BYO interface instance.
+With byo_interface and generate _interface_instance = no, the interface instance
+names are user-defined. The if clock and if reset settings are ignored. Virtual
+interfaces in the configuration object, driver, and monitor will not be assigned
+automatically (because the interface instance names are unknown), but can be
+assigned in a user-supplied code fragment (tb_inc_before_run_test is a suitable
+setting).
+A parameterized interface has to be instantiated manually
+(generate _interface_instance = no). A parameterized interface can be a BYO
+interface, but it does not have to be. It is possible to generate a parameterized
+interface from an interface template file.
+uvm_seqr_class = <yes or no>
+uvm_seqr_class can be set to yes or no. The value is not case sensitive. The default
+is no, which means that the sequencer type for that specific agent is defined using
+a typedef, e.g.
+typedef uvm_sequencer #(<trans_item>) <agent>_sequencer;
+If the value is yes, then an explicit class is generated, e.g.
+class <agent>_sequencer extends uvm_sequencer #(<trans_item>); ... endclass
+agent is active = <UVM_ACTIVE or UVM_PASSIVE>
+agent _is_active can be set to UVM_ACTIVE or UVM_PASSIVE, which determines
+whether the agent is run in active or passive mode by setting the flag in the
+configuration object of the agent accordingly. The default is UVYM_ACTIVE. The
+configuration object is created and the flag set in the top-level environment
+<top>_env.
+agent_checks_enable = <yes or no>
+agent _checks enable can be set to yes or no. The value is not case sensitive. The
+default is yes. This setting determines the value of the checks enable flag within
+the configuration object of this agent and should be used within user-defined code
+fragments to enable or disable checks.
+agent coverage enable = <yes or no>
+agent _coverage enable can be set to yes or no. The value is not case sensitive.
+The default is yes. This setting determines the value of the coverage enable flag
+within the configuration object of this agent and should be used within user-
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 10/42

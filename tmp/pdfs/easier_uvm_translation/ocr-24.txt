@@ -1,0 +1,38 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+The following settings specify the names of include files for inserting user-defined
+code within automatically generated code. Each setting does nothing except insert
+some code, so these settings can be freely combined with other settings. By
+default, each setting generates one ‘include directive. If inline is given as a second
+parameter, the user-defined code is copied inline instead of being included using
+an ‘include directive. With or without inline, the included files are copied to the
+<project>/tb/include directory. Any files referenced by nested “include directives
+will not be copied to the <project>/th/include directory.
+th_inc_inside_module = <filename> [inline]
+Include user-defined code from the given file before the DUT instantiation in the
+generated test harness module <project>/tb/<top>_tb/sv/<top> th.sv.
+tb_inc_inside_module = <filename> [inline]
+Include user-defined code from the given file in the generated top-level test bench
+module <project>/th/<top>_tb/sv/<top>_tb.sv.
+th_prepend_to_initial = <filename> [inline] [2016-04-18]
+Include user-defined code from the given file at the top of (inside) the generated
+initial block that calls run_test() in the generated top-level test bench module
+<project>/th/<top>_tb/sv/<top>_th.sv.
+th_inc_before_run_test = <filename> [inline] [2016-04-18]
+Include user-defined code from the given file inside the generated initial block
+immediately before the call to run_test() in the top-level test bench module
+<project>/th/<top>_tb/sv/<top>_th.sv. tb_inc_before_run_test can be used to
+assign variables within a configuration object from the top-level module, such as
+when setting a virtual interface to refer to a user-defined interface instance (see
+generate interface instance). Aside from virtual interfaces, variables within
+configuration objects are often best set from a test (see
+test_prepend_to_build_phase).
+tb_generate run test = <yes or no> [2016-02-19]
+If no, suppresses the generation of the initial block that calls run_test() in the
+generated top-level test bench module <project>/th/<top>_tb/sv/<top>_th.sv.
+You can then use tb_inc_inside_module to provide your own top-level
+configuration object and your own call to run_test().
+test _inc_before class = <filename> [inline]
+test_inc_inside_class = <filename> [inline]
+test _inc_after class = <filename> [inline]
+Include user-defined code from the given file in the generated test class.
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 24142

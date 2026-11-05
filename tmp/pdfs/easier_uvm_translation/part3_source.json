@@ -1,0 +1,566 @@
+[
+  {
+    "id": "b0272",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated test class.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0274",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the build_phase method of the generated test class. Requires test_generate_methods_after_class = yes (which is the default).",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0276",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated top-level env class.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0278",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the build_phase , connect_phase , or run_phase methods of the generated top-level env class. Requires top_env_generate_methods_after_class = yes (which is the default).",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0280",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated top-level configuration class (not the agent configuration class, which can be controlled from the interface template file).",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0282",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the new method of the generated top-level configuration class. The inserted code could be used to initialize variables in the top-level configuration class that were specified using config_var , for example.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0284",
+    "type": "p",
+    "text": "Include user-defined code from the given file at the end of the file <top>_seq_lib.sv that contains <top>_default_seq .",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0286",
+    "type": "p",
+    "text": "Generates a call to set_type_override in the build_phase method of the <top>_test class. Can be used with top_seq_inc to replace a default sequence with a user-defined sequence. top_factory_set and agent_factory_set have identical behavior since both do a factory overrride by type.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0288",
+    "type": "p",
+    "text": "Specifies the value of the repeat count used in the top-level default virtual sequence to determine how many times the lower level sequences are started. This is a convenience setting that is only relevant if the top-level default virtual sequence is actually used to demonstrate or pipe-clean the generated code. This setting is irrelevant if the top-level default virtual sequence is replaced with a user-defined sequence using a factory override. The default value is 1.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0290",
+    "type": "p",
+    "text": "Specifies a list of flags that are passed as simulator command line arguments to the UVM command line processor. Multiple flags should be separated by spaces.",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0291",
+    "type": "p",
+    "text": "Example",
+    "section": "Common Template File"
+  },
+  {
+    "id": "b0293",
+    "type": "h1",
+    "text": "Common Template File - Reference Model and Scoreboard",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0294",
+    "type": "p",
+    "text": "The code generator can create one or more reference models each associated with its own instance of the Syosil UVM Scoreboard. Each reference model receives transactions from certain agents and sends transactions to its scoreboard. Each scoreboard receives transactions that represent the expected behavior of the DUT from its reference model, and also receives transactions that represent the actual behavior of the DUT from certain agents. The source code for the Syosil UVM Scoreboard itself must be downloaded separately from www.syosil.com . See the documentation that accompanies the Syosil UVM Scoreboard for further details.",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0296",
+    "type": "p",
+    "text": "Figure: Reference Model and Scoreboard",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0297",
+    "type": "p",
+    "text": "The predefined compare methods of the scoreboard compare two transactions that originate from the same producer, a transaction from the \"DUT\" queue that represents the actual response and a transaction from the \"REF\" queue that represents the expected response.",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0298",
+    "type": "p",
+    "text": "The reference model and scoreboard are controlled by settings in the Common Template File as follows:",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0300",
+    "type": "p",
+    "text": "syosil_scoreboard_src_path specifies the path to the directory that contains the source files for the Syosil UVM Scoreboard. The path must be specified relative to the directory from which the script is run. This directory is named . / src within the distribution files, which you can download from www.syosil.com . The Easier UVM Code Generator has been tested with version 1.0.2.5 of the Syosil UVM Scoreboard, and hopefully will work with this and later versions. This setting is necessary if and only if you use the settings that follow to instantiate a reference model and scoreboard.",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0302",
+    "type": "p",
+    "text": "ref_model_input specifies an agent that sends transactions to an input (technically a uvm_analysis_imp ) of the reference model. A reference model can have any number of inputs. <ref_model> is a tag that identifies a particular reference model and is used as the root for the instance names of the reference model, scoreboard, and associated components within the top-level env in the generated code. You can have any number of reference models. Each reference model will be associated with one Syosil UVM Scoreboard. All settings in the common template file that refer to a particular reference model and the associated scoreboard must have the same tag. <agent_instance_name> must be the name of a SystemVerilog variable that holds a reference to a UVM agent object. It may be a hierarchical object reference, that is, it may include dot characters in order that it may refer to an agent instantiated its own env (using the setting agent_has_env = yes ). The analysis port of the given agent will be connected to an analysis export (of type uvm_analysis_imp ) of the reference model in the generated code.",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0304",
+    "type": "p",
+    "text": "ref_model_output specifies an agent that sends analysis transactions to the scoreboard that reflect the actual output from the DUT. A reference model can have any number of outputs. The scoreboard compares the transactions from the given agent (the \"DUT\" queue within the Syosil UVM Scoreboard) with the expected transactions that are output from the reference model (the \"REF\" queue). In other words, the given agent instance is not really an output of the reference model but rather is an output from the DUT with which the reference model will be compared by the scoreboard. The analysis port of the given agent will be connected to an analysis export of the scoreboard and a corresponding analysis port of the reference model will be connected to a second analysis export of the scoreboard in the generated code.",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0305",
+    "type": "p",
+    "text": "The same <agent_instance_name> may be used as both a ref_model_input and a ref_model_output for the same reference model, in which case the stream of analysis transactions that form one of the inputs to the reference model are also passed directly to the scoreboard where they represent the actual outputs from the DUT (the \"DUT\" queue). The reference model will create its own stream of analysis transactions which will also be passed to the scoreboard for comparison (the \"REF\" queue).",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0307",
+    "type": "p",
+    "text": "Include user-defined code from the given files in the reference model identified by the given <ref_model> tag. ref_model_inc_after_class must include a file that defines the extern function void write... methods associated with the uvm_analysis_imp exports that are automatically generated as part of the reference model, one write method per export. For example:",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0309",
+    "type": "p",
+    "text": "Note that the analysis exports and the analysis ports of the reference model are both numbered with an _N suffix that counts up from 0. The easiest way to get to grips with this is to inspect the generated code for the reference model before attempting to write your own user-defined code fragments.",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0311",
+    "type": "p",
+    "text": "ref_model_compare_method specifies the compare method used by the given instance of the scoreboard. The Syosil UVM Scoreboard comes with three predefined compare methods, In Order ( io ), In Order by Producer ( iop ), and Out of Order ( ooo ), or you could define your own compare method. Different scoreboard instances can use different compare methods. The compare methods are set using factory overrides in the generated code. If and when new compare methods are added, you should be able to select a new compare method by adjusting the value of this setting, assuming that the new comparison class follows the same naming convention as the existing three comparison classes (e.g. cl_syoscb_compare_ooo ).",
+    "section": "Common Template File - Reference Model and Scoreboard"
+  },
+  {
+    "id": "b0312",
+    "type": "h1",
+    "text": "Common Template File - Acceleration/Emulation-Ready Environments",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0313",
+    "type": "p",
+    "text": "There are three settings, dual_top , split_transactors , and agent_inc_inside_bfm relevant to generating acceleration/emulation-ready environments in which the \"HDL domain\" that instantiates the DUT can be synthesized onto an accelerator or emulator box while the \"HVL domain\" that instantiates the UVM environment is strictly untimed, that is, does not contain any delays or clocks.",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0315",
+    "type": "p",
+    "text": "dual_top creates two top-level modules rather than instantiating the test harness module below the top-level test bench module. The default is no .",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0317",
+    "type": "p",
+    "text": "split_transactors expects each transactor (driver and monitor) to be split across the HVL and HDL domains. The default is no . split_transactors does the following:",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0318",
+    "type": "bullet",
+    "text": "Forces dual_top = yes .",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0319",
+    "type": "bullet",
+    "text": "Instantiates an additional interface in the test harness for each agent. This interface is intended to be used as a synthesizable BFM (Bus Functional Model) to drive and monitor the pins of the DUT.",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0320",
+    "type": "bullet",
+    "text": "Sets the virtual interfaces in the UVM environment to point to these BFMs as opposed to the pin-level interfaces.",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0322",
+    "type": "p",
+    "text": "Include user-defined code from the given file in the generated BFM, which is a SystemVerilog interface.",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0323",
+    "type": "p",
+    "text": "To find out how to use split_transactors to create acceleration-ready environments, see Tutorial Part 5 .",
+    "section": "Common Template File - Acceleration/Emulation-Ready Environments"
+  },
+  {
+    "id": "b0324",
+    "type": "h1",
+    "text": "Pin List File",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0325",
+    "type": "p",
+    "text": "The pin list file (given by dut_pfile in the common template file) is a text file that contains the DUT pin list, which is used by the generator to determine the connections between the ports of the DUT module instance and the variables of the test bench. The text file itself has the following format:",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0327",
+    "type": "p",
+    "text": "<variable_declaration> must be a complete variable declaration, including the semicolon, e.g. logic [7:0] data; <parameter_name> is the name of a SystemVerilog parameter to the DUT module instantiation. <parameter_value> is the default value of a SystemVerilog parameter to the DUT module instantiation. <interface_name> may be the name of a SystemVerilog interface or an interface instance name (see below). <dut_port_name> must be the name of a port on the DUT. <variable_name> must be the name of the corresponding variable in the SystemVerilog interface that is to be connected to that DUT port.",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0328",
+    "type": "p",
+    "text": "DEC is used to specify local variable declarations, which will be included in the generated code before the DUT module instantiation and may be connected to ports of the DUT in the list following ! or !none . In other words, ! or !none are used to specify connections between DUT ports and locally-declared variables, as opposed to connections between DUT ports and variables declared in an interface.",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0329",
+    "type": "p",
+    "text": "PAR is used to specify parameters to the generated module instantiation statement. Each parameter must be given a default value.",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0330",
+    "type": "p",
+    "text": "SystemVerilog one-line comments (//, but not /* */) anywhere in the list will be copied verbatim into the generated code and can be used, for example, to indicate that a group of port connections are associated with a particular interface. Any line starting with a # character is treated as a regular comment and will be ignored.",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0331",
+    "type": "p",
+    "text": "An interface name generally takes the form <agent>_if . If number_of_instances is greater than 1, multiple instances of the same interface can be distinguished by adding the suffix _0, _1, _2, ... to the interface name in the pin list file. If number_of_instances = 1, the _0 suffix is optional in the pinlist file (though it will appear in the generated code).",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0332",
+    "type": "p",
+    "text": "If generate_interface_instance = no the interface name should be the user-defined interface instance name (regardless of number_of_instances ).         [2016-04-18]",
+    "section": "Pin List File"
+  },
+  {
+    "id": "b0333",
+    "type": "h1",
+    "text": "Generated Structure",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0334",
+    "type": "p",
+    "text": "Viewed as a diagram, the set of generated modules, interfaces, and classes is as follows. For each interface template file there is an interface and all the classes associated with an agent, including a configuration object and a sequence. If agent_has_env = yes or the agent has a register model, each agent would be instantiated in its own env, and the env would have its own associated virtual sequence (see below).",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0336",
+    "type": "p",
+    "text": "Figure: The Set of Generated \"Things\"",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0337",
+    "type": "p",
+    "text": "The generated file structure is as follows:",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0339",
+    "type": "p",
+    "text": "Given two interface templates, no register model, and agent_has_env = no for each agent, the structure of the generated code would be as follows:",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0341",
+    "type": "p",
+    "text": "Given two interface templates, no register model, and agent_has_env = yes for each agent, the structure of the generated code would be as follows:",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0343",
+    "type": "p",
+    "text": "Given three interface templates, two with a register model and agent_has_env = yes , one with no register model and agent_has_env = no , the structure of the generated code would be as follows:",
+    "section": "Generated Structure"
+  },
+  {
+    "id": "b0345",
+    "type": "h1",
+    "text": "Compilation and Simulation",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0346",
+    "type": "p",
+    "text": "Having run the code generator successfully, you can then run a simulation as follows:",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0347",
+    "type": "p",
+    "text": "Cadence:",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0349",
+    "type": "p",
+    "text": "Mentor:",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0351",
+    "type": "p",
+    "text": "Synopsys:",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0353",
+    "type": "p",
+    "text": "Aldec:",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0355",
+    "type": "p",
+    "text": "The code generator creates an env that runs a simple sequence on each agent to generate one transaction per-agent. In the early stages of experimenting with the code generator, you could extend this sequence to generate more than one transaction and to consume some simulation time by editing the following SystemVerilog source file. (A better solution in the long run would be to set a factory override from a new test.)",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0357",
+    "type": "p",
+    "text": "<top>_env starts a single top-level virtual sequence which starts a sequence on each agent. How this is accomplished depends on the settings in the template file for that agent. With agent_has env = no , the top-level virtual sequence starts a sequence on the agent. With agent_has env = yes , the top-level virtual sequence starts a virtual sequence associated with the <agent>_env , which in turn starts a non-virtual sequence on the agent.",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0358",
+    "type": "p",
+    "text": "The top-level virtual sequence starts child sequences, one per agent, using code of the following form in the file <top>_seq_lib.sv :",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0360",
+    "type": "p",
+    "text": "As a result, the child sequences will run in lock-step, with all sequences finishing before the next round of sequences are started. In running initial simulations using the generated code, you can either set the value of the variable vseq.m_seq_count in the <top>_env::run_phase task to some number of transactions greater than one, or override the child sequences running on the agents to generate multiple transactions, or both. (In any case, this code is only intended as an example to get you started, and you are expected to override these sequences as you develop your tests.)",
+    "section": "Compilation and Simulation"
+  },
+  {
+    "id": "b0361",
+    "type": "h1",
+    "text": "Adding a User-Defined Sequence",
+    "section": "Adding a User-Defined Sequence"
+  },
+  {
+    "id": "b0362",
+    "type": "p",
+    "text": "A sequence <agent>_default_seq is generated for each agent. This default sequence executes a single transaction. The idea is that you can create your own user-defined sequences by extending <agent>_default_seq and add a factory override to the test to replace <agent>_default_seq with your sequence. If agent_has_env = yes , the <agent>_env has an <agent>_env_default_seq that starts the <agent>_default_seq .",
+    "section": "Adding a User-Defined Sequence"
+  },
+  {
+    "id": "b0363",
+    "type": "p",
+    "text": "You can specify the name and location of a user-defined sequence and a factory override in the interface template file:",
+    "section": "Adding a User-Defined Sequence"
+  },
+  {
+    "id": "b0365",
+    "type": "p",
+    "text": "<sequence-include-filename> must be the name of a file in the <inc_path> directory (see above). <original-classname> must be the name of the sequence to be overridden. <replacement-classname> must be the name of the extended sequence.",
+    "section": "Adding a User-Defined Sequence"
+  },
+  {
+    "id": "b0366",
+    "type": "p",
+    "text": "With agent_seq_inc , the include file should contain a class that extends class <agent>_default_seq . With agent_env_seq_inc , the include file should contain a class that extends class <agent>_env_default_seq . agent_factory_set generates a factory override that replaces the default sequence with the user-defined sequence.",
+    "section": "Adding a User-Defined Sequence"
+  },
+  {
+    "id": "b0367",
+    "type": "h1",
+    "text": "Adding a User-Defined Register Sequence",
+    "section": "Adding a User-Defined Register Sequence"
+  },
+  {
+    "id": "b0368",
+    "type": "p",
+    "text": "You can also specify the name and location of a user-defined register sequence in the interface template file:",
+    "section": "Adding a User-Defined Register Sequence"
+  },
+  {
+    "id": "b0370",
+    "type": "p",
+    "text": "<register-sequence-include-filename> must be the name of a file in the <inc_path> directory (see above). <original-classname> must be <agent>_env_default_seq in this particular case. <replacement-classname> must be the name of the extended sequence in this particular case.",
+    "section": "Adding a User-Defined Register Sequence"
+  },
+  {
+    "id": "b0371",
+    "type": "p",
+    "text": "The included file should contain a class that extends class <agent>_env_default_seq . agent_factory_set generates a factory override that replaces <agent>_env_default_seq with the user-defined sequence.",
+    "section": "Adding a User-Defined Register Sequence"
+  },
+  {
+    "id": "b0372",
+    "type": "h1",
+    "text": "Clocks and Resets",
+    "section": "Clocks and Resets"
+  },
+  {
+    "id": "b0373",
+    "type": "p",
+    "text": "The top-level test bench <top> _tb instantiates the DUT within a test harness module named <top> _th, calls run_test to run the UVM test, and sets virtual interfaces in the configuration database. The test harness module instantiates the DUT and by default contains example code to generate the clock and reset signals. If if_clock and if_reset ports are specified in the interface template files, then these ports will be connected to the clock and reset signals, respectively, of the test harness. You will most likely want to modify the clock and reset generation code in the test harness according to the details of your DUT interfaces. This can be done by setting the th_generate_clock_and_reset = no and th_inc_inside_module variables in the common template file and supplying an include file to replace the automatically generated code. The test bench and test harness are generated in the following files:",
+    "section": "Clocks and Resets"
+  },
+  {
+    "id": "b0375",
+    "type": "h1",
+    "text": "Making Minimal Extensions to the Generated Code",
+    "section": "Making Minimal Extensions to the Generated Code"
+  },
+  {
+    "id": "b0376",
+    "type": "p",
+    "text": "In order to have the verification environment send signals to the DUT, you can provide the code executed by the run_phase tasks of each of the UVM drivers. To avoid having to modify the generated source code, you can provide code fragments to be included in the drivers in the <inc_path> directory. You must set the value of driver_inc in the interface template file to the name of the include file, and also make a single if_clock setting in the same template file. driver_inc relies on the name of the clock given by the if_clock setting. You must ensure that the included filename does not clash with the name of any generated file. The code fragment in the include file must follow the following pattern:",
+    "section": "Making Minimal Extensions to the Generated Code"
+  },
+  {
+    "id": "b0378",
+    "type": "p",
+    "text": "In order to have the verification environment monitor the pins of the DUT interfaces, you can provide the code for the run_phase tasks of each of the UVM monitors. To avoid having to modify the generated source code, you can provide code fragments to be included in the monitors in the <inc_path> directory. You must set the value of monitor_inc in the interface template file to the name of the include file. You must ensure that the included filename does not clash with the name of any generated file. The code fragment in the include file must follow the following pattern:",
+    "section": "Making Minimal Extensions to the Generated Code"
+  },
+  {
+    "id": "b0380",
+    "type": "p",
+    "text": "In order to have the verification environment collect coverage information, you can provide the code for the coverpoints for each of the coverage collector component, which is a UVM subscriber. To avoid having to modify the generated source code, you can provide a code fragment for a covergroup to be included in the coverage collectors in the <inc_path> directory. It is possible to include a run_phase task, for example to raise an objection until some coverage goal is met. You must set the value of reg_cover_inc or agent_cover_inc in the interface template file to the name of the include file, reg_cover_inc if the agent is associated with a register block, or agent_cover_inc if it is not. In either case, the file will be included in the covergroup of a coverage collector component connected to the agent. You must ensure that the included filename does not clash with the name of any generated file. The code fragment in the include file must follow the following pattern:",
+    "section": "Making Minimal Extensions to the Generated Code"
+  },
+  {
+    "id": "b0382",
+    "type": "p",
+    "text": "The behaviour of reg_cover_inc has been changed to match that of agent_cover_inc , that is, the include file should contain an entire covergroup named m_cov . For backward compatibility with template files from earlier versions of the code generator, it is still possible for the reg_cover_inc include file to contain only the coverpoints.",
+    "section": "Making Minimal Extensions to the Generated Code"
+  },
+  {
+    "id": "b0383",
+    "type": "h1",
+    "text": "Rules for Minimal Include Files",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0384",
+    "type": "p",
+    "text": "There are a couple of quirks, depending on which class we are talking about:",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0385",
+    "type": "bullet",
+    "text": "The analysis port of the monitor is instantiated in new rather than in build_phase . This contravenes the coding guidelines, but has the advantage that the user can provide their own build_phase method in the include file.",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0386",
+    "type": "bullet",
+    "text": "The subscriber (and only the subscriber) does not provide a new method. This allows the user to provide their own new method to instantiate a covergroup where needed (this is necessary because SystemVerilog requires covergroups to be instantiated in new ).",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0387",
+    "type": "p",
+    "text": "With driver_inc specified, a default run_phase method is generated that calls do_drive , which you must overload in the include file. Otherwise you must define run_phase in the include file as specified by driver_inc_inside_class , either in-line or extern (in which case you would also need to specify driver_inc_after_class to provide the implemention of the extern method). It does not make much sense to specify an _after_class include file without also specifying the corresponding _inside_class include file. If you specify both driver_inc and driver_inc_inside_class , the latter could be used to provide methods called from do_drive .",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0388",
+    "type": "p",
+    "text": "With monitor_inc specified, a default run_phase method is generated that calls do_mon , which you must overload in the include file. Otherwise you must define run_phase in the include file as specified by monitor_inc_inside_class . Again, you may specify both monitor_inc and monitor_inc_inside_class .",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0389",
+    "type": "p",
+    "text": "With agent_cover_inc specified, you provide a covergroup in the include file. Otherwise, if you specify agent_cover_inc_inside_class , you provide the entire contents of the subscriber component, which may or may not include a covergroup. With neither specified, a default covergroup is generated together with the write method to sample that covergroup. agent_cover_inc and agent_cover_inc_inside_class are mutually exclusive.",
+    "section": "Rules for Minimal Include Files"
+  },
+  {
+    "id": "b0390",
+    "type": "h1",
+    "text": "Including Code Before, Inside, and After Classes",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0391",
+    "type": "p",
+    "text": "While the approach described in the previous section allows you to extend the generated code by including user-defined code fragments, those code fragments must fit with the automatically generated run_phase and write methods. There is an alternative approach that allows you to replace the entire contents of the component classes including the phase methods and the write method where appropriate. This alternative approach requires you to provide more code but allows much more flexibility.",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0392",
+    "type": "p",
+    "text": "The alternative approach is to provide up to three include files per class, interface, or module (or in some cases even more). For example, the first file might be included before the class, the second inside the class, and the third after the class. You can put any syntactically valid code in these include files. The location of the included files is given by the inc_path setting of the common template file. You can have the generated code contain `include directives or you can have the user-defined code inserted inline in the generated code. With some classes you can also prepend and append code to certain phase methods (e.g. agent_append_to_build_phase ). There are also settings to suppress the automatic generation of extern methods inside the class and the corresponding method definitions after the class, allowing the automatically generated methods to be replaced entirely by user-defined code, for example:",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0394",
+    "type": "p",
+    "text": "You can see the locations of all the include files in the generated code by setting",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0396",
+    "type": "p",
+    "text": "in the common template file (the default). The automatically generated code for a driver class would then appear as follows (ignoring the conditional compilation guards for simplicity):",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0397",
+    "type": "p",
+    "text": "Filename my_driver.sv",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0399",
+    "type": "h1",
+    "text": "Links",
+    "section": "Links"
+  },
+  {
+    "id": "b0400",
+    "type": "p",
+    "text": "Easier UVM Coding Guidelines",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0401",
+    "type": "p",
+    "text": "Easier UVM - Deeper Explanations",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0402",
+    "type": "p",
+    "text": "Easier UVM Code Generator",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0403",
+    "type": "p",
+    "text": "Easier UVM Video Tutorial",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0404",
+    "type": "p",
+    "text": "Easier UVM Paper and Poster",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0405",
+    "type": "p",
+    "text": "Easier UVM Examples Ready-to-Run on EDA Playground",
+    "section": "Including Code Before, Inside, and After Classes"
+  },
+  {
+    "id": "b0406",
+    "type": "p",
+    "text": "Back to the full list of UVM Resources: https://www.doulos.com/knowhow/systemverilog/uvm/",
+    "section": "Including Code Before, Inside, and After Classes"
+  }
+]

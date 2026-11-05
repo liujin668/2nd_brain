@@ -1,0 +1,35 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+the interface template file to add declarations to the individual agent configuration
+classes. See agent_copy_config_vars.
+The following settings enable or suppress the automatic generation of certain code
+inside or immediately after the corresponding class or module. The default is yes in
+every case. Suppressing the automatic generation of methods allows those
+methods to be user-defined.
+th_generate_clock and_reset = <yes or no>
+If no, suppresses the generation of the clock and reset declarations and
+assignments in the test harness module <project>/th/<top>_tb/sv/<top>_th.sv.
+These declarations and assignments rely on the if clock and if reset settings in the
+interface template file. If there exist multiple clocks then every clock will be
+generated with the same period and duty cycle, and similarly for resets.
+top_env_generate_methods_inside_class = <yes or no>
+top_env_generate_methods after class = <yes or no>
+If no, suppresses the generation of the build_phase, connect_phase, and
+run_phase methods of the top-level env class.
+top_env_generate_run_phase = <yes or no> [2016-02-15]
+If no, suppresses the generation of the run_phase method only of the top-level env
+class. The build_phase and connect phase will still be generated unless
+top_env_generate_methods_inside/after_class are also specified.
+top_env_generate_end of elaboration = <yes or no>
+If no, suppresses the generation of the end _of elaboration_phase method of the
+top-level env class. The generated method prints out the verbosity threshold,
+topology, and factory overrides to help you debug the verification environment.
+top_env_config_generate_methods_inside_class = <yes or no> [2016-02-
+19]
+top_env_config_generate_methods after class = <yes or no>
+If no, suppresses the generation of the new method of the top-level configuration
+(uvm_object) class. If no, you must provide a constructor in an include file using the
+setting top_env_config_inc inside class and/or top_env_config_inc_after class.
+test_generate_methods_inside_class = <yes or no>
+test_generate_methods_after class = <yes or no>
+If no, suppresses the generation of the build_phase method of the test class.
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 23/142

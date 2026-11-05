@@ -1,0 +1,46 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+defined code fragments to enable or disable coverage collection. If set to no, the
+coverage subscriber component for this agent will not be instantiated.
+agent_has_env = <yes or no>
+agent_has_env can be set to yes or no. The value is not case sensitive. The default
+is no, which means that the agent is instantiated directly in the top-level env (or
+inside the env of another agent - see additional_agent). If the value is yes, the
+agent is instantiated within its own environment <agent>_env, which is itself
+instantiated with the top-level environment <top>_env. As well as determining the
+hierarchical structure of the verification environment, this flag also determines the
+structure of the sequences created by the generator (see below). agent_has_env
+CAVEAT. An agent that is used with a register model will always have an env, and
+so setting agent_has_env = no would have no effect for such an agent.
+additional_agent = <agent>
+additional _agent = <agent>
+If present, each additional_agent defines an agent that will be instantiated within
+the environment of the current agent, assuming agent_has_env = yes. If
+agent _has_env = no, specifying additional agents has no effect. An agent must not
+name itself as an additional agent.
+CAVEAT. As implemented in the current version of the code generator,
+additional_agent has many restrictions, as follows:
+
+« A template file that specifies an additional_agent must also specify
+agent _has env = yes.
+
+« additional_agent and reg_access_name are mutually exclusive, that is,
+additional_agent should not be used for an agent that has a register
+model: Doing so would mean that the additional agent in question would
+not be instantiated (unless it is instantiated in its own env).
+
+« An agent that appears as an additional agent should not itself have
+agent_has_env = yes (otherwise it will be instantiated twice, in its own
+env and as an additional agent in another env).
+
+« Any specific agent should not appear as an additional_agent more than
+once, whether in a single interface template file or in multiple interface
+template files.
+
+« An agent that appears as an additional_agent must itself have
+number_of_instances = 1 (the default).
+
+The following settings enable or suppress the automatic generation of certain
+methods inside or immediately after the corresponding class. The default is yes in
+every case. Suppressing the automatic generation of methods allows those
+methods to be user-defined.
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 11/42

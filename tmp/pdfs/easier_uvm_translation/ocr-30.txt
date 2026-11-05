@@ -1,0 +1,58 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+agent_inc_inside_bfm = <filename> [inline] [2016-01-21]
+Include user-defined code from the given file in the generated BFM, which is a
+SystemVerilog interface.
+
+To find out how to use split_transactors to create acceleration-ready
+environments, see Tutorial Part 5.
+
+Back to the top.
+
+Pin List File
+
+The pin list file (given by dut_pfile in the common template file) is a text file that
+contains the DUT pin list, which is used by the generator to determine the
+connections between the ports of the DUT module instance and the variables of
+the test bench. The text file itself has the following format:
+
+DEC = <variable_declaration>
+
+DEC = <variable_declaration>
+
+PAR = <parameter name> <parameter value>
+
+PAR = <parameter_name> <parameter_value>
+
+I<interface_name>
+
+<dut_port_name> <variable_name>
+
+<dut_port_name> <variable_name>
+
+I<interface_name>
+
+// Connections for a specific interface
+
+<dut_port_name> <variable_name>
+
+<dut_port_name> <variable_name>
+
+// Ports connected to local variables
+
+<dut_port_name> <variable_name>
+
+<dut_port_name> <variable name>
+
+<variable_declaration> must be a complete variable declaration, including the
+semicolon, e.g. logic [7:0] data;
+
+<parameter_name> is the name of a SystemVerilog parameter to the DUT module
+instantiation.
+
+<parameter_value> is the default value of a SystemVerilog parameter to the DUT
+module instantiation.
+
+<interface_name> may be the name of a SystemVerilog interface or an interface
+instance name (see below).
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 30/42

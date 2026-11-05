@@ -1,0 +1,42 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+trans_var_constraint = { addr < data; data < 55; }
+trans_var_constraint = { solve cmd before data; cmd < data; }
+Alternatively, constraints can be specified using trans_var. This has the advantage
+that constraints can be named explicitly, for example:
+trans_var = constraint addr_It_data {addr < data; data < 55; }
+trans_var = constraint cmd_before_data { solve cmd before data; cmd < data; }
+config var = <declaration>
+config_var = <declaration>
+Each config_var declaration will be included in the generated agent configuration
+class. config_var can also be used in the common template file to add declarations
+to the top-level configuration class. See agent_copy_config_vars. As for trans_var,
+each <declaration> can be a complete class property (variable) declaration, a
+typedef, a constraint, or a comment, for example:
+config var = // Configuration variable specified in interface template file
+config_var = int count = 4;
+(config_var can also be used in the common template file to add declarations to
+the top-level configuration class.)
+if port = <variable declaration>
+if_port = <variable_declaration>
+Each if port must be a complete declaration suitable for inclusion within a
+SystemVerilog interface, for example:
+if port = parameter AW = 4;
+if port = parameter DW = 4;
+if port = logic clock;
+if_port = logic enable;
+if port = logic [AW-1:0] addr;
+if port = logic [DW-1:0] data;
+These declarations will be included in the interface associated with this agent. Note
+that it is possible to incorporate parameters, and thus to define parameterized
+interfaces, although truly parameterized interfaces require special treatment. There
+will usually be some relationship between the trans_vars and the if ports, as
+defined by the behavior of the UVM driver and monitor components, but this
+relationship need not be one-to-one. The driver and monitor components will use
+the variables of the transaction object when driving and sensing the variables of
+the interface.
+The formatting of the if_port items is preserved as as they are copied from the
+template file to the generated code, so you may wish to vertically align variable
+names and/or initial values in the template file.
+if clock = <name>
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 8/42

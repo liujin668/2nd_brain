@@ -1,0 +1,42 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+settings in the interface and common template files.
+perl easier_uvm_gen.pl if1.tpl if2.tpl if3.tpl reg.tpl
+The register model itself must be provided in the file given by regmodel file
+(default regmodel.sv) in the directory from which the script is run. The script does
+not generate the register model: It must be generated separately (or written by
+hand).
+The reg.tpl file is used to identify the names and structure of the register blocks in
+the register model. The top-level register block will be instantiated in the top-level
+env, and each lower-level register block will be instantiated in the env of the agent
+to which its address map is connected. reg.tpl must be formatted as follows:
+regmodel_name = <top-level-register-block-classname>
+regmodel_file = <register-model-filename>
+regmodel_sub_block = <register-sub-block-classname> <instance/agent-name>
+regmodel_sub_block = <register-sub-block-classname> <instance/agent-name>
+In [2015-06-29] these settings were replaced as follows:
+regmodel_name replaced by top_reg_block_type in the common template file
+regmodel_file replaced by regmodel_file in the common template file
+regmodel_sub_block replaced by reg_access_block_type in the interface template
+file
+<top-level-register-block-classname> must be the class name of the top-level
+uvm_reg_block in the register model.
+<register-model-filename> must be the name of the file containing the register
+model, relative to the directory in which the script is run. If this parameter is
+omitted, the filename defaults to regmodel.sv.
+<register-sub-block-classname> must be the class name of a uvm_reg_block in
+the register model associated with a specific agent.
+<instance/agent-name> must be the variable name of that specific sub-block in
+the top-level register block class. Furthermore, that variable name must be the
+name of the agent associated with the particular register sub-block.
+In addition to the register template file, the interface template file for each agent
+must specify the mapping between the specific variables of the transaction and the
+kind, address, and data required for the generic register access.
+If an agent is associated with a register block, agent_has_env must NOT be set to
+no. In other words, the register block associated with an agent must be instantiated
+in an env dedicated to that specific agent. You can combine agents that have a
+register block with agents that don't, and provided the agents with a register block
+each have their own env, there is no restriction on whether the remaining agents
+have agent_has_env = yes or no.
+Back to the top.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 18/42

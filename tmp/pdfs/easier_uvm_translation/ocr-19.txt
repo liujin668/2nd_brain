@@ -1,0 +1,40 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Common Template File
+In addition to the interface template files listed on the command line, there must
+be a single common template file which contains all the code generator settings
+that do not relate to a specific agent/interface. The common template file is named
+common.tpl by default, though a different filename may be selected using the -m
+command line flag.
+There is one mandatory setting, dut_top:
+dut_top = <name>
+dut_top must be the SystemVerilog module name (not the instance name) of the
+top-level module of the DUT.
+The remaining settings are all optional:
+dut_source_path = <path>
+dut_source_path specifies the path to a directory that contains the DUT files. The
+path must be specified relative to the directory from which the script is run. The
+script recursively copies the contents of the directory <dut_source_path> into the
+directory <project>/dut so that the script works on a copy of the DUT files rather
+than the files themselves. This directory may contain a file named files.f which, if it
+exists, must contain any SystemVerilog source file names and command line flags
+necessary to compile the DUT, but should not refer to files from the UVM base
+class library itself (since these will be included in the automatically generated
+compilation scripts). If files.f does not exist, the generator will create a files.f that
+lists all the files in the DUT directory with the extension .sv in alphabetical order.
+The user must provide a files.f if the source files need to be compiled in anything
+other than alphabetical order or if any of the source files are not located directly
+within the DUT directory. If dut_source path is not specified, the default is dut.
+inc_path = <path>
+inc_path specifies the path to a directory that may contain files that contain
+fragments of user-defined code to be included in the generated code. (This
+capability was greatly enhanced in the 2015-06 release.) The path must be specified
+relative to the directory from which the script is run. The script copies the files from
+the directory <inc_path> into the directory <project>/tb/include so that it works
+on a copy of the include files rather than the files themselves. Any files referenced
+by nested “include directives will not be copied to the <project>/tb/include
+directory. If the include files exist their filenames must be specified using the
+appropriate template settings in the interface and common template files, such as
+driver_inc_inside_class. If inc_path is not specified, the default is include.
+The include files within the inc_path directory may by organised into
+subdirectories. The corresponding settings would then include a relative path
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 19/42

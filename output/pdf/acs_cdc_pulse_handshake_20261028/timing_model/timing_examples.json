@@ -1,0 +1,3183 @@
+{
+  "model_kind": "illustrative Python event model; NOT RTL simulation or CDC signoff",
+  "assumptions": [
+    "Each unprovided acs_cdc_capt_sync is modeled as exactly TWO positive-edge flip-flops.",
+    "Both active-low resets have already initialized all registers to zero and safely released before t=0.",
+    "No metastability, recovery/removal violation, setup/hold violation, reset operation or stopped clock is modeled.",
+    "All same-domain registers sample old values and update atomically after the edge (NBA-like).",
+    "Noncoincident rising edges; din changes away from clock edges.",
+    "internal_idle is explanatory only: the pictured IP has no ready/busy output.",
+    "sampled_in_events records source-side din_re detection, NOT successfully queued or delivered transactions."
+  ],
+  "clocks": {
+    "src_period_ns": 10,
+    "dst_period_ns": 16,
+    "src_first_rise_ns": 0,
+    "dst_first_rise_ns": 3
+  },
+  "cases": [
+    {
+      "name": "normal_single",
+      "din_changes": [
+        {
+          "time_ns": 6,
+          "value": 1
+        },
+        {
+          "time_ns": 16,
+          "value": 0
+        }
+      ],
+      "end_ns": 160,
+      "summary": {
+        "sampled_in_events": [
+          10
+        ],
+        "dout_rises": [
+          35
+        ],
+        "dout_falls": [
+          51
+        ],
+        "consumer_samples": [
+          51
+        ],
+        "idle_return": [
+          100
+        ],
+        "sampled_in_event_count": 1,
+        "dout_pulse_count": 1
+      },
+      "transitions": [
+        {
+          "time_ns": 6,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 6,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_store",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 10,
+          "signal": "internal_idle",
+          "value": 0
+        },
+        {
+          "time_ns": 16,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 19,
+          "signal": "forward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 20,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 35,
+          "signal": "din_store_sync2dst",
+          "value": 1
+        },
+        {
+          "time_ns": 35,
+          "signal": "dout",
+          "value": 1
+        },
+        {
+          "time_ns": 40,
+          "signal": "backward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 50,
+          "signal": "din_store_sync2src",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "dout",
+          "value": 0
+        },
+        {
+          "time_ns": 60,
+          "signal": "din_store",
+          "value": 0
+        },
+        {
+          "time_ns": 67,
+          "signal": "forward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 83,
+          "signal": "din_store_sync2dst",
+          "value": 0
+        },
+        {
+          "time_ns": 90,
+          "signal": "backward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 99,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "din_store_sync2src",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "internal_idle",
+          "value": 1
+        }
+      ],
+      "rows": [
+        {
+          "time_ns": 0,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 3,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 6,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 10,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 16,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 19,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 20,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 30,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 35,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 40,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 50,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 51,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 1
+        },
+        {
+          "time_ns": 60,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 67,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 70,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 80,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 83,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 90,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 99,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 100,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 110,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 115,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 120,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 130,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 131,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 140,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 147,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 150,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 160,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        }
+      ]
+    },
+    {
+      "name": "busy_merge",
+      "din_changes": [
+        {
+          "time_ns": 6,
+          "value": 1
+        },
+        {
+          "time_ns": 16,
+          "value": 0
+        },
+        {
+          "time_ns": 26,
+          "value": 1
+        },
+        {
+          "time_ns": 36,
+          "value": 0
+        }
+      ],
+      "end_ns": 160,
+      "summary": {
+        "sampled_in_events": [
+          10,
+          30
+        ],
+        "dout_rises": [
+          35
+        ],
+        "dout_falls": [
+          51
+        ],
+        "consumer_samples": [
+          51
+        ],
+        "idle_return": [
+          100
+        ],
+        "sampled_in_event_count": 2,
+        "dout_pulse_count": 1
+      },
+      "transitions": [
+        {
+          "time_ns": 6,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 6,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_store",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 10,
+          "signal": "internal_idle",
+          "value": 0
+        },
+        {
+          "time_ns": 16,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 19,
+          "signal": "forward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 20,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 26,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 26,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 30,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 30,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 35,
+          "signal": "din_store_sync2dst",
+          "value": 1
+        },
+        {
+          "time_ns": 35,
+          "signal": "dout",
+          "value": 1
+        },
+        {
+          "time_ns": 36,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 40,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 40,
+          "signal": "backward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 50,
+          "signal": "din_store_sync2src",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "dout",
+          "value": 0
+        },
+        {
+          "time_ns": 60,
+          "signal": "din_store",
+          "value": 0
+        },
+        {
+          "time_ns": 67,
+          "signal": "forward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 83,
+          "signal": "din_store_sync2dst",
+          "value": 0
+        },
+        {
+          "time_ns": 90,
+          "signal": "backward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 99,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "din_store_sync2src",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "internal_idle",
+          "value": 1
+        }
+      ],
+      "rows": [
+        {
+          "time_ns": 0,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 3,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 6,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 10,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 16,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 19,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 20,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 26,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 30,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 35,
+          "event": "dst_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 36,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 40,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 50,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 51,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 1
+        },
+        {
+          "time_ns": 60,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 67,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 70,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 80,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 83,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 90,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 99,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 100,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 110,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 115,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 120,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 130,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 131,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 140,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 147,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 150,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 160,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        }
+      ]
+    },
+    {
+      "name": "rearmed_two",
+      "din_changes": [
+        {
+          "time_ns": 6,
+          "value": 1
+        },
+        {
+          "time_ns": 16,
+          "value": 0
+        },
+        {
+          "time_ns": 106,
+          "value": 1
+        },
+        {
+          "time_ns": 116,
+          "value": 0
+        }
+      ],
+      "end_ns": 240,
+      "summary": {
+        "sampled_in_events": [
+          10,
+          110
+        ],
+        "dout_rises": [
+          35,
+          131
+        ],
+        "dout_falls": [
+          51,
+          147
+        ],
+        "consumer_samples": [
+          51,
+          147
+        ],
+        "idle_return": [
+          100,
+          190
+        ],
+        "sampled_in_event_count": 2,
+        "dout_pulse_count": 2
+      },
+      "transitions": [
+        {
+          "time_ns": 6,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 6,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_store",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 10,
+          "signal": "internal_idle",
+          "value": 0
+        },
+        {
+          "time_ns": 16,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 19,
+          "signal": "forward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 20,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 35,
+          "signal": "din_store_sync2dst",
+          "value": 1
+        },
+        {
+          "time_ns": 35,
+          "signal": "dout",
+          "value": 1
+        },
+        {
+          "time_ns": 40,
+          "signal": "backward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 50,
+          "signal": "din_store_sync2src",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "dout",
+          "value": 0
+        },
+        {
+          "time_ns": 60,
+          "signal": "din_store",
+          "value": 0
+        },
+        {
+          "time_ns": 67,
+          "signal": "forward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 83,
+          "signal": "din_store_sync2dst",
+          "value": 0
+        },
+        {
+          "time_ns": 90,
+          "signal": "backward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 99,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "din_store_sync2src",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "internal_idle",
+          "value": 1
+        },
+        {
+          "time_ns": 106,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 106,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 110,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 110,
+          "signal": "din_store",
+          "value": 1
+        },
+        {
+          "time_ns": 110,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 110,
+          "signal": "internal_idle",
+          "value": 0
+        },
+        {
+          "time_ns": 115,
+          "signal": "forward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 116,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 120,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 131,
+          "signal": "din_store_sync2dst",
+          "value": 1
+        },
+        {
+          "time_ns": 131,
+          "signal": "dout",
+          "value": 1
+        },
+        {
+          "time_ns": 140,
+          "signal": "backward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 147,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 147,
+          "signal": "dout",
+          "value": 0
+        },
+        {
+          "time_ns": 150,
+          "signal": "din_store_sync2src",
+          "value": 1
+        },
+        {
+          "time_ns": 160,
+          "signal": "din_store",
+          "value": 0
+        },
+        {
+          "time_ns": 163,
+          "signal": "forward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 179,
+          "signal": "din_store_sync2dst",
+          "value": 0
+        },
+        {
+          "time_ns": 180,
+          "signal": "backward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 190,
+          "signal": "din_store_sync2src",
+          "value": 0
+        },
+        {
+          "time_ns": 190,
+          "signal": "internal_idle",
+          "value": 1
+        },
+        {
+          "time_ns": 195,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 0
+        }
+      ],
+      "rows": [
+        {
+          "time_ns": 0,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 3,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 6,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 10,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 16,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 19,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 20,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 30,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 35,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 40,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 50,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 51,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 1
+        },
+        {
+          "time_ns": 60,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 67,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 70,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 80,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 83,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 90,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 99,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 100,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 106,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 110,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 115,
+          "event": "dst_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 116,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 120,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 130,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 131,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 140,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 147,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 1
+        },
+        {
+          "time_ns": 150,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 160,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 163,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 170,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 179,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 180,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 190,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 195,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 200,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 210,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 211,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 220,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 227,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 230,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 240,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        }
+      ]
+    },
+    {
+      "name": "unsafe_partial_rearm",
+      "din_changes": [
+        {
+          "time_ns": 6,
+          "value": 1
+        },
+        {
+          "time_ns": 16,
+          "value": 0
+        },
+        {
+          "time_ns": 66,
+          "value": 1
+        },
+        {
+          "time_ns": 76,
+          "value": 0
+        }
+      ],
+      "end_ns": 180,
+      "summary": {
+        "sampled_in_events": [
+          10,
+          70
+        ],
+        "dout_rises": [
+          35
+        ],
+        "dout_falls": [
+          51
+        ],
+        "consumer_samples": [
+          51
+        ],
+        "idle_return": [
+          100
+        ],
+        "sampled_in_event_count": 2,
+        "dout_pulse_count": 1
+      },
+      "transitions": [
+        {
+          "time_ns": 6,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 6,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_store",
+          "value": 1
+        },
+        {
+          "time_ns": 10,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 10,
+          "signal": "internal_idle",
+          "value": 0
+        },
+        {
+          "time_ns": 16,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 19,
+          "signal": "forward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 20,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 35,
+          "signal": "din_store_sync2dst",
+          "value": 1
+        },
+        {
+          "time_ns": 35,
+          "signal": "dout",
+          "value": 1
+        },
+        {
+          "time_ns": 40,
+          "signal": "backward_ff1",
+          "value": 1
+        },
+        {
+          "time_ns": 50,
+          "signal": "din_store_sync2src",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 51,
+          "signal": "dout",
+          "value": 0
+        },
+        {
+          "time_ns": 60,
+          "signal": "din_store",
+          "value": 0
+        },
+        {
+          "time_ns": 66,
+          "signal": "din",
+          "value": 1
+        },
+        {
+          "time_ns": 66,
+          "signal": "din_re",
+          "value": 1
+        },
+        {
+          "time_ns": 67,
+          "signal": "forward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 70,
+          "signal": "din_pipe",
+          "value": 1
+        },
+        {
+          "time_ns": 70,
+          "signal": "din_store",
+          "value": 1
+        },
+        {
+          "time_ns": 70,
+          "signal": "din_re",
+          "value": 0
+        },
+        {
+          "time_ns": 76,
+          "signal": "din",
+          "value": 0
+        },
+        {
+          "time_ns": 80,
+          "signal": "din_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 80,
+          "signal": "din_store",
+          "value": 0
+        },
+        {
+          "time_ns": 83,
+          "signal": "din_store_sync2dst",
+          "value": 0
+        },
+        {
+          "time_ns": 90,
+          "signal": "backward_ff1",
+          "value": 0
+        },
+        {
+          "time_ns": 99,
+          "signal": "din_store_sync2dst_pipe",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "din_store_sync2src",
+          "value": 0
+        },
+        {
+          "time_ns": 100,
+          "signal": "internal_idle",
+          "value": 1
+        }
+      ],
+      "rows": [
+        {
+          "time_ns": 0,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 3,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 6,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 10,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 16,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 19,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 20,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 30,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 35,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 40,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 50,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 1,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 51,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 1,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 1
+        },
+        {
+          "time_ns": 60,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 66,
+          "event": "din_change",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 1,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 67,
+          "event": "dst_rise",
+          "din": 1,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 1,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 70,
+          "event": "src_rise",
+          "din": 1,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 1,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 76,
+          "event": "din_change",
+          "din": 0,
+          "din_pipe": 1,
+          "din_store": 1,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 80,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 1,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 83,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 1,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 90,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 1,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 99,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 1,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 0,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 100,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 110,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 115,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 120,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 130,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 131,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 140,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 147,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 150,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 160,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 163,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 170,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 179,
+          "event": "dst_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        },
+        {
+          "time_ns": 180,
+          "event": "src_rise",
+          "din": 0,
+          "din_pipe": 0,
+          "din_store": 0,
+          "forward_ff1": 0,
+          "din_store_sync2dst": 0,
+          "din_store_sync2dst_pipe": 0,
+          "backward_ff1": 0,
+          "din_store_sync2src": 0,
+          "din_re": 0,
+          "dout": 0,
+          "internal_idle": 1,
+          "sampled_in_event": 0,
+          "consumer_sample": 0
+        }
+      ]
+    }
+  ],
+  "checks": "All expected event-time assertions passed."
+}

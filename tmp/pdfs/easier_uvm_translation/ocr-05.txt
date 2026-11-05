@@ -1,0 +1,39 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+You will find the generated files in the directory <project>/tb, as specified in the
+common template file (see below). Depending on the settings in the template files
+given on the command line, the top-level environment <top>_env may instantiate
+lower-level UVM envs or agents and a configuration object for each. Any lower-
+level envs instantiate agents, coverage collector components, and register models.
+Each agent instantiates a sequencer, driver, and monitor. Alongside the UVM
+component hierarchy, the code generator creates an example UVM test that runs a
+simple sequence on each agent.
+Each run of the code generator script generates a complete set of files below the
+<project> directory. These files will be self-contained unless the user-supplied
+code (consisting of the DUT and any verification environment include files) happen
+to contain any nested ‘include directives that reference external files, in which case
+those external files will not be copied to the <project> directory. You should not
+modify the generated code if you intend to regenerate it later, because any
+modifications will be overwritten when the generator is re-run. Instead, the
+generator contains a mechanism (described below) to insert user-defined code into
+the generated code.
+Back to the top.
+Interface Template File
+There must be one template file for each DUT interface. The template file defines
+the specific variables and options for that interface and for the corresponding UVM
+agent and its transaction. Each template file has the following format:
+Any line starting with a # character is treated as a comment and ignored. End-of-
+line comments are allowed.
+When the value to the right of = consists of more than one item, the items can be
+separated by commas or by spaces.
+The order of the lines in the template file is mostly unimportant.
+agent_name = <agent>
+The agent_name is used to construct the names of all UVM classes and variables
+associated with a particular agent. agent_name should be the first setting in the
+template file.
+trans_item = <name>
+The trans _item is used as the class name of the transaction (sequence item) used
+by the agent: the same transaction type is used as the sequence item and as the
+analysis transaction.
+number of instances = <integer>
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 5/42

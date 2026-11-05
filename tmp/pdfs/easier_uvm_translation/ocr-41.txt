@@ -1,0 +1,48 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+
+Including Code Before, Inside, and After Classes
+While the approach described in the previous section allows you to extend the
+generated code by including user-defined code fragments, those code fragments
+must fit with the automatically generated run_phase and write methods. There is
+an alternative approach that allows you to replace the entire contents of the
+component classes including the phase methods and the write method where
+appropriate. This alternative approach requires you to provide more code but
+allows much more flexibility.
+The alternative approach is to provide up to three include files per class, interface,
+or module (or in some cases even more). For example, the first file might be
+included before the class, the second inside the class, and the third after the class.
+You can put any syntactically valid code in these include files. The location of the
+included files is given by the inc_path setting of the common template file. You can
+have the generated code contain ‘include directives or you can have the user-
+defined code inserted inline in the generated code. With some classes you can also
+prepend and append code to certain phase methods (e.g.
+agent_append_to_build_phase). There are also settings to suppress the automatic
+generation of extern methods inside the class and the corresponding method
+definitions after the class, allowing the automatically generated methods to be
+replaced entirely by user-defined code, for example:
+driver_generate_methods_inside_class = no
+driver generate_methods after class = no
+You can see the locations of all the include files in the generated code by setting
+comments_at_include_locations = yes
+in the common template file (the default). The automatically generated code for a
+driver class would then appear as follows (ignoring the conditional compilation
+guards for simplicity):
+Filename my _driver.sv
+// You can insert code here by setting driver_inc_before_class in file my.tpl
+class my_driver extends uvm_driver #(my_tx);
+
+‘uvm_component_utils(my_driver)
+
+virtual my_if vif;
+
+extern function new(string name, uvm_component parent);
+
+// You can insert code here by setting driver_inc_inside_class in file my.tpl
+endclass : my_driver
+function my_driver:new(string name, uvm_component parent);
+
+super.new(name, parent);
+endfunction : new
+// You can insert code here by setting driver inc after class in file my.tpl
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 41/42

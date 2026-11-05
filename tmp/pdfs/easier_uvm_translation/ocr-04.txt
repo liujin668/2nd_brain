@@ -1,0 +1,47 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+perl -MFile:Copy::Recursive -e 1
+perl -MFile:stat -e 1
+If the module is installed the command should complete silently. If the module is
+not installed you will see an error message, in which case you can install it by
+running the following command as root:
+perl -MCPAN -e "install File:z:Copy::Recursive'
+perl -MCPAN -e ‘install File:stat'
+Early versions of the Code Generator prior to version 2015-06 also required the
+following, but it is no longer necessary:
+perl -MCPAN -e ‘install Time::Piece'
+Back to the top.
+Running the Code Generator
+The code generator script can be run as follows:
+perl easier_uvm_gen.pl [-t] <template> <template> ...
+Each of the command line switches listed below is optional.
+
+« t <template> lists the interface template files. While there must be one
+or more template files named on the command line, the -t switch itself is
+optional. The recommended convention is for template files to have the
+extension .tpl, but the script will actually accept any filename.
+
+« p <top> specifies the prefix used when constructing the names of the
+files, module, package, and UVM classes associated with the top-level
+verification environment. The prefix can also be specified using the setting
+prefix in the common template file. The default is top.
+
++ m <filename> specifies the path of the common template file relative to
+the current directory. The default is common.tpl.
+
+« s <path> specifies the path of the Syosil scoreboard source files. This
+command line switch overrides the value of the setting
+syosil_scoreboard_src_path in the common template file. [2016-03-
+08]
+
+« c causes the code generator to continue after a warning is issued. By
+default the code generator issues a Continue? (y/n) prompt after a
+warning.
+
+« nopack suppresses the automatic generation of do_pack and do_unpack
+methods within the uvm_sequence_item class. This is for backward
+compatibility with previous versions of the code generator script which
+did not generate these methods.
+
+« h prints this list of command line switches and takes no other action.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 4/42

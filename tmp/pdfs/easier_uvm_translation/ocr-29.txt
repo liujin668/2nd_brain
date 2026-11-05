@@ -1,0 +1,41 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Note that the analysis exports and the analysis ports of the reference model are
+both numbered with an _N suffix that counts up from 0. The easiest way to get to
+grips with this is to inspect the generated code for the reference model before
+attempting to write your own user-defined code fragments.
+ref model_compare_method = <ref model> <io or iop or coo> [2015-
+11]
+ref model_compare_method specifies the compare method used by the given
+instance of the scoreboard. The Syosil UVM Scoreboard comes with three
+predefined compare methods, In Order (io), In Order by Producer (iop), and Out of
+Order (000), or you could define your own compare method. Different scoreboard
+instances can use different compare methods. The compare methods are set using
+factory overrides in the generated code. If and when new compare methods are
+added, you should be able to select a new compare method by adjusting the value
+of this setting, assuming that the new comparison class follows the same naming
+convention as the existing three comparison classes (e.g. cl_syosch_compare ooo).
+Back to the top.
+Common Template File - Acceleration/Emulation-Ready Environments
+There are three settings, dual_top, split_transactors, and agent_inc_inside_bfm
+relevant to generating acceleration/emulation-ready environments in which the
+"HDL domain” that instantiates the DUT can be synthesized onto an accelerator or
+emulator box while the "HVL domain” that instantiates the UVM environment is
+strictly untimed, that is, does not contain any delays or clocks.
+dual_top = <yes or no> [2016-01-21]
+dual_top creates two top-level modules rather than instantiating the test harness
+module below the top-level test bench module. The default is no.
+split_transactors = <yes or no> [2016-01-21]
+split_transactors expects each transactor (driver and monitor) to be split across the
+HVL and HDL domains. The default is no.
+split_transactors does the following:
+
+« Forces dual_top = yes.
+
+« Instantiates an additional interface in the test harness for each agent. This
+interface is intended to be used as a synthesizable BFM (Bus Functional
+Model) to drive and monitor the pins of the DUT.
+
+« Sets the virtual interfaces in the UVM environment to point to these BFMs
+as opposed to the pin-level interfaces.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 29/42

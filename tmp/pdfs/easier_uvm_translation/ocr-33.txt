@@ -1,0 +1,42 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+<top>_seq_lib.sv
+<top>_package.sv
+<project>/th/<top>_test/sv/<top>_test.sv Test
+<top>_test_package.sv
+<project>/tb/<top>_tb/sv/<top>_tb.sv Modules
+<top>_th.sv
+<project>/tb/include Copy of user-defined include files
+<project>/sim Simulation scripts
+Given two interface templates, no register model, and agent_has env = no for
+each agent, the structure of the generated code would be as follows:
+testbench (module)
+l, test harness (module)
+I, interface (interface instance)
+interface? (interface instance)
+DUT (module instance)
+l, top_config (object)
+test (object)
+top_env
+L, config1
+agent
+1, sequencer
+driver1
+monitor1
+coverage
+I, config2
+agent2
+I, sequencer?
+driver2
+monitor2
+coverage2
+l, top_virtual_seq (created in run_phase)
+I, agent1_seq
+|, transaction
+l, agent2_seq
+l, transaction2
+Given two interface templates, no register model, and agent_has_env = yes for
+each agent, the structure of the generated code would be as follows:
+testbench (module)
+l, test harness (module)
+I, interface (interface instance)
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 33/42

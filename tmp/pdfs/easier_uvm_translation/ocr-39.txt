@@ -1,0 +1,47 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+name of any generated file. The code fragment in the include file must follow the
+following pattern:
+task <agent_name>_monitor::do_mon();
+// This is an example. Do whatever you need to do to monitor the pins of the
+interface.
+// This task is expected to contain an infinite loop
+// The virtual interface variable is named vif
+// The signal names are from the .tpl file for the particular interface
+// The analysis transaction is named m_trans
+// The analysis port is named analysis_port
+// forever @(negedge vif.clock)
+// begin
+// m_trans.cmd = vif.cmd;
+// m_trans.addr = vif.addr;
+// m_trans.data = vifwdata;
+// analysis_port.write(m_trans);
+// end
+endtask
+In order to have the verification environment collect coverage information, you can
+provide the code for the coverpoints for each of the coverage collector component,
+which is a UVM subscriber. To avoid having to modify the generated source code,
+you can provide a code fragment for a covergroup to be included in the coverage
+collectors in the <inc_path> directory. It is possible to include a run_phase task,
+for example to raise an objection until some coverage goal is met. You must set the
+value of reg_cover_inc or agent_cover_inc in the interface template file to the
+name of the include file, reg_cover inc if the agent is associated with a register
+block, or agent_cover inc if it is not. In either case, the file will be included in the
+covergroup of a coverage collector component connected to the agent. You must
+ensure that the included filename does not clash with the name of any generated
+file. The code fragment in the include file must follow the following pattern:
+// The covergroup must be named m_cov
+// The transaction received by the subscriber is named m_item
+covergroup m_cov;
+option.per instance = 1;
+// This is an example. Provide whatever coverpoints you need.
+cp_cmd: coverpoint m_item.cmd;
+cp_addr: coverpoint m_item.addr;
+cp_data: coverpoint m_item.data {
+bins zero = {0};
+bins one = {1};
+bins negative = { [-128:-1] };
+bins positive = { [1:127] };
+option.at_least = 16;
+}
+endgroup
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 39/42

@@ -1,0 +1,77 @@
+{
+  "02_normal_timing": {
+    "matched_independent_model": true,
+    "signals_checked": 5,
+    "summary": {
+      "sampled_in_events": [
+        10
+      ],
+      "dout_rises": [
+        35
+      ],
+      "dout_falls": [
+        51
+      ],
+      "consumer_samples": [
+        51
+      ],
+      "idle_return": [
+        100
+      ],
+      "sampled_in_event_count": 1,
+      "dout_pulse_count": 1
+    }
+  },
+  "03_busy_merge": {
+    "matched_independent_model": true,
+    "signals_checked": 5,
+    "summary": {
+      "sampled_in_events": [
+        10,
+        30
+      ],
+      "dout_rises": [
+        35
+      ],
+      "dout_falls": [
+        51
+      ],
+      "consumer_samples": [
+        51
+      ],
+      "idle_return": [
+        100
+      ],
+      "sampled_in_event_count": 2,
+      "dout_pulse_count": 1
+    }
+  },
+  "04_safe_repeat": {
+    "matched_independent_model": true,
+    "signals_checked": 5,
+    "summary": {
+      "sampled_in_events": [
+        10,
+        110
+      ],
+      "dout_rises": [
+        35,
+        131
+      ],
+      "dout_falls": [
+        51,
+        147
+      ],
+      "consumer_samples": [
+        51,
+        147
+      ],
+      "idle_return": [
+        100,
+        190
+      ],
+      "sampled_in_event_count": 2,
+      "dout_pulse_count": 2
+    }
+  }
+}

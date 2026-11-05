@@ -1,0 +1,41 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+driver_inc = <filename> [inline]
+monitor_inc = <filename> [inline]
+agent_cover_inc = <filename> [inline]
+reg_cover_inc = <filename> [inline]
+driver_inc, monitor _inc, agent_cover_inc, and reg_cover_inc offer a convenient
+way for beginners to get started in that they require the user to provide the
+minimum of user-defined code. They are described below in the section Extending
+the Generated Code. The following settings provide more flexibility.
+The following settings specify the names of include files for inserting user-defined
+code within automatically generated code. Each setting does nothing except insert
+some code, so these settings can be freely combined with other settings. By
+default, each setting generates one ‘include directive. If inline is given as a second
+parameter, the user-defined code is copied inline instead of being included using
+an ‘include directive. With or without inline, the included files are copied to the
+<project>/tb/include directory. Any files referenced by nested “include directives
+will not be copied to the <project>/tb/include directory.
+if_inc_inside_interface = <filename> [inline]
+Include user-defined code from the given file in the generated interface.
+trans_inc_before_class = <filename> [inline]
+trans_inc_inside class = <filename> [inline]
+trans_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated transaction
+(sequence item) class.
+agent_inc_before_class = <filename> [inline]
+agent_inc_inside class = <filename> [inline]
+agent_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated agent class.
+agent_prepend_to_build_phase = <filename> [inline]
+agent append _to_build_phase = <filename> [inline]
+agent_append_to_connect_phase = <filename> [inline]
+Include user-defined code from the given file in the build_phase or connect_phase
+methods of the generated agent class. Requires
+agent_generate_methods_after class = yes (which is the default).
+sequencer_inc_before_class = <filename> [inline]
+sequencer _inc_inside class = <filename> [inline]
+sequencer_inc_after class = <filename> [inline]
+Include user-defined code from the given file in the generated sequencer class.
+Requires uvm_seqr_class = yes.
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 13/42

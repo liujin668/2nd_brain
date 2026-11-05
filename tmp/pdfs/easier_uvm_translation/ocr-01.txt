@@ -1,0 +1,30 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+o
+Easier UVM Code Generator Reference
+Guide
+The Easier UVM Code Generator - Reference Guide
+Key Concepts
+You should understand these concepts before diving into the detail.
+4 Use Models
+There are three possible use models for the code generator (see Tutorial Part 1:
+Getting Started):
+
+« Simply as a learning aid, generating and running working examples of
+UVM code.
+
+« To generate the first version of your production code, after which the
+production code is maintained by hand and the code generator not run
+again.
+
+« To generate and regenerate the boilerplate code within your production
+code as the project proceeds, postponing for as long as possible the point
+when you need to start maintaining the boilerplate code by hand.
+
++ Inputs and Outputs
+
+The way the code generator works is to take a set of template files, include files,
+
+and the DUT code as inputs, and to generate a set of SystemVerilog source files
+
+and simulator scripts as outputs, overwriting any previously generated files.
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 1/42

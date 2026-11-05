@@ -1,0 +1,42 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+driver_inc_before_class = <filename> [inline]
+driver_inc_inside_class = <filename> [inline]
+driver_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated driver class.
+Operates independently from driver_inc.
+monitor_inc_before_class = <filename> [inline]
+monitor inc_inside_class = <filename> [inline]
+monitor_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated monitor class.
+Operates independently from monitor _inc.
+agent_cover_inc_before_class ~~ = <filename> [inline]
+agent cover _inc_inside class = <filename> [inline]
+agent_cover_inc_after_class = <filename> [inline]
+Include user-defined code from the given file in the generated agent coverage
+(subscriber) class. Operates independently from agent_cover_inc.
+agent_config_inc_before class = <filename> [inline]
+agent_config_inc_inside_class = <filename> [inline]
+agent_config_inc_after class ~~ = <filename> [inline]
+Include user-defined code from the given file in the generated agent configuration
+class (not the top-level configuration class, which can be controlled from the
+common template file).
+agent copy config vars = <filename> [inline]
+Include user-defined code from the given file in the build_phase method of the
+generated top-level env class in order to copy any user-defined configuration
+variables from the top-level configuration object (see config_var in the common
+template file) to the agent configuration object (see config var in the interface
+template file). agent_copy_config_vars is primarily intended for use with
+nested config objects = no, which is the default. It does work with
+nested_config_objects = yes, although it is not usually necessary because there is
+less need to copy variables between configuration objects when they are nested.
+If number of instances is greater than 1, the given file will only be included once
+and may contain assignments for multiple instances of the configuration object
+corresponding to multiple instances of the agent. For example:
+// m_config is a reference to the top-level configuration object
+// m_agent_0_config and m_agent_1_config are references to two agent
+configuration objects
+// There are two config vars n_0 and n_1 in the top-level configuration object
+// and one config_var n in the agent configuration object, of which there are two
+instances
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 14/42

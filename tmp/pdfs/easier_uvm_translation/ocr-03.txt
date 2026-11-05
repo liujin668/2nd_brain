@@ -1,0 +1,40 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+dut_pfile that specifies the pin-level connections between the generated interface
+instances and the DUT (see Pin List File).
++r Modifying the Generated Code
+The interface and common template files provide ways of inserting user-defined
+code fragments from include files into the generated code, and ways of
+suppressing automatic code generation at specific points in the code. These user-
+defined fragments can be inserted inline or inserted using ‘include directives.
+Either way, the user-defined code fragments do form part of the output file set
+(unlike “include directives in the input source code, which are opaque).
+Since the output file set is overwritten each time the code generator is run, care
+needs to be taken to make sure that any changes made to the output file set are
+not lost. There are two good approaches:
+« Use settings in the template files to modify the generated code.
+« Write a script that makes any necessary edits to the generated file set
+immediately after running the code generator.
++ Differentiating Multiple Instances
+Any settings given in an interface template file, including any user-defined code
+fragments, will affect the generated classes (the type set), and will thus apply
+equally to all objects of those types. Multiple instances of a given type set will be
+symmetrical, including the default sequences started on the agents. Furthermore,
+any factory overrides subsequently applied to those sequences (replacing one
+sequence with another) will be applied symmetrically to all instances, because
+sequence factory overrides are always type overrides (whereas UVM components
+can be differentiated using factory instance overrides). The only obvious way to
+differentiate multiple instances of the same sequence class is by assigning
+instance-specific information within the top-level configuration object, which can
+then be read by the sequence objects.
+If you need multiple instances of the same agent/interface that are identical or
+near-identical, the best approach is to use the number _of instances setting. If you
+need multiple instances of the same agent/interface that are highly differentiated
+(or used in different contexts), the best approach is to define a separate interface
+template file for each.
+Back to the top.
+Installing the Code Generator
+The code generator consists of a single Perl script easier_uvm_gen.pl.
+You need to have Perl 5.8.0 or later installed along with the modules
+File:Copy::Recursive, File:stat, and Time::Piece modules. You can check whether
+these modules are installed by typing the following commands:
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 3/42

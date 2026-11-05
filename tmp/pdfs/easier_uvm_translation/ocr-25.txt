@@ -1,0 +1,38 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+test_prepend_to_build_phase = = <filename> [inline]
+test_append_to_build_phase = <filename> [inline]
+Include user-defined code from the given file in the build_phase method of the
+generated test class. Requires test_generate_methods_after class = yes (which is
+the default).
+top_env_inc_before class = <filename> [inline]
+top_env_inc_inside_class = <filename> [inline]
+top_env inc after class = <filename> [inline]
+Include user-defined code from the given file in the generated top-level env class.
+top_env_prepend_to_build_phase = <filename> [inline]
+top_env_append_to_ build phase = <filename> [inline]
+top_env_append_to_connect_phase = <filename> [inline]
+top_env_append_to run_phase = <filename> [inline]
+Include user-defined code from the given file in the build_phase, connect_phase,
+or run_phase methods of the generated top-level env class. Requires
+top_env_generate_methods_after class = yes (which is the default).
+top_env_config_inc_before class = <filename> [inline]
+top_env_config_inc_inside_class = <filename> [inline]
+top_env_config_inc after class = <filename> [inline]
+Include user-defined code from the given file in the generated top-level
+configuration class (not the agent configuration class, which can be controlled from
+the interface template file).
+top_env_config_append_to_new = <filename> [inline]
+Include user-defined code from the given file in the new method of the generated
+top-level configuration class. The inserted code could be used to initialize variables
+in the top-level configuration class that were specified using config var, for
+example.
+top_seq_inc = <filename> [inline]
+Include user-defined code from the given file at the end of the file
+<top>_seq_lib.sv that contains <top>_default_seq.
+top factory set = <original-classname> <replacement-classname>
+Generates a call to set type override in the build_phase method of the
+<top>_test class. Can be used with top_seq_inc to replace a default sequence with
+a user-defined sequence. top factory set and agent factory set have identical
+behavior since both do a factory override by type.
+top default seq count = <integer> [2015-11]
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 25/142

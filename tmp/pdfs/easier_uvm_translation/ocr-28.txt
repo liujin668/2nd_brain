@@ -1,0 +1,47 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+ref_model_input specifies an agent that sends transactions to an input (technically
+a uvm_analysis_imp) of the reference model. A reference model can have any
+number of inputs. <ref model> is a tag that identifies a particular reference model
+and is used as the root for the instance names of the reference model, scoreboard,
+and associated components within the top-level env in the generated code. You
+can have any number of reference models. Each reference model will be associated
+with one Syosil UVM Scoreboard. All settings in the common template file that
+refer to a particular reference model and the associated scoreboard must have the
+same tag. <agent_instance_name> must be the name of a SystemVerilog variable
+that holds a reference to a UVM agent object. It may be a hierarchical object
+reference, that is, it may include dot characters in order that it may refer to an
+agent instantiated its own env (using the setting agent_has_env = yes). The
+analysis port of the given agent will be connected to an analysis export (of type
+uvm_analysis_imp) of the reference model in the generated code.
+ref_model_output = <ref_model> <agent_instance_name> [2015-
+11]
+ref model _output specifies an agent that sends analysis transactions to the
+scoreboard that reflect the actual output from the DUT. A reference model can have
+any number of outputs. The scoreboard compares the transactions from the given
+agent (the "DUT" queue within the Syosil UVM Scoreboard) with the expected
+transactions that are output from the reference model (the "REF" queue). In other
+words, the given agent instance is not really an output of the reference model but
+rather is an output from the DUT with which the reference model will be compared
+by the scoreboard. The analysis port of the given agent will be connected to an
+analysis export of the scoreboard and a corresponding analysis port of the
+reference model will be connected to a second analysis export of the scoreboard in
+the generated code.
+The same <agent_instance_name> may be used as both a ref_model_input and a
+ref model output for the same reference model, in which case the stream of
+analysis transactions that form one of the inputs to the reference model are also
+passed directly to the scoreboard where they represent the actual outputs from the
+DUT (the "DUT" queue). The reference model will create its own stream of analysis
+transactions which will also be passed to the scoreboard for comparison (the "REF"
+queue).
+ref model_inc_before class = <ref model> <filename> [inline] [2015-11]
+ref_model_inc_inside_class = <ref_model> <filename> [inline] [2015-11]
+ref model_inc_after class = <ref model> <filename> [inline] [2015-11]
+Include user-defined code from the given files in the reference model identified by
+the given <ref model> tag. ref model_inc after class must include a file that
+defines the extern function void write... methods associated with the
+uvm_analysis imp exports that are automatically generated as part of the
+reference model, one write method per export. For example:
+function void <ref_model>:write_<ref_model>_0(<tx_type> t);
+endfunction
+
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 28142

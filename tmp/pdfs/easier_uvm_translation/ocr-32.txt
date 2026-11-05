@@ -1,0 +1,33 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Test
+Env,
+:
+0 0 Q 0
+< Register layer :
+S 2
+Agent Agent
+[o] : [ow]
+Test hamess : : :
+Figure: The Set of Generated "Things"
+The generated file structure is as follows:
+<project>/dut Copy of DUT directory
+<project>/tb/<agent>/sv/<agent>_<trans>.sv Per-interface/agent
+<agent>_if.sv
+<agent>_config.sv
+<agent>_driversv
+<agent>_monitor.sv
+<agent>_sequencer.sv
+<agent>_agent.sv
+<agent>_coverage.sv
+<agent>_seq_lib.sv Sequences
+<agent>_package.sv Package
+<agent>_env.sv If agent_has_env = yes
+<agent>_env_seq_lib.sv If agent_has_env = yes
+<project>/tb/<agent>_env/sv/reg2<agent>_adapter.sv If agent uses a regmodel
+<agent>_env_coverage.sv If agent uses a regmodel
+<agent>_env.sv If agent uses a regmodel
+<agent>_env_seq_lib.sv If agent uses a regmodel
+<agent>_env_package.sv If agent uses a regmodel
+<project>/tb/<top>/sv/<top>_config.sv Top-level env
+<top>_env.sv
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos. com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv... 32/42

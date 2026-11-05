@@ -1,0 +1,45 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Aldec:
+cd <project>/sim
+vsimsa -do compile_riviera.do
+The code generator creates an env that runs a simple sequence on each agent to
+generate one transaction per-agent. In the early stages of experimenting with the
+code generator, you could extend this sequence to generate more than one
+transaction and to consume some simulation time by editing the following
+SystemVerilog source file. (A better solution in the long run would be to set a
+factory override from a new test.)
+<project>/tb/<top>/sv/<top>_env.sv
+<top>_env starts a single top-level virtual sequence which starts a sequence on
+each agent. How this is accomplished depends on the settings in the template file
+for that agent. With agent _has env = no, the top-level virtual sequence starts a
+sequence on the agent. With agent_has env = yes, the top-level virtual sequence
+starts a virtual sequence associated with the <agent>_env, which in turn starts a
+non-virtual sequence on the agent.
+The top-level virtual sequence starts child sequences, one per agent, using code of
+the following form in the file <top>_seq_lib.sv:
+repeat (m_seq_count)
+begin
+fork
+
+m_<agent1>_env_seq.start(null, this);
+
+m_<agent2>_env_seq.start(null, this);
+
+m_<agent3>_env_seq.start(null, this);
+
+join
+end
+As a result, the child sequences will run in lock-step, with all sequences finishing
+before the next round of sequences are started. In running initial simulations using
+the generated code, you can either set the value of the variable vseq.m_seq_count
+in the <top>_env::run_phase task to some number of transactions greater than
+one, or override the child sequences running on the agents to generate multiple
+transactions, or both. (In any case, this code is only intended as an example to get
+you started, and you are expected to override these sequences as you develop your
+tests.)
+Back to the top.
+Adding a User-Defined Sequence
+A sequence <agent>_default_seq is generated for each agent. This default
+sequence executes a single transaction. The idea is that you can create your own
+user-defined sequences by extending <agent>_default_seq and add a factory
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 36/42

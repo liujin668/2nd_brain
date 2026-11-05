@@ -1,0 +1,542 @@
+[
+  {
+    "id": "b0000",
+    "type": "h1",
+    "text": "Key Concepts",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0001",
+    "type": "p",
+    "text": "You should understand these concepts before diving into the detail.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0002",
+    "type": "h2",
+    "text": "☆ Use Models",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0003",
+    "type": "p",
+    "text": "There are three possible use models for the code generator (see Tutorial Part 1: Getting Started ):",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0004",
+    "type": "bullet",
+    "text": "Simply as a learning aid, generating and running working examples of UVM code.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0005",
+    "type": "bullet",
+    "text": "To generate the first version of your production code, after which the production code is maintained by hand and the code generator not run again.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0006",
+    "type": "bullet",
+    "text": "To generate and regenerate the boilerplate code within your production code as the project proceeds, postponing for as long as possible the point when you need to start maintaining the boilerplate code by hand.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0007",
+    "type": "h2",
+    "text": "☆ Inputs and Outputs",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0008",
+    "type": "p",
+    "text": "The way the code generator works is to take a set of template files, include files, and the DUT code as inputs, and to generate a set of SystemVerilog source files and simulator scripts as outputs, overwriting any previously generated files.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0010",
+    "type": "p",
+    "text": "Figure: Inputs and Outputs",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0011",
+    "type": "h2",
+    "text": "☆ References to External Files",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0012",
+    "type": "p",
+    "text": "The output files will be self-contained except for any SystemVerilog packages referenced from the input files and for any files referenced from ` include directives in the input files. Referenced packages and included files will not be copied to the output file set unless they are explicitly present in the input file set. So import declarations and ` include directives are opaque - the code generator simply copies the declaration/directive, not the associated files. Thus the generated code can reference external files and packages, including the UVM package itself.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0013",
+    "type": "h2",
+    "text": "☆ Interface Template Files",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0014",
+    "type": "p",
+    "text": "Each interface template file defines a single type set, literally a set of SystemVerilog classes in a package (representing UVM agent, sequence, configuration, env, and so forth) and a SystemVerilog interface. An interface template file can also specify information relating to how that agent is instantiated in a single env (i.e. the number of instances, whether the agent is active or passive, and the location of the corresponding address map in the register model). Instead of the agent being instantiated in its own env, it is also possible to instantiate the generated agent from another env, or from the top-level env (see Interface Template File ).",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0015",
+    "type": "h2",
+    "text": "☆ Other Template Files",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0016",
+    "type": "p",
+    "text": "In additional to the interface template files, there is a common template file that specifies settings that apply equally to all agents or that apply to the top-level modules, top-level env, and test (see Common Template File ). There is also a dut_pfile that specifies the pin-level connections between the generated interface instances and the DUT (see Pin List File ).",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0017",
+    "type": "h2",
+    "text": "☆ Modifying the Generated Code",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0018",
+    "type": "p",
+    "text": "The interface and common template files provide ways of inserting user-defined code fragments from include files into the generated code, and ways of suppressing automatic code generation at specific points in the code. These user-defined fragments can be inserted inline or inserted using ` include directives. Either way, the user-defined code fragments do form part of the output file set (unlike ` include directives in the input source code, which are opaque).",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0019",
+    "type": "p",
+    "text": "Since the output file set is overwritten each time the code generator is run, care needs to be taken to make sure that any changes made to the output file set are not lost. There are two good approaches:",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0020",
+    "type": "bullet",
+    "text": "Use settings in the template files to modify the generated code.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0021",
+    "type": "bullet",
+    "text": "Write a script that makes any necessary edits to the generated file set immediately after running the code generator.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0022",
+    "type": "h2",
+    "text": "☆ Differentiating Multiple Instances",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0023",
+    "type": "p",
+    "text": "Any settings given in an interface template file, including any user-defined code fragments, will affect the generated classes (the type set), and will thus apply equally to all objects of those types. Multiple instances of a given type set will be symmetrical, including the default sequences started on the agents. Furthermore, any factory overrides subsequently applied to those sequences (replacing one sequence with another) will be applied symmetrically to all instances, because sequence factory overrides are always type overrides (whereas UVM components can be differentiated using factory instance overrides). The only obvious way to differentiate multiple instances of the same sequence class is by assigning instance-specific information within the top-level configuration object, which can then be read by the sequence objects.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0024",
+    "type": "p",
+    "text": "If you need multiple instances of the same agent/interface that are identical or near-identical, the best approach is to use the number_of_instances setting. If you need multiple instances of the same agent/interface that are highly differentiated (or used in different contexts), the best approach is to define a separate interface template file for each.",
+    "section": "Key Concepts"
+  },
+  {
+    "id": "b0025",
+    "type": "h1",
+    "text": "Installing the Code Generator",
+    "section": "Installing the Code Generator"
+  },
+  {
+    "id": "b0026",
+    "type": "p",
+    "text": "The code generator consists of a single Perl script easier_uvm_gen.pl .",
+    "section": "Installing the Code Generator"
+  },
+  {
+    "id": "b0027",
+    "type": "p",
+    "text": "You need to have Perl 5.8.0 or later installed along with the modules File::Copy::Recursive, File::stat, and Time::Piece modules. You can check whether these modules are installed by typing the following commands:",
+    "section": "Installing the Code Generator"
+  },
+  {
+    "id": "b0029",
+    "type": "p",
+    "text": "If the module is installed the command should complete silently. If the module is not installed you will see an error message, in which case you can install it by running the following command as root:",
+    "section": "Installing the Code Generator"
+  },
+  {
+    "id": "b0031",
+    "type": "p",
+    "text": "Early versions of the Code Generator prior to version 2015-06 also required the following, but it is no longer necessary:",
+    "section": "Installing the Code Generator"
+  },
+  {
+    "id": "b0033",
+    "type": "h1",
+    "text": "Running the Code Generator",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0034",
+    "type": "p",
+    "text": "The code generator script can be run as follows:",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0036",
+    "type": "p",
+    "text": "Each of the command line switches listed below is optional.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0037",
+    "type": "bullet",
+    "text": "t <template> lists the interface template files. While there must be one or more template files named on the command line, the -t switch itself is optional. The recommended convention is for template files to have the extension .tpl , but the script will actually accept any filename.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0038",
+    "type": "bullet",
+    "text": "p <top> specifies the prefix used when constructing the names of the files, module, package, and UVM classes associated with the top-level verification environment. The prefix can also be specified using the setting prefix in the common template file. The default is top.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0039",
+    "type": "bullet",
+    "text": "m <filename> specifies the path of the common template file relative to the current directory. The default is common.tpl.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0040",
+    "type": "bullet",
+    "text": "s <path > specifies the path of the Syosil scoreboard source files. This command line switch overrides the value of the setting syosil_scoreboard_src_path in the common template file.         [2016-03-08]",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0041",
+    "type": "bullet",
+    "text": "c causes the code generator to continue after a warning is issued. By default the code generator issues a Continue? (y/n) prompt after a warning.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0042",
+    "type": "bullet",
+    "text": "nopack suppresses the automatic generation of do_pack and do_unpack methods within the uvm_sequence_item class. This is for backward compatibility with previous versions of the code generator script which did not generate these methods.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0043",
+    "type": "bullet",
+    "text": "h prints this list of command line switches and takes no other action.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0044",
+    "type": "p",
+    "text": "You will find the generated files in the directory <project>/tb , as specified in the common template file (see below). Depending on the settings in the template files given on the command line, the top-level environment <top>_env may instantiate lower-level UVM envs or agents and a configuration object for each. Any lower-level envs instantiate agents, coverage collector components, and register models. Each agent instantiates a sequencer, driver, and monitor. Alongside the UVM component hierarchy, the code generator creates an example UVM test that runs a simple sequence on each agent.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0045",
+    "type": "p",
+    "text": "Each run of the code generator script generates a complete set of files below the <project> directory. These files will be self-contained unless the user-supplied code (consisting of the DUT and any verification environment include files) happen to contain any nested `include directives that reference external files, in which case those external files will not be copied to the <project> directory. You should not modify the generated code if you intend to regenerate it later, because any modifications will be overwritten when the generator is re-run. Instead, the generator contains a mechanism (described below) to insert user-defined code into the generated code.",
+    "section": "Running the Code Generator"
+  },
+  {
+    "id": "b0046",
+    "type": "h1",
+    "text": "Interface Template File",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0047",
+    "type": "p",
+    "text": "There must be one template file for each DUT interface. The template file defines the specific variables and options for that interface and for the corresponding UVM agent and its transaction. Each template file has the following format:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0048",
+    "type": "p",
+    "text": "Any line starting with a # character is treated as a comment and ignored. End-of-line comments are allowed. When the value to the right of = consists of more than one item, the items can be separated by commas or by spaces. The order of the lines in the template file is mostly unimportant.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0050",
+    "type": "p",
+    "text": "The agent_name is used to construct the names of all UVM classes and variables associated with a particular agent. agent_name should be the first setting in the template file.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0052",
+    "type": "p",
+    "text": "The trans_item is used as the class name of the transaction (sequence item) used by the agent: the same transaction type is used as the sequence item and as the analysis transaction.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0054",
+    "type": "p",
+    "text": "If present, number_of_instances specifies the number of instances of the given agent/interface. The default is 1. If agent_has_env = no , these agent instances will be generated in the top-level env. Otherwise, they will be in the agent env. In the dut_pfile , multiple instances of the same interface should be differentiated using the suffix _0, _1, _2, ...",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0055",
+    "type": "p",
+    "text": "For an agent/interface with a register model, the agent will anyway be contained in its own env. The register sub-block associated with the agent must have the suffix _0, _1, ... to its instance name in the top-level register block. The name of the associated map in the top-level register block must have the same suffix. The generated sequence <agent>_env_default_seq will have members regmodel_0 , regmodel_1 , ... (i.e. the same suffix) to be used for calls to read/write registers from a register sequence.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0057",
+    "type": "p",
+    "text": "Each trans_var declaration will be included in the generated transaction (sequence item) class. Each variable so declared will be included in the generated do_copy , do_compare , do_print , do_record , do_pack , do_unpack , and convert2string methods of that class. Each <declaration> can be a complete class property (variable) declaration or a comment, e.g. rand logic [7:0] data ; A trans_var is also allowed to define a user-defined type ( typedef ) or a const or static class property, which will not be copied or compared by the generated do_copy and do_compare methods. For example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0059",
+    "type": "p",
+    "text": "The formatting of the trans_var items is preserved as as they are copied from the template file to the generated code, so you may wish to vertically align variable names and/or initial values in the template file. The variables will be packed and unpacked in the order in which the trans_vars are given.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0061",
+    "type": "p",
+    "text": "To be used instead of trans_var for variables of an enumeration type, for example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0063",
+    "type": "p",
+    "text": "Note that the enumeration type must be defined separately with a typedef , not defined as part of the variable definition. The typedef can be given as a trans_var or a trans_enum_var . It is necessary to distinguish enumeration from non-enumeration variables within the generated do_pack and do_unpack methods, the corollary being that it is not necessary to distinguish enumeration variables if you suppress the generation of these methods using the -nopack command line switch. The generated convert2string method takes advantage trans_var_enum by converting to the enumeration value, but this is not strictly necessary ( trans_var values are formatted as integers).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0065",
+    "type": "p",
+    "text": "Each trans_meta and trans_enum_meta declaration will be included in the generated transaction ( uvm_sequence_item ) class but the variables so declared will not be included within the generated do_compare , do_pack , and do_unpack methods. These variables represent metadata that is present in each transaction object but does not represent data sent to and from the DUT. The setting trans_enum_meta is only relevant to convert2string since metadata anyway does not get packed and unpacked. In other words, the only difference between trans_meta and trans_enum_meta is how the value of the variable is formatted by the generated convert2string method. A typedef can be given as a trans_var , a trans_enum_var , a trans_meta , or as a trans_enum_meta , the only difference being in the resultant declaration ordering within the transaction class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0066",
+    "type": "p",
+    "text": "The settings trans_var , trans_enum_var , trans_meta , and trans_enum_meta each allow any number of packed array dimensions and a single unpacked array dimension. The unpacked dimension must be specified as a size as opposed to a range. All dimensions may be given as expressions involving parameter names. For example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0068",
+    "type": "p",
+    "text": "The UVM macros for packing and unpacking fields do not support arrays of enumeration type. Because of this, trans_enum_var does not allow an unpacked array dimension if the do_pack and do_unpack methods are being generated. ( trans_enum_meta works above because metadata is anyway not included in the do_pack / unpack methods.)",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0069",
+    "type": "p",
+    "text": "Unpacked arrays are not included in the automatically generated transaction covergroup.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0071",
+    "type": "p",
+    "text": "If present, each trans_var_constraint specifies a constraint block, which will be included as a constraint within the transaction (sequence item) class, e.g.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0073",
+    "type": "p",
+    "text": "Alternatively, constraints can be specified using trans_var . This has the advantage that constraints can be named explicitly, for example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0076",
+    "type": "p",
+    "text": "Each config_var declaration will be included in the generated agent configuration class. config_var can also be used in the common template file to add declarations to the top-level configuration class. See agent_copy_config_vars . As for trans_var , each <declaration> can be a complete class property (variable) declaration, a typedef, a constraint, or a comment, for example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0078",
+    "type": "p",
+    "text": "( config_var can also be used in the common template file to add declarations to the top-level configuration class.)",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0080",
+    "type": "p",
+    "text": "Each if_port must be a complete declaration suitable for inclusion within a SystemVerilog interface, for example:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0082",
+    "type": "p",
+    "text": "These declarations will be included in the interface associated with this agent. Note that it is possible to incorporate parameters, and thus to define parameterized interfaces, although truly parameterized interfaces require special treatment. There will usually be some relationship between the trans_vars and the if_ports, as defined by the behavior of the UVM driver and monitor components, but this relationship need not be one-to-one. The driver and monitor components will use the variables of the transaction object when driving and sensing the variables of the interface.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0083",
+    "type": "p",
+    "text": "The formatting of the if_port items is preserved as as they are copied from the template file to the generated code, so you may wish to vertically align variable names and/or initial values in the template file.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0085",
+    "type": "p",
+    "text": "If present, if_clock and if_reset are used to identify the clock and reset variables of the interface, respectively, which must also be declared as if_ports. Note that unlike if_port , these settings must specify variables names rather than complete variable declarations. The only significant effect of these two settings is to generate assignments to the specified clock and reset variables, respectively, from the automatically generated clock and reset generation code. These settings have no effect if generate_interface_instance = no in the interface template file (see below) or if th_generate_clock_and_reset = no in the common template file; in either case the user would be responsible for connecting clock and reset code in the test harness to clock and reset variables in the interface, if such connections are required. if_clock and if_reset can be thought of as convenience features for automatically connecting clocks and resets to interfaces in simple cases where the default generated code is adequate.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0087",
+    "type": "p",
+    "text": "generate_interface_instance can be set to yes or no . The value is not case sensitive. The default is yes, which means that a SystemVerilog interface instance will be generated for the interface specified in the current template file, or multiple interface instances if number_of_instances is greater than 1. The interface instance is placed in the generated test harness module. generate_interface_instance = no allows you to provide a user-defined instantiation of a parameterized interface that overrides the default parameter values.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0088",
+    "type": "p",
+    "text": "If generate_interface_instance = no then no interface instance will be generated from the current template file, and the user should include their own interface instantiation by using the setting th_inc_inside_module . Any if_clock or if_reset settings in the current interface template file will be ignored, so the user should include their own code to connect any clock and reset signals to their own interface instantiation. Since an interface is not being instantiated automatically, the virtual interface in the corresponding configuration object will not be assigned. This leaves two possibilities: either assign the virtual interface with a user-defined code fragment ( tb_inc_before_run_test is a suitable setting) or do not access the virtual interfaces in the UVM driver or monitor (since they will be null).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0090",
+    "type": "p",
+    "text": "If present, byo_interface specifies the name of a BYO (or Bring Your Own) SystemVerilog interface. In other words, instead of instantiating the automatically generated interface, the generated test harness module instantiates the named interface, which must be provided by the user. The <interface_name> should not be <agent>_if or the name would clash with that of the automatically generated interface. The source file that contains the interface can be made available as part of the DUT code using the dut_source_path . The byo_interface setting can be used with generate_interface_instance = yes (the default) or generate_interface_instance = no .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0091",
+    "type": "p",
+    "text": "With byo_interface and generate_interface_instance = yes (the default), the generated interface instance names are as per the default, that is, <agent>_if_<suffix> . The if_clock and if_reset settings can be used to connect automatically generated clocks and resets to the interface instance. Virtual interfaces in the configuration object, driver, and monitor are generated and set automatically, and their type is changed to virtual <interface_name> so they can refer to the BYO interface instance.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0092",
+    "type": "p",
+    "text": "With byo_interface and generate_interface_instance = no , the interface instance names are user-defined. The if_clock and if_reset settings are ignored. Virtual interfaces in the configuration object, driver, and monitor will not be assigned automatically (because the interface instance names are unknown), but can be assigned in a user-supplied code fragment ( tb_inc_before_run_test is a suitable setting).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0093",
+    "type": "p",
+    "text": "A parameterized interface has to be instantiated manually ( generate_interface_instance = no ). A parameterized interface can be a BYO interface, but it does not have to be. It is possible to generate a parameterized interface from an interface template file.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0095",
+    "type": "p",
+    "text": "uvm_seqr_class can be set to yes or no . The value is not case sensitive. The default is no , which means that the sequencer type for that specific agent is defined using a typedef , e.g.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0097",
+    "type": "p",
+    "text": "If the value is yes , then an explicit class is generated, e.g.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0100",
+    "type": "p",
+    "text": "agent_is_active can be set to UVM_ACTIVE or UVM_PASSIVE, which determines whether the agent is run in active or passive mode by setting the flag in the configuration object of the agent accordingly. The default is UVM_ACTIVE. The configuration object is created and the flag set in the top-level environment <top>_env .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0102",
+    "type": "p",
+    "text": "agent_checks_enable can be set to yes or no . The value is not case sensitive. The default is yes . This setting determines the value of the checks_enable flag within the configuration object of this agent and should be used within user-defined code fragments to enable or disable checks.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0104",
+    "type": "p",
+    "text": "agent_coverage_enable can be set to yes or no . The value is not case sensitive. The default is yes . This setting determines the value of the coverage_enable flag within the configuration object of this agent and should be used within user-defined code fragments to enable or disable coverage collection. If set to no , the coverage subscriber component for this agent will not be instantiated.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0106",
+    "type": "p",
+    "text": "agent_has_env can be set to yes or no . The value is not case sensitive. The default is no , which means that the agent is instantiated directly in the top-level env (or inside the env of another agent - see additional_agent ). If the value is yes , the agent is instantiated within its own environment <agent>_env , which is itself instantiated with the top-level environment <top>_env . As well as determining the hierarchical structure of the verification environment, this flag also determines the structure of the sequences created by the generator (see below). agent_has_env",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0107",
+    "type": "p",
+    "text": "CAVEAT. An agent that is used with a register model will always have an env, and so setting agent_has_env = no would have no effect for such an agent.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0109",
+    "type": "p",
+    "text": "If present, each additional_agent defines an agent that will be instantiated within the environment of the current agent, assuming agent_has_env = yes . If agent_has_env = no , specifying additional agents has no effect. An agent must not name itself as an additional agent.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0110",
+    "type": "p",
+    "text": "CAVEAT. As implemented in the current version of the code generator, additional_agent has many restrictions, as follows:",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0111",
+    "type": "bullet",
+    "text": "A template file that specifies an additional_agent must also specify agent_has_env = yes .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0112",
+    "type": "bullet",
+    "text": "additional_agent and reg_access_name are mutually exclusive, that is, additional_agent should not be used for an agent that has a register model: Doing so would mean that the additional agent in question would not be instantiated (unless it is instantiated in its own env).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0113",
+    "type": "bullet",
+    "text": "An agent that appears as an additional agent should not itself have agent_has_env = yes (otherwise it will be instantiated twice, in its own env and as an additional agent in another env).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0114",
+    "type": "bullet",
+    "text": "Any specific agent should not appear as an additional_agent more than once, whether in a single interface template file or in multiple interface template files.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0115",
+    "type": "bullet",
+    "text": "An agent that appears as an additional_agent must itself have number_of_instances = 1 (the default).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0116",
+    "type": "p",
+    "text": "The following settings enable or suppress the automatic generation of certain methods inside or immediately after the corresponding class. The default is yes in every case. Suppressing the automatic generation of methods allows those methods to be user-defined.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0118",
+    "type": "p",
+    "text": "If no , suppresses the generation of the do_copy, do_compare, do_print, do_record , and convert2string methods of the transaction (sequence item) class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0120",
+    "type": "p",
+    "text": "If no , suppresses the generation of the build_phase and connect_phase methods of the agent class.",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0122",
+    "type": "p",
+    "text": "If no , suppresses the generation of the build_phase and connect_phase methods of the agent env class (not the top-level env, which can be controlled from the common template file).",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0124",
+    "type": "p",
+    "text": "If no , suppresses the generation of the new method of the agent configuration (uvm_object) class. If no , you must provide a constructor in an include file using the setting agent_config_inc_inside_class and/or agent_config_inc_after_class .",
+    "section": "Interface Template File"
+  },
+  {
+    "id": "b0126",
+    "type": "p",
+    "text": "If no , suppresses the generation of the new , write , and report_phase methods and covergroup m_cov of the agent coverage (subscriber) class. If no , you must provide a constructor in an include file using the setting agent_cover_inc_inside_class and/or agent_cover_inc_after_class .",
+    "section": "Interface Template File"
+  }
+]

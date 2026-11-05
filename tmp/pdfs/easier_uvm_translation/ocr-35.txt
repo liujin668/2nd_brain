@@ -1,0 +1,41 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+driver1
+monitor
+coverage
+adapter
+predictor
+I, env_config2
+env2
+I, config2
+agent2
+l, sequencer2
+driver2
+monitor2
+coverage?
+adapter2
+predictor2
+L, config3
+agent3
+1, sequencer3
+driver3
+monitor3
+coverage3
+I, top_virtual_seq (created in run_phase)
+1, env1_virtual_register_seq
+env2_virtual_register_seq
+agent3_seq
+|, transaction3
+Back to the top.
+Compilation and Simulation
+Having run the code generator successfully, you can then run a simulation as
+follows:
+Cadence:
+cd <project>/sim
+./compile_ius.sh
+Mentor:
+cd <project>/sim
+vsim -c -do "do compile_questa.do; run -all"
+Synopsys:
+cd <project>/sim
+./compile_vcs.sh
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uv. 35/42

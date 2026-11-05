@@ -1,0 +1,39 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+Input Files Script Output Files
+generated th
+
+Interface TemplateFile
+= Ey I
+
+Common Template File Fea
+
+Pa sim
+rd Simulation scripts
+Pin List File Design Under Test
+Pl th
+al agent I
+User-defined code fragments 3
+inserted into generated code
+Figure: Inputs and Outputs
+J References to External Files
+The output files will be self-contained except for any SystemVerilog packages
+referenced from the input files and for any files referenced from ‘include directives
+in the input files. Referenced packages and included files will not be copied to the
+output file set unless they are explicitly present in the input file set. So import
+declarations and ‘include directives are opaque - the code generator simply copies
+the declaration/directive, not the associated files. Thus the generated code can
+reference external files and packages, including the UVM package itself.
++ Interface Template Files
+Each interface template file defines a single type set, literally a set of SystemVerilog
+classes in a package (representing UVM agent, sequence, configuration, env, and so
+forth) and a SystemVerilog interface. An interface template file can also specify
+information relating to how that agent is instantiated in a single env (i.e. the
+number of instances, whether the agent is active or passive, and the location of the
+corresponding address map in the register model). Instead of the agent being
+instantiated in its own env, it is also possible to instantiate the generated agent
+from another env, or from the top-level env (see Interface Template File).
++ Other Template Files
+In additional to the interface template files, there is a common template file that
+specifies settings that apply equally to all agents or that apply to the top-level
+modules, top-level env, and test (see Common Template File). There is also a
+read://https_www.doulos.com/?url=https%3A%2F %2Fwww.doulos.com%2Fknowhow%2F systemverilog%2Fuvm%2F easier-uvm%2F easier-uvm 2/42

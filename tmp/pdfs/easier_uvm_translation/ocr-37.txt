@@ -1,0 +1,38 @@
+2026/10/26 17:08 Easier UVM Code Generator Reference Guide
+override to the test to replace <agent>_default_seq with your sequence. If
+agent _has_env = yes, the <agent>_env has an <agent>_env_default_seq that
+starts the <agent>_default_seq.
+You can specify the name and location of a user-defined sequence and a factory
+override in the interface template file:
+agent seq inc = <sequence-include-filename>
+agent_factory_set = <original-classname> <replacement-classname>
+agent_env_seq_inc = <sequence-include-filename>
+agent_factory set = <original-classname> <replacement-classname>
+<sequence-include-filename> must be the name of a file in the <inc_path>
+directory (see above).
+<original-classname> must be the name of the sequence to be overridden.
+<replacement-classname> must be the name of the extended sequence.
+With agent seq _inc, the include file should contain a class that extends class
+<agent>_default_seq.
+With agent _env_seq_inc, the include file should contain a class that extends class
+<agent>_env_default_seq.
+agent factory set generates a factory override that replaces the default sequence
+with the user-defined sequence.
+Back to the top.
+Adding a User-Defined Register Sequence
+You can also specify the name and location of a user-defined register sequence in
+the interface template file:
+reg_seq_inc = <register-sequence-include-filename>
+agent_factory set = <original-classname> <replacement-classname>
+<register-sequence-include-filename> must be the name of a file in the
+<inc_path> directory (see above).
+<original-classname> must be <agent>_env_default_seq in this particular case.
+<replacement-classname> must be the name of the extended sequence in this
+particular case.
+The included file should contain a class that extends class
+<agent>_env_default_seq. agent_factory_set generates a factory override that
+replaces <agent>_env_default_seq with the user-defined sequence.
+Back to the top.
+Clocks and Resets
+
+read://https_www.doulos.com/?uri=https%3A%2F %2Fwww.doulos.com%2Fknowhow?%2F systemverilog%2Fuvm®2F easier-uvm%2F easier-uv. 37/42
