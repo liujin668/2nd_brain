@@ -467,7 +467,8 @@ table(['指标与范围','计划目标','实际值与有效分母','缺口及排
 ['功能覆盖率／【配置】','【填写】','【命中或工具分数；有效bins】','【未覆盖原因；批准记录】','【待填写】'],
 ['代码覆盖率／【指标】','【填写】','【原始；处理后；统计口径】','【版本；对象；理由】','【待填写】'],
 ['断言或形式结果','【填写】','【触发；失败；未触发或未收敛】','【vacuous或假设检查】','【待填写】'],
-['需求与VP映射','【填写】','【已关闭数／适用总数】','【缺口及责任人】','【待填写】']
+['需求映射完整率','【填写】','【已建立验证映射的需求数／适用需求总数】','【缺失映射及责任人】','【待填写】'],
+['VP关闭率','【填写】','【满足关闭条件的VP数／适用VP总数】','【未关闭原因及证据】','【待填写】']
 ],widths=[1.5,1,2,1.8,1],caption='表7-2 覆盖率与证据结果')
 para('覆盖率目标不统一预填100%；不同指标和配置采用已批准目标。断言无失败还需结合启用范围、触发及非空洞检查；形式结果另列证明、反例、超时和假设。')
 heading('7.2 用例和回归状态',2)
@@ -522,4 +523,4 @@ outmd=BASE/'SoC子系统验证方案模板.md'
 doc.save(outdoc)
 outmd.write_text('\n'.join(md),encoding='utf-8')
 (BASE/'_work'/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
-print(json.dumps({'docx':str(outdoc),'markdown':str(outmd),'figures':len(manifest['figures']),'tables':manifest['tables'],'headings':len(manifest['sections'])},ensure_ascii=False))
+print(json.dumps({'docx':str(outdoc),'markdown':str(outmd),'figures':len(manifest['figures']),'tables':manifest['tables'],'headings':len(manifest['sections'])},ensure_ascii=True))
