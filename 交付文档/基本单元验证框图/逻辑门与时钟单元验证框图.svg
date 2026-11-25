@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="650" viewBox="0 0 1500 650">
+<title>逻辑门与时钟单元验证框图</title>
+<desc>激励驱动并列的逻辑与时钟单元。参考模型使用实际输入产生期望结果，与监测输出比较。</desc>
+<rect width="100%" height="100%" fill="white"/>
+<text x="750" y="43" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="32" font-weight="600" text-anchor="middle" dominant-baseline="central" fill="#213a49">逻辑门与时钟单元验证框图</text>
+<rect x="390" y="115" width="460" height="325" rx="9" fill="white" stroke="#3c6278" stroke-width="1.8"/>
+<text x="411" y="141" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="24" font-weight="600" text-anchor="start" dominant-baseline="central" fill="#213a49">DUT 边界 | 基本单元</text>
+<rect x="440" y="180" width="350" height="105" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="615" y="205" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="25" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">组合逻辑单元</text>
+<text x="615" y="239" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">AND / OR / XOR / NAND / NOR</text>
+<text x="615" y="264" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">XNOR / MUX / BUF / INV</text>
+<rect x="440" y="315" width="350" height="100" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="615" y="340" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="25" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">时钟单元</text>
+<text x="615" y="373" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">CLK BUF / INV / AND / OR</text>
+<text x="615" y="396" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">GATE / MUX</text>
+<rect x="60" y="215" width="225" height="160" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="172.5" y="250" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="27" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">激励发生器</text>
+<text x="172.5" y="296" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">穷举 / 随机逻辑向量</text>
+<text x="172.5" y="331" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">时钟 / 使能 / 选择</text>
+<rect x="920" y="230" width="180" height="130" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="1010" y="265" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="27" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">输出监测</text>
+<text x="1010" y="307" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">数据 / 边沿</text>
+<text x="1010" y="337" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">脉宽 / 时间戳</text>
+<rect x="1210" y="230" width="220" height="130" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="1320" y="263" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="27" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">比对与检查</text>
+<text x="1320" y="306" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">功能 / 时钟行为</text>
+<text x="1320" y="337" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">Checker / SVA</text>
+<rect x="440" y="475" width="350" height="110" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="615" y="503" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="26" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">参考模型</text>
+<text x="615" y="540" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">逻辑真值表 / 时钟行为</text>
+<text x="615" y="570" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">独立计算期望结果</text>
+<rect x="1210" y="455" width="220" height="110" rx="9" fill="#eef4f7" stroke="#3c6278" stroke-width="1.8"/>
+<text x="1320" y="485" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="25" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">结果与覆盖率</text>
+<text x="1320" y="523" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">PASS / FAIL</text>
+<text x="1320" y="551" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#213a49">日志 / 波形 / 覆盖率</text>
+<polyline points="285,295 350,295" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polyline points="350,295 350,232 440,232" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="440.00,232.00 430.00,227.50 430.00,236.50" fill="#3c6278"/>
+<polyline points="350,295 350,365 440,365" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="440.00,365.00 430.00,360.50 430.00,369.50" fill="#3c6278"/>
+<circle cx="350" cy="295" r="3.5" fill="#3c6278"/>
+<polyline points="315,295 315,530 440,530" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="440.00,530.00 430.00,525.50 430.00,534.50" fill="#3c6278"/>
+<circle cx="315" cy="295" r="3.5" fill="#3c6278"/>
+<text x="324" y="491" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" text-anchor="start" dominant-baseline="central" fill="#647985">实际输入</text>
+<polyline points="790,232 885,232 885,270 920,270" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="920.00,270.00 910.00,265.50 910.00,274.50" fill="#3c6278"/>
+<polyline points="790,365 885,365 885,325 920,325" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="920.00,325.00 910.00,320.50 910.00,329.50" fill="#3c6278"/>
+<polyline points="1100,275 1210,275" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="1210.00,275.00 1200.00,270.50 1200.00,279.50" fill="#3c6278"/>
+<text x="1155" y="252" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#647985">实际输出</text>
+<polyline points="790,530 1160,530 1160,330 1210,330" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="1210.00,330.00 1200.00,325.50 1200.00,334.50" fill="#3c6278"/>
+<text x="975" y="509" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="middle" dominant-baseline="central" fill="#647985">期望输出 / 预期边沿</text>
+<polyline points="1320,360 1320,455" fill="none" stroke="#3c6278" stroke-width="1.9" stroke-linejoin="round"/>
+<polygon points="1320.00,455.00 1324.50,445.00 1315.50,445.00" fill="#3c6278"/>
+<text x="1334" y="408" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" text-anchor="start" dominant-baseline="central" fill="#647985">检查结果</text>
+<text x="60" y="620" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="20" font-weight="400" text-anchor="start" dominant-baseline="central" fill="#647985">注：各单元并列验证；毛刺、脉宽和切换规则按具体单元规格检查。</text>
+</svg>
